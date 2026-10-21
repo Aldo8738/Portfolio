@@ -1,0 +1,12 @@
+node_modules/
+.astro/
+.tools/
+.cache/
+dist/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+TAQUERIA_ALDO_CODEX_HANDOFF.md
+GLB_VERIFIED_ASSET_REPORT.json
+docs/agent-rules/

@@ -1,0 +1,22 @@
+# Dependencies and generated output
+node_modules/
+.cache/
+.tools/
+.astro/
+.next/
+dist/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Local environment values; keep the documented template trackable
+.env
+.env.*
+!.env.example
+
+# Local logs and operating-system files
+npm-debug.log*
+.DS_Store
+Thumbs.db

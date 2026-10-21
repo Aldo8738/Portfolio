@@ -1,0 +1,76 @@
+---
+import { siteContent } from '../content/site';
+import ThemePicker from '../components/ui/ThemePicker.astro';
+import '../styles/globals.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = siteContent.description } = Astro.props;
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<!doctype html>
+<html lang="en" data-theme="original">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b1020" />
+    <title>{title} · {siteContent.brand}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('taqueria-theme');
+        if (['original', 'noir', 'vintage'].includes(theme))
+          document.documentElement.dataset.theme = theme;
+      } catch {
+        /* The default theme remains available without storage. */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header shell">
+      <a class="brand" href="/" aria-label="Taquería Aldo home">
+        <span aria-hidden="true">✳</span> Taquería Aldo
+      </a>
+      <nav aria-label="Main navigation">
+        {[
+          ['/work', 'Work'],
+          ['/about', 'About'],
+          ['/contact', 'Contact'],
+        ].map(([path, label]) => (
+          <a
+            href={path}
+            aria-current={
+              currentPath === path || currentPath.startsWith(`${path}/`)
+                ? 'page'
+                : undefined
+            }
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="brand" href="/">
+          Taquería Aldo
+        </a>
+        <p>A creative portfolio, served after dark.</p>
+      </div>
+      <ThemePicker />
+      <a class="text-link" href="/work">
+        View work <span aria-hidden="true">↗</span>
+      </a>
+    </footer>
+  </body>
+</html>

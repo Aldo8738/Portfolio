@@ -1,0 +1,36 @@
+{
+  "source": "taqueria_aldo_v3_12_9_optimized.glb",
+  "output": "taqueria_aldo_v3_12_9_selectively_merged.glb",
+  "source_bytes": 2716936,
+  "merged_bytes": 2609612,
+  "source_meshes": 776,
+  "merged_meshes": 175,
+  "original_triangles": 70293,
+  "merged_triangles": 70293,
+  "materials": 61,
+  "images": 13,
+  "preserved_click_targets": 8,
+  "preserved_salsa_bottle_parts": 9,
+  "animation_roots": [
+    "TROMPO_ROTATING",
+    "SALSA_RED_PIVOT",
+    "SALSA_GREEN_PIVOT",
+    "SALSA_ORANGE_PIVOT",
+    "POLAROID_0_SWING_PIVOT",
+    "POLAROID_1_SWING_PIVOT",
+    "POLAROID_2_SWING_PIVOT",
+    "CRT_INTERACTION",
+    "SKETCHBOOK_INTERACTION",
+    "AMP_INTERACTION"
+  ],
+  "sha256": "09e950db19887e86094b5feb98df50badee1b21a5171afeba0d230cbdf61bad9",
+  "quality_checks": {
+    "all_original_meshes_assigned_once": true,
+    "original_material_definitions_unchanged": true,
+    "all_texture_bytes_unchanged": true,
+    "per_material_triangle_count_unchanged": true,
+    "interaction_extras_unchanged": true,
+    "world_bounds_error_m": 8.568167686462402e-08,
+    "max_local_vertex_rounding_error_m": 1.1920928955078125e-07
+  }
+}

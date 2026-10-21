@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Preserve model bytes on every platform
+*.glb binary

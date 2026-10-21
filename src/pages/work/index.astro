@@ -1,0 +1,47 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { projects } from '../../content/portfolio';
+---
+
+<SiteLayout title="Work" description="Project case studies from Taquería Aldo.">
+  <div class="content-page shell">
+    <header class="page-intro">
+      <p class="eyebrow">From the counter</p>
+      <h1>Selected work.</h1>
+      <p>The place for projects, process and the details behind each piece.</p>
+    </header>
+    {projects.length ? (
+      <div class="project-grid">
+        {projects.map((project) => (
+          <article class="project-card">
+            {project.images[0] && (
+              <img
+                src={project.images[0].src}
+                alt={project.images[0].alt}
+                width={project.images[0].width}
+                height={project.images[0].height}
+                loading="lazy"
+              />
+            )}
+            <h2>
+              <a href={`/work/${project.slug}`}>{project.title}</a>
+            </h2>
+            <p>{project.summary}</p>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <section class="empty-state">
+        <p class="eyebrow">Content in preparation</p>
+        <h2>The first case studies are on their way.</h2>
+        <p>
+          Real project descriptions and images will appear here once they are
+          supplied. No sample projects are published.
+        </p>
+        <a class="text-link" href="/">
+          Return to the stand <span aria-hidden="true">↗</span>
+        </a>
+      </section>
+    )}
+  </div>
+</SiteLayout>

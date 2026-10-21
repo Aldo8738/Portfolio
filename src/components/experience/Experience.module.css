@@ -1,0 +1,65 @@
+.stage {
+  position: relative;
+  height: clamp(340px, 49vw, 660px);
+  min-width: 0;
+  isolation: isolate;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 70%, #182039, #090e1b 75%);
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 2rem;
+  z-index: 2;
+  background: var(--background);
+}
+.loading p {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  margin: 1.5rem 0 0.5rem;
+}
+.loading > span {
+  max-width: 360px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.loader {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 30px;
+}
+.loader span {
+  width: 8px;
+  height: 18px;
+  background: var(--salsa-red);
+  border-radius: 3px 3px 1px 1px;
+  animation: simmer 1s ease-in-out infinite alternate;
+}
+.loader span:nth-child(2) {
+  background: var(--salsa-green);
+  animation-delay: 0.2s;
+}
+.loader span:nth-child(3) {
+  background: var(--salsa-orange);
+  animation-delay: 0.4s;
+}
+@keyframes simmer {
+  to {
+    transform: translateY(-8px);
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loader span {
+    animation: none;
+  }
+}

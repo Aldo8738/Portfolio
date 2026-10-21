@@ -1,0 +1,76 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Experience from '../components/experience/Experience';
+import { siteContent } from '../content/site';
+---
+
+<SiteLayout title="Welcome">
+  <section class="hero shell" aria-labelledby="welcome-title">
+    <div>
+      <p class="eyebrow">
+        <span aria-hidden="true">✦</span> Portfolio · Open after dark
+      </p>
+      <h1 id="welcome-title">
+        A small stand.
+        <br />A world of <em>work.</em>
+      </h1>
+    </div>
+    <div class="hero-intro">
+      <p>
+        {siteContent.introduction ??
+          'Welcome to Taquería Aldo. Step up to the counter, explore the stand, or head straight to the portfolio.'}
+      </p>
+      <a class="button" href="/work">
+        View work <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+  <section class="experience-section shell" aria-label="Explore the taquería">
+    <Experience client:load />
+    <noscript>
+      <p class="empty-state">
+        The interactive stand needs JavaScript.{' '}
+        <a href="/work">Explore the portfolio</a> with the navigation above.
+      </p>
+    </noscript>
+  </section>
+</SiteLayout>
+
+<style>
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 3rem;
+    padding-block: 3.5rem 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 5.2vw, 5rem);
+    margin-bottom: 0;
+  }
+  em {
+    color: var(--accent);
+  }
+  .hero-intro {
+    max-width: 340px;
+    padding-bottom: 0.4rem;
+  }
+  .hero-intro p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .experience-section {
+    margin-bottom: 3rem;
+  }
+  @media (max-width: 700px) {
+    .hero {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding-top: 2.5rem;
+    }
+    .hero-intro {
+      max-width: 100%;
+    }
+  }
+</style>

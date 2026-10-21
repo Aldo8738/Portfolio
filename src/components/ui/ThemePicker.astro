@@ -1,0 +1,44 @@
+---
+import { themes } from '../../lib/theme';
+---
+
+<fieldset class="theme-picker">
+  <legend>Choose your salsa</legend>
+  <div>
+    {themes.map((theme, index) => (
+      <button
+        type="button"
+        data-theme-id={theme.id}
+        aria-pressed={theme.id === 'original'}
+        title={`${theme.salsa}: ${theme.label}`}
+      >
+        <span class={`salsa-dot salsa-dot-${index}`} aria-hidden="true" />
+        {theme.label}
+      </button>
+    ))}
+  </div>
+</fieldset>
+
+<script>
+  import { parseTheme, selectTheme } from '../../lib/theme';
+  function syncButtons() {
+    const selected = parseTheme(document.documentElement.dataset.theme);
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-theme-id]')
+      .forEach((button) => {
+        button.setAttribute(
+          'aria-pressed',
+          String(button.dataset.themeId === selected),
+        );
+      });
+  }
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-theme-id]')
+    .forEach((button) => {
+      button.addEventListener('click', () =>
+        selectTheme(parseTheme(button.dataset.themeId)),
+      );
+    });
+  window.addEventListener('taqueria:theme', syncButtons);
+  syncButtons();
+</script>
