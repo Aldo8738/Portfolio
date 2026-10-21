@@ -36,6 +36,10 @@ This checkout's browser binaries are in `.cache/ms-playwright`; when using those
 on Windows, set `$env:PLAYWRIGHT_BROWSERS_PATH = (Resolve-Path '.cache/ms-playwright').Path`
 before running tests. Both toolchain caches are ignored by Git.
 
+For an environment without hardware WebGL, set `$env:PLAYWRIGHT_SOFTWARE_WEBGL = '1'`
+before browser tests. This opts into SwiftShader for functional checks; its timings
+are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md).
+
 ## Content and assets
 
 - `/`, `/work`, `/about`, `/contact` and `/404` are real HTML pages.
@@ -49,6 +53,9 @@ before running tests. Both toolchain caches are ignored by Git.
   unchanged using `node scripts/extract-previews.mjs`. Do not treat them as originals.
 - A CSS loading animation is the primary loading presentation. Navigation remains
   usable while the scene initializes or if WebGL fails. No poster is required.
+- The live model loads once in a deferred homepage chunk. The CRT links to `/work`,
+  and the trompo rotates independently. Reduced motion and visibility pause motion.
+  Append `?debug=1` locally to see the initial renderer diagnostics.
 
 Do not add full-resolution media or guitar audio to startup preloads. Do not replace
 the model or bake personal content into 3D textures.

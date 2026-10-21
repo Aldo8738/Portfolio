@@ -8,6 +8,35 @@
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 70%, #182039, #090e1b 75%);
 }
+.canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: var(--scene-filter);
+  transition: opacity 0.2s ease;
+}
+.canvas[data-visible='true'] {
+  opacity: 1;
+}
+.sceneNote {
+  position: absolute;
+  left: 1.2rem;
+  bottom: 1rem;
+  pointer-events: none;
+  color: var(--muted);
+  font-size: 0.68rem;
+  background: var(--background);
+  padding: 0.4rem 0.65rem;
+  border-radius: 2px;
+}
+.diagnostics {
+  display: block;
+  margin-block: 0.75rem;
+  font:
+    0.75rem ui-monospace,
+    monospace;
+  color: var(--muted);
+}
 .loading {
   position: absolute;
   inset: 0;
@@ -57,6 +86,13 @@
     transform: translateY(-8px);
     opacity: 0.5;
   }
+}
+:global(html:not(.js)) .loading {
+  display: none;
+}
+:global(html:not(.js)) .stage {
+  height: auto;
+  padding: 1.5rem;
 }
 @media (prefers-reduced-motion: reduce) {
   .loader span {

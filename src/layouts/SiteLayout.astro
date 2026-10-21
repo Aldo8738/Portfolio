@@ -20,7 +20,9 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     <meta name="theme-color" content="#0b1020" />
     <title>{title} · {siteContent.brand}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <slot name="head" />
     <script is:inline>
+      document.documentElement.classList.add('js');
       try {
         const theme = localStorage.getItem('taqueria-theme');
         if (['original', 'noir', 'vintage'].includes(theme))

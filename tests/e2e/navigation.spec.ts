@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 test('HTML navigation works with JavaScript disabled', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
+  const modelRequests: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().endsWith('.glb')) modelRequests.push(request.url());
+  });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'A small stand.',
@@ -16,6 +20,7 @@ test('HTML navigation works with JavaScript disabled', async ({ browser }) => {
     .getByRole('link', { name: 'About' })
     .click();
   await expect(page).toHaveTitle('About · Taquería Aldo');
+  expect(modelRequests).toEqual([]);
   await context.close();
 });
 

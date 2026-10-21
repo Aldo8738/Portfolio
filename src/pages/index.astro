@@ -2,9 +2,20 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Experience from '../components/experience/Experience';
 import { siteContent } from '../content/site';
+import { modelUrl } from '../lib/glb-contract';
 ---
 
 <SiteLayout title="Welcome">
+  <script slot="head" is:inline define:vars={{ modelUrl }}>
+    if (typeof WebGL2RenderingContext !== 'undefined') {
+      const preload = document.createElement('link');
+      preload.rel = 'preload';
+      preload.as = 'fetch';
+      preload.href = modelUrl;
+      preload.crossOrigin = 'anonymous';
+      document.head.append(preload);
+    }
+  </script>
   <section class="hero shell" aria-labelledby="welcome-title">
     <div>
       <p class="eyebrow">
@@ -27,12 +38,6 @@ import { siteContent } from '../content/site';
   </section>
   <section class="experience-section shell" aria-label="Explore the taquería">
     <Experience client:load />
-    <noscript>
-      <p class="empty-state">
-        The interactive stand needs JavaScript.{' '}
-        <a href="/work">Explore the portfolio</a> with the navigation above.
-      </p>
-    </noscript>
   </section>
 </SiteLayout>
 

@@ -4,8 +4,9 @@ Planning baseline: 21 October 2026. The authoritative specification remains
 [`TAQUERIA_ALDO_CODEX_HANDOFF.md`](../TAQUERIA_ALDO_CODEX_HANDOFF.md); this document
 turns it into delivery checkpoints. Follow [coding conventions](CODING_CONVENTIONS.md)
 when implementing each phase.
-Astro + React + R3F is approved. The static HTML foundation and verification tooling
-are implemented; frozen-model browser integration is the next checkpoint.
+Astro + React + R3F is approved. The static HTML foundation, verification tooling
+and first live model are implemented. See the [scene baseline](qa/BASELINE.md) for
+actual browser observations and remaining verification limits.
 
 ## Accepted loading and performance decisions
 
@@ -25,7 +26,8 @@ These user clarifications supersede the handoff's poster-first loading requireme
   animation that delays access to an already-ready scene.
 - Verify the target on a production build with cold and warm caches, documented
   network conditions and named desktop/mobile hardware. Record download, parse/setup
-  and ready timings separately. No measurements exist yet; the target is not a
+  and ready timings separately. Initial software-renderer observations are recorded
+  in the scene baseline; the target is not a
   guarantee for every connection or device, and is separate from LCP and steady FPS.
 - Measure the actual scene early in Phase 2, before adding effects. Prioritize the
   scene fetch without blocking first HTML paint; bound any idle delay. If startup
@@ -53,7 +55,8 @@ These user clarifications supersede the handoff's poster-first loading requireme
   `09e950db19887e86094b5feb98df50badee1b21a5171afeba0d230cbdf61bad9`.
 - All 16 required node names exist exactly once; interaction metadata is present.
   No external buffer/image URIs or animation clips were found. This is a structural
-  inspection, not a browser rendering or performance certification.
+  inspection. Browser integration is verified separately in the scene baseline;
+  physical-device performance remains unverified.
 - The backup has 776 meshes and lacks the root and animation pivots required by the
   merged model contract. Use it for development visual/performance comparisons;
   it is not a drop-in runtime fallback. Runtime failures fall back to HTML with
@@ -216,6 +219,20 @@ Do not label unavailable device/content checks as passed.
   persisted themes without model requests on content routes and mobile page width.
 - The homepage scene is still a loading placeholder at this checkpoint. First-scene
   timings, GPU performance and visual fidelity are not yet measured.
+
+### First live scene checkpoint
+
+- The frozen GLB renders in Chromium with responsive camera fitting, authored lights,
+  readable CRT texture, independent trompo rotation and lifecycle/error handling.
+- The loader hands off after a rendered frame. Missing WebGL, model failure and a
+  startup timeout retain useful navigation. No JavaScript means no model download.
+- Seven unit tests and nine browser tests pass. The actual CRT raycast opens `/work`;
+  the GLB is requested once, and no originals/audio are requested on entry.
+- Software-renderer observations: 2,681 ms desktop and 1,517 ms narrow-screen readiness.
+  Glass simplification reduces narrow-screen draw calls from 358 to 185. These are
+  local, unthrottled single runs with reduced motion, not mobile-device guarantees.
+- Screenshots and remaining size/performance/fidelity concerns are recorded in
+  [qa/BASELINE.md](qa/BASELINE.md). Phase 3 object interactions are next.
 
 ## Inputs to gather alongside development
 
