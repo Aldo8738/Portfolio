@@ -121,9 +121,10 @@ export default function Experience() {
           </div>
         )}
         {state.status === 'ready' && (
-          <span className={styles.sceneNote}>
-            Explore the stand · the CRT opens Work
-          </span>
+          <p className="sr-only" role="status">
+            The interactive stand is ready. Click the CRT or use the View work
+            link.
+          </p>
         )}
         <noscript>
           <p>

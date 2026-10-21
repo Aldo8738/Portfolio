@@ -8,7 +8,7 @@ import {
   modelUrl,
   requiredNodeNames,
 } from '../../lib/glb-contract';
-import { fitCamera } from '../../lib/camera';
+import { fitCamera, getFramingPoints } from '../../lib/camera';
 import type { CanvasProps } from './scene-types';
 import { useModelMaterials } from './useModelMaterials';
 
@@ -41,15 +41,21 @@ function Model({
     () => scene.getObjectByName('TROMPO_ROTATING'),
     [scene],
   );
+  const framingPoints = useMemo(() => getFramingPoints(scene), [scene]);
   useModelMaterials(scene, size.width < 700, invalidate);
   useLayoutEffect(() => {
     if (!(camera instanceof PerspectiveCamera)) return;
-    const fit = fitCamera(bounds, size.width / size.height, camera.fov);
+    const fit = fitCamera(
+      bounds,
+      size.width / size.height,
+      camera.fov,
+      framingPoints,
+    );
     camera.position.copy(fit.position);
     camera.lookAt(fit.target);
     camera.updateProjectionMatrix();
     invalidate();
-  }, [bounds, camera, size.width, size.height, invalidate]);
+  }, [bounds, framingPoints, camera, size.width, size.height, invalidate]);
   useEffect(() => () => cancelAnimationFrame(readyFrame.current), []);
   useFrame((_, delta) => {
     if (active && !reducedMotion && trompo)

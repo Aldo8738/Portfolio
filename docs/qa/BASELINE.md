@@ -2,6 +2,8 @@
 
 Measured 21 October 2026 against the local Astro production preview. This is a
 functional/visual baseline, not a physical-device performance certification.
+The later [fullscreen checkpoint](FULLSCREEN.md) follows the supplied design mock
+and replaces this initial homepage layout.
 
 ## Environment and observations
 

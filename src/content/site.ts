@@ -5,6 +5,9 @@ export interface SocialLink {
 
 export const siteContent = {
   brand: 'Taquería Aldo',
+  name: 'Aldo Juárez',
+  headerLine: 'Product engineer · Mexico → Berlin',
+  cvUrl: null as string | null,
   description: 'A creative portfolio behind an interactive nighttime taquería.',
   introduction: null as string | null,
   biography: null as string | null,

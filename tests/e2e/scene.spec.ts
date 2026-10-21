@@ -38,6 +38,7 @@ test('renders the real frozen stand once, exposes metrics and routes through the
   expect(screen).toBeDefined();
   expect(canvas).not.toBeNull();
   if (!screen || !canvas) throw new Error('Scene target coordinates missing');
+  expect(canvas).toMatchObject({ x: 0, y: 0, width: 1280, height: 720 });
   await page.mouse.click(
     canvas.x + ((screen.x + 1) * canvas.width) / 2,
     canvas.y + ((1 - screen.y) * canvas.height) / 2,
@@ -75,6 +76,12 @@ test('mobile scene fits and uses the cheaper glass profile', async ({
   );
   expect(metrics.quality).toBe('mobile');
   expect(metrics.calls).toBeLessThan(250);
+  expect(await page.locator('canvas').boundingBox()).toMatchObject({
+    x: 0,
+    y: 0,
+    width: 390,
+    height: 844,
+  });
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

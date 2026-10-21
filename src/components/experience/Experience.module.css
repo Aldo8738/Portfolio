@@ -1,12 +1,14 @@
 .stage {
   position: relative;
-  height: clamp(340px, 49vw, 660px);
+  height: 100svh;
   min-width: 0;
   isolation: isolate;
-  border: 1px solid var(--line);
-  border-radius: 5px;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 70%, #182039, #090e1b 75%);
+  background: radial-gradient(
+    ellipse at 55% 55%,
+    #152a3b,
+    var(--background) 72%
+  );
 }
 .canvas {
   position: absolute;
@@ -18,20 +20,16 @@
 .canvas[data-visible='true'] {
   opacity: 1;
 }
-.sceneNote {
-  position: absolute;
-  left: 1.2rem;
-  bottom: 1rem;
-  pointer-events: none;
-  color: var(--muted);
-  font-size: 0.68rem;
-  background: var(--background);
-  padding: 0.4rem 0.65rem;
-  border-radius: 2px;
-}
 .diagnostics {
+  position: absolute;
+  z-index: 5;
+  left: 1rem;
+  bottom: 5rem;
   display: block;
-  margin-block: 0.75rem;
+  margin: 0;
+  padding: 0.5rem;
+  background: var(--background);
+  pointer-events: none;
   font:
     0.75rem ui-monospace,
     monospace;
@@ -50,8 +48,8 @@
   background: var(--background);
 }
 .loading p {
-  font-family: Georgia, serif;
-  font-size: 1.8rem;
+  font-weight: 700;
+  font-size: 1.6rem;
   margin: 1.5rem 0 0.5rem;
 }
 .loading > span {
@@ -91,8 +89,9 @@
   display: none;
 }
 :global(html:not(.js)) .stage {
-  height: auto;
-  padding: 1.5rem;
+  padding: 6rem 2rem;
+  display: grid;
+  place-items: center;
 }
 @media (prefers-reduced-motion: reduce) {
   .loader span {

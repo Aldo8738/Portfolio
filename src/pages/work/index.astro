@@ -6,13 +6,13 @@ import { projects } from '../../content/portfolio';
 <SiteLayout title="Work" description="Project case studies from Taquería Aldo.">
   <div class="content-page shell">
     <header class="page-intro">
-      <p class="eyebrow">From the counter</p>
+      <p class="eyebrow">01 / Selected work</p>
       <h1>Selected work.</h1>
       <p>The place for projects, process and the details behind each piece.</p>
     </header>
     {projects.length ? (
       <div class="project-grid">
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <article class="project-card">
             {project.images[0] && (
               <img
@@ -23,10 +23,21 @@ import { projects } from '../../content/portfolio';
                 loading="lazy"
               />
             )}
-            <h2>
-              <a href={`/work/${project.slug}`}>{project.title}</a>
-            </h2>
-            <p>{project.summary}</p>
+            <div class="project-copy">
+              <p class="eyebrow">
+                {String(index + 1).padStart(2, '0')} / {project.role}
+              </p>
+              <h2>
+                <a href={`/work/${project.slug}`}>{project.title}</a>
+              </h2>
+              <p>{project.summary}</p>
+              <a
+                class={index === 0 ? 'button' : 'text-link'}
+                href={`/work/${project.slug}`}
+              >
+                View project <span aria-hidden="true">→</span>
+              </a>
+            </div>
           </article>
         ))}
       </div>

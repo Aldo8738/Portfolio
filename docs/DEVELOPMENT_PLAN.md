@@ -8,6 +8,14 @@ Astro + React + R3F is approved. The static HTML foundation, verification toolin
 and first live model are implemented. See the [scene baseline](qa/BASELINE.md) for
 actual browser observations and remaining verification limits.
 
+The creator's [visual direction](design/DIRECTION.md), based on
+[mock.png](design/mock.png), replaces the initial boxed scene: the stand opens
+full screen beneath overlay navigation. Portfolio routes use a light editorial
+layout with bold sans-serif type and magenta accents. Preserve the frozen model;
+illustrative projects in the mock are not supplied case-study content.
+The [fullscreen checkpoint](qa/FULLSCREEN.md) records the implemented layout,
+screenshots and current browser measurements.
+
 ## Accepted loading and performance decisions
 
 These user clarifications supersede the handoff's poster-first loading requirement:
@@ -114,7 +122,7 @@ asset contract passes; all planned routes and missing inputs are documented.
    Unknown slugs return a proper 404.
 4. Implement accessible HTML controls and persistent theme tokens:
    red → Original, green → Noir, orange → Vintage. Prevent a theme flash on reload.
-5. Reserve a stable homepage scene area with introduction and direct `View work`
+5. Reserve a full-viewport homepage scene area with compact identity and direct `View work`
    link. Add the lightweight loading animation/status and an intentional failure
    state. Include fallback artwork only if available; never request a missing image.
 
@@ -143,7 +151,8 @@ not block this phase.
 
 Exit gate: visual desktop/mobile review passes, all contract assertions pass,
 fallback navigation survives blocked WebGL/GLB, and initial measurements are recorded.
-Visual fidelity cannot be signed off against an absent reference image.
+Use the supplied mock for composition and interface review. Its illustrative model
+does not replace the frozen GLB; exact Blender-material fidelity remains unverified.
 
 ### Phase 3 — Interactions in separate tested increments
 

@@ -6,13 +6,22 @@ import '../styles/globals.css';
 interface Props {
   title: string;
   description?: string;
+  immersive?: boolean;
 }
-const { title, description = siteContent.description } = Astro.props;
+const {
+  title,
+  description = siteContent.description,
+  immersive = false,
+} = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <!doctype html>
-<html lang="en" data-theme="original">
+<html
+  lang="en"
+  data-theme="original"
+  data-presentation={immersive ? 'immersive' : 'portfolio'}
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,17 +41,40 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
       }
     </script>
   </head>
-  <body>
+  <body data-layout={immersive ? 'immersive' : 'portfolio'}>
     <a class="skip-link" href="#main">
       Skip to content
     </a>
-    <header class="site-header shell">
-      <a class="brand" href="/" aria-label="Taquería Aldo home">
-        <span aria-hidden="true">✳</span> Taquería Aldo
+    <header
+      class:list={[
+        'site-header',
+        'shell',
+        { 'site-header--immersive': immersive },
+      ]}
+    >
+      <a
+        class:list={['brand', { 'brand--identity': immersive }]}
+        href="/"
+        aria-label="Taquería Aldo home"
+      >
+        {immersive ? (
+          <>
+            <strong>
+              {siteContent.name}
+              <span class="brand-dot">.</span>
+            </strong>
+            <span class="identity-line">{siteContent.headerLine}</span>
+          </>
+        ) : (
+          <>
+            ALDO<span class="brand-dot">.</span>
+          </>
+        )}
       </a>
       <nav aria-label="Main navigation">
         {[
           ['/work', 'Work'],
+          ...(siteContent.cvUrl ? [[siteContent.cvUrl, 'CV']] : []),
           ['/about', 'About'],
           ['/contact', 'Contact'],
         ].map(([path, label]) => (
@@ -58,21 +90,29 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
           </a>
         ))}
       </nav>
+      {!immersive && (
+        <a class="back-link" href="/">
+          <span class="back-long">Back to </span>stand{' '}
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
     </header>
     <main id="main">
       <slot />
     </main>
-    <footer class="site-footer shell">
-      <div>
-        <a class="brand" href="/">
-          Taquería Aldo
+    {!immersive && (
+      <footer class="site-footer shell">
+        <div>
+          <a class="brand" href="/">
+            ALDO<span class="brand-dot">.</span>
+          </a>
+          <p>A creative portfolio, served after dark.</p>
+        </div>
+        <ThemePicker />
+        <a class="text-link" href="/work">
+          View work <span aria-hidden="true">↗</span>
         </a>
-        <p>A creative portfolio, served after dark.</p>
-      </div>
-      <ThemePicker />
-      <a class="text-link" href="/work">
-        View work <span aria-hidden="true">↗</span>
-      </a>
-    </footer>
+      </footer>
+    )}
   </body>
 </html>
