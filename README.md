@@ -101,10 +101,10 @@ the cooking area, within the same point-light budget. Effects pause behind the
 loader, when hidden/offscreen and with reduced motion. See the
 [cooking effects review](docs/qa/cooking/REVIEW.md).
 
-A static Berlin night skyline sits behind the stand: TV Tower, distant rooftops,
-warm horizon haze, sparse stars and a crescent moon. The decorative SVG adds no
-WebGL draw calls, textures or animation loop. Narrow screens crop toward the
-TV Tower. See the [Berlin background comparison](docs/qa/berlin/REVIEW.md).
+A surrounding Berlin night panorama follows camera rotation: TV Tower, distant
+rooftops and a crescent near the horizon, sparse stars above and concrete below.
+It adds one sky-dome draw call and one 2048 × 1024 texture, without a separate
+animation loop. See the [camera-aware background comparison](docs/qa/environment/REVIEW.md).
 
 For reproducible visual QA, serve a production preview on port 4322 and run
 `npm run capture:scene -- <label>`. `CAPTURE_BENCHMARK=1` adds a short render-loop

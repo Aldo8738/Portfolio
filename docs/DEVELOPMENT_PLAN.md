@@ -114,10 +114,11 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   `docs/design/fog-and-background.png`. Preserve the frozen stand and avoid a
   second scene render on every frame for reflections.
 - The creator also approved the Berlin night background from the same reference.
-  Use a lightweight static skyline behind the existing Canvas, with the TV Tower,
-  distant rooftops, warm horizon haze, stars and a crescent moon. Keep it decorative,
-  outside raycasting and camera framing, and share the scene theme filter.
-  See the [Berlin background review](qa/berlin/REVIEW.md).
+  The later request makes it follow camera rotation: use a surrounding panorama
+  with the TV Tower, distant rooftops and a crescent near the horizon, sparse
+  stars above and concrete below. Keep it outside raycasting, camera fitting and
+  lighting calculations. Use the existing render loop and scene theme filter.
+  See the [camera-aware background review](qa/environment/REVIEW.md).
 - Keep content in typed `src/content/site.ts`, `portfolio.ts` and `media.ts` files.
   Model absent media explicitly instead of constructing URLs to nonexistent files.
 - Use one shared action/state layer for HTML controls and 3D targets. Work navigation,

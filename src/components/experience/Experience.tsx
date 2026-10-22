@@ -93,15 +93,6 @@ export default function Experience() {
           state.status === 'ready' ? JSON.stringify(state.metrics) : undefined
         }
       >
-        <img
-          className={styles.backdrop}
-          src="/images/berlin-night.svg"
-          alt=""
-          aria-hidden="true"
-          width="1600"
-          height="900"
-          decoding="async"
-        />
         {CanvasComponent && state.status !== 'failed' && (
           <div
             className={styles.canvas}

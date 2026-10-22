@@ -1,5 +1,8 @@
 # Berlin night background
 
+Historical fixed-background checkpoint. The creator's later request replaces
+this with a [camera-aware surrounding panorama](../environment/REVIEW.md).
+
 22 October 2026. The creator requested the Berlin background in
 [fog-and-background.png](../../design/fog-and-background.png). This extends the
 original environment brief; the production GLB, camera and lighting are unchanged.

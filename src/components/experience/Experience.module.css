@@ -10,21 +10,6 @@
     var(--background) 72%
   );
 }
-.backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  filter: var(--scene-filter);
-}
-@media (max-aspect-ratio: 3/4) {
-  .backdrop {
-    top: -3rem;
-    object-position: 31% center;
-  }
-}
 .canvas {
   position: absolute;
   inset: 0;

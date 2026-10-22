@@ -76,14 +76,6 @@ test('fullscreen shell keeps navigation and theme controls usable at small sizes
     await page.setViewportSize(viewport);
     await page.goto('/');
     await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
-    const backdrop = page.locator('img[src="/images/berlin-night.svg"]');
-    await expect(backdrop).toHaveAttribute('alt', '');
-    await expect(backdrop).toHaveCSS('pointer-events', 'none');
-    await expect
-      .poll(() =>
-        backdrop.evaluate((image: HTMLImageElement) => image.naturalWidth),
-      )
-      .toBeGreaterThan(0);
     const stage = await page.locator('[data-scene-status]').boundingBox();
     expect(stage).toMatchObject({ x: 0, y: 0, ...viewport });
     expect(
