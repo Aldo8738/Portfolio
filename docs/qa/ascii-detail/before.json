@@ -1,0 +1,28 @@
+{
+  "browser": "156.0.8078.4",
+  "method": "Isolated production ASCII renderer; static angles; three batches of 48 synchronous draws, no WebGL/network. Timings include Canvas command submission and are not presented FPS.",
+  "desktop": {
+    "points": 58915,
+    "cells": 8760,
+    "canvas": {
+      "width": 360,
+      "height": 270,
+      "dpr": 1
+    },
+    "backingPixels": 97200,
+    "meanDrawMs": [11.279166666790843, 11.064583333209157, 10.516666666294137],
+    "fillTextBudget": 8760
+  },
+  "mobile": {
+    "points": 58915,
+    "cells": 6552,
+    "canvas": {
+      "width": 312,
+      "height": 234,
+      "dpr": 2
+    },
+    "backingPixels": 292032,
+    "meanDrawMs": [9.799999999503294, 14.112500000124177, 11.227083333457509],
+    "fillTextBudget": 6552
+  }
+}

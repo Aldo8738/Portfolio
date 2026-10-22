@@ -67,6 +67,8 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
   taco; hidden tabs pause it. Tab exposes a skip-to-work link; Escape dismisses it.
   Without JavaScript, the dialog stays hidden and HTML navigation works normally.
   The source reference is preserved in `ascii-taco-loader-v6/`.
+  The app copy uses about 30,000 points, a coarser character grid and a 1.5 DPR cap
+  to reduce loader work. See the [detail comparison](docs/qa/ascii-detail/REVIEW.md).
 - Prepare the first stand frame behind the loader, then use demand rendering until
   the dialog closes. Covered WebGL animation must not compete with the ASCII taco
   during the minimum hold. See the [handoff check](docs/qa/handoff/REVIEW.md).

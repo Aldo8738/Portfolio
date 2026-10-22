@@ -53,7 +53,7 @@ function buildModel() {
   const rand = random();
   // x y z material shade glyphSeed
   // Packed typed arrays: no growing JS object array and no copying on first load.
-  const MAX_POINTS = 65000;
+  const MAX_POINTS = 35000;
   const xyz = new Float32Array(MAX_POINTS * 3);
   const color = new Uint8Array(MAX_POINTS);
   const glyph = new Uint8Array(MAX_POINTS);
@@ -98,7 +98,7 @@ function buildModel() {
   };
   // The shell curves are identical at each longitudinal slice.
   // Precomputing them avoids thousands of trigonometric operations per start.
-  const shellSteps = 86,
+  const shellSteps = 60,
     shellSine = new Float32Array(shellSteps + 1);
   const shellBelly = new Float32Array(shellSteps + 1);
   for (let j = 0; j <= shellSteps; j++) {
@@ -107,8 +107,9 @@ function buildModel() {
     shellBelly[j] = 1 - Math.pow(t, 0.62);
   }
   for (const side of [-1, 1]) {
-    for (let i = 0; i <= 112; i++) {
-      const u = -0.999 + (1.998 * i) / 112,
+    const shellSlices = 80;
+    for (let i = 0; i <= shellSlices; i++) {
+      const u = -0.999 + (1.998 * i) / shellSlices,
         x = length * u,
         p = profile(u),
         top = rimY(u);
@@ -130,7 +131,7 @@ function buildModel() {
       }
     }
     // Crisp, narrow rim running along the top of each open flap.
-    for (let i = 0; i < 1600; i++) {
+    for (let i = 0; i < 800; i++) {
       const u = (rand() * 2 - 1) * 0.997,
         x = u * length,
         y = rimY(u) + (rand() - 0.5) * 0.027;
@@ -140,7 +141,7 @@ function buildModel() {
   }
   // Smoothly folded bottom seam connecting the two tortilla sides.
   // Crucially, it is only a tiny rounded hinge along the bottom, not a slab.
-  for (let i = 0; i < 2000; i++) {
+  for (let i = 0; i < 1000; i++) {
     const u = rand() * 1.995 - 0.9975,
       theta = rand() * Math.PI;
     const x = length * u;
@@ -152,14 +153,14 @@ function buildModel() {
   }
   // Chunky carne, sitting INSIDE the V and reaching the open rim. Use little
   // individual ellipsoidal clusters so you see texture through the opening.
-  for (let b = 0; b < 280; b++) {
+  for (let b = 0; b < 180; b++) {
     const u = (rand() * 2 - 1) * 0.94,
       p = profile(u),
       x = length * u;
     const z = (rand() * 2 - 1) * (0.6 * Math.pow(p, 0.62));
     const y = rimY(u) - 0.29 + rand() * 0.4;
     const radius = 0.055 + rand() * 0.13;
-    for (let n = 0; n < 40; n++) {
+    for (let n = 0; n < 28; n++) {
       const longitude = TAU * rand(),
         h = rand() * 2 - 1,
         planar = Math.sqrt(1 - h * h);
@@ -171,7 +172,7 @@ function buildModel() {
   }
   // Meat-filled central interior, visible between shell edges from end-on.
   // All of these points live in the cavity, not projected on the outer wall.
-  for (let n = 0; n < 4500; n++) {
+  for (let n = 0; n < 2200; n++) {
     const u = (rand() * 2 - 1) * 0.965,
       h = profile(u),
       x = length * u;
@@ -187,7 +188,7 @@ function buildModel() {
   // Dense interior filler to prevent the black background from peeking through
   // the cavity at edge-on and quarter-turn views. This lives fully inside the
   // shell and acts like volume/occlusion rather than outer garnish.
-  for (let n = 0; n < 4200; n++) {
+  for (let n = 0; n < 2000; n++) {
     const u = (rand() * 2 - 1) * 0.93,
       h = profile(u),
       x = length * u;
@@ -213,7 +214,7 @@ function buildModel() {
       : isSalsa
         ? 0.033 + rand() * 0.055
         : 0.026 + rand() * 0.042;
-    const count = isLeaf ? 35 : isSalsa ? 38 : 41;
+    const count = isLeaf ? 22 : isSalsa ? 24 : 26;
     for (let n = 0; n < count; n++) {
       const theta = rand() * TAU,
         r = Math.sqrt(rand()) * rad;
@@ -329,7 +330,7 @@ export function createAsciiTaco(canvas, options = {}) {
     const rect = canvas.getBoundingClientRect();
     const w = Math.max(1, Math.round(rect.width)),
       h = Math.max(1, Math.round(rect.height));
-    const pixelRatio = Math.min(devicePixelRatio || 1, 2);
+    const pixelRatio = Math.min(devicePixelRatio || 1, 1.5);
     if (w === width && h === height && pixelRatio === dpr) return;
     width = w;
     height = h;
@@ -337,7 +338,7 @@ export function createAsciiTaco(canvas, options = {}) {
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    cellW = clamp(width / 198, 3, 6) * cellScale;
+    cellW = clamp(width / 198, 4, 6) * cellScale;
     cellH = cellW * 1.24;
     cols = Math.ceil(width / cellW);
     rows = Math.ceil(height / cellH);
