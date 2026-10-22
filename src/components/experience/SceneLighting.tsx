@@ -8,6 +8,7 @@ import {
   type Object3D,
 } from 'three';
 import type { SceneQuality } from './scene-quality';
+import { getCookingPlacement } from '../../lib/cooking-effects';
 
 const bulbNames = [
   'LIGHT_0_glowing_bulb',
@@ -24,6 +25,8 @@ export function SceneLighting({
 }) {
   const key = useRef<DirectionalLight>(null);
   const { gl, invalidate } = useThree();
+  const cooking = useMemo(() => getCookingPlacement(scene), [scene]);
+  const fireLight = cooking?.fireLight;
   const bulbs = useMemo(
     () =>
       bulbNames.map((name) => {
@@ -86,12 +89,12 @@ export function SceneLighting({
   }, [scene, quality, gl, invalidate]);
   return (
     <>
-      <hemisphereLight args={['#9dbbd0', '#2a171e', 0.4]} />
+      <hemisphereLight args={['#9dbbd0', '#2a171e', 0.16]} />
       <directionalLight
         ref={key}
         position={[-3.5, 7, 5]}
         color="#ffe3bf"
-        intensity={2}
+        intensity={1.1}
         castShadow
         shadow-mapSize={[quality.shadowSize, quality.shadowSize]}
         shadow-camera-left={-5.2}
@@ -104,18 +107,42 @@ export function SceneLighting({
         shadow-normalBias={0.02}
         shadow-radius={2}
       />
-      <directionalLight position={[3, 4, -4]} color="#6aadc8" intensity={1.8} />
-      {(quality.practicalLights === 3 ? bulbs : bulbs.slice(1, 2)).map(
-        ({ name, position }, index) => (
-          <pointLight
-            key={name}
-            position={position}
-            color="#ffd09a"
-            intensity={quality.practicalLights === 3 ? [6, 8, 5][index] : 13}
-            distance={4.5}
-            decay={2}
-          />
-        ),
+      <directionalLight
+        position={[3, 4, -4]}
+        color="#6aadc8"
+        intensity={0.75}
+      />
+      {(quality.practicalLights === 3
+        ? cooking
+          ? bulbs.filter((_, index) => index !== 1)
+          : bulbs
+        : cooking
+          ? []
+          : bulbs.slice(1, 2)
+      ).map(({ name, position }, index) => (
+        <pointLight
+          key={name}
+          position={position}
+          color="#ffd09a"
+          intensity={
+            cooking
+              ? [0.85, 0.75][index]
+              : quality.practicalLights === 3
+                ? [6, 8, 5][index]
+                : 13
+          }
+          distance={4.5}
+          decay={2}
+        />
+      ))}
+      {fireLight && (
+        <pointLight
+          position={fireLight}
+          color="#ff842d"
+          intensity={quality.practicalLights === 3 ? 4 : 5.5}
+          distance={3}
+          decay={2}
+        />
       )}
     </>
   );

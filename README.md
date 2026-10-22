@@ -92,6 +92,15 @@ visual comparisons. The standard profile uses three practical lights and filtere
 shadows; the cheaper mode uses one practical light and single-sample shadows.
 Both use cached 1024-pixel shadow maps and lightweight bottle glass.
 
+The cooking area has a procedural heater flame, rising smoke from the trompo and
+griddle, soft haze drifting through the opening and low mist around the platform.
+Rain-darkened concrete picks up broken warm and cool highlights around its base.
+Interior pendants are dimmed
+so a warm fire light dominates
+the cooking area, within the same point-light budget. Effects pause behind the
+loader, when hidden/offscreen and with reduced motion. See the
+[cooking effects review](docs/qa/cooking/REVIEW.md).
+
 For reproducible visual QA, serve a production preview on port 4322 and run
 `npm run capture:scene -- <label>`. `CAPTURE_BENCHMARK=1` adds a short render-loop
 sample; `CAPTURE_HERO=1` captures the refined default camera instead of the original

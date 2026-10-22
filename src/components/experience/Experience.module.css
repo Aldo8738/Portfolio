@@ -6,7 +6,7 @@
   overflow: hidden;
   background: radial-gradient(
     ellipse at 55% 55%,
-    #152a3b,
+    #0d1d30,
     var(--background) 72%
   );
 }

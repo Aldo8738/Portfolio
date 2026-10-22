@@ -23,6 +23,7 @@ import { usePointerDrag } from './usePointerDrag';
 import { SceneBenchmark } from './SceneBenchmark';
 import { SceneLighting } from './SceneLighting';
 import { SceneRendering } from './SceneRendering';
+import { CookingEffects } from './CookingEffects';
 import { chooseSceneQuality, getRendererName } from './scene-quality';
 
 function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
@@ -122,6 +123,13 @@ function Model({
     <>
       <SceneRendering quality={quality} />
       <SceneLighting scene={scene} quality={quality} />
+      <CookingEffects
+        scene={scene}
+        quality={quality}
+        active={active}
+        sceneRevealed={sceneRevealed}
+        reducedMotion={reducedMotion}
+      />
       {new URLSearchParams(location.search).has('benchmark') && (
         <SceneBenchmark />
       )}

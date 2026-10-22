@@ -104,6 +104,15 @@ the official React integration, strict TypeScript, npm and the committed lockfil
 - Prepare the stand's first frame behind the ASCII loader, then keep WebGL on
   demand until actual loader dismissal. Start continuous rendering, the trompo
   and the entrance only after reveal. See the [handoff check](qa/handoff/REVIEW.md).
+- The creator authorized runtime fire behind the trompo and light smoke from the
+  griddle/trompo, plus dimmer interior lamps to favor the fire's warm light. This
+  extends the original visual brief without editing the frozen GLB. Keep the
+  existing light/shadow budget and pause effects with scene activity and reduced
+  motion. See the [cooking effects review](qa/cooking/REVIEW.md).
+  Later direction adds low warm/cool fog wrapping the platform, lower exterior
+  fill and a wet ground surface with rough warm/cool reflection pools, following
+  `docs/design/fog-and-background.png`. Preserve the frozen stand and avoid a
+  second scene render on every frame for reflections.
 - Keep content in typed `src/content/site.ts`, `portfolio.ts` and `media.ts` files.
   Model absent media explicitly instead of constructing URLs to nonexistent files.
 - Use one shared action/state layer for HTML controls and 3D targets. Work navigation,
