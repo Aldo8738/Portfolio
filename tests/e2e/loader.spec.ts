@@ -1,6 +1,67 @@
 import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
 
+test('the prepared stand stops redrawing behind the ASCII loader', async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await page.setViewportSize({ width: 640, height: 480 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    let draws = 0;
+    Object.defineProperty(window, '__testWebglDraws', { get: () => draws });
+    for (const name of ['drawElements', 'drawArrays'] as const) {
+      Object.defineProperty(WebGL2RenderingContext.prototype, name, {
+        value: new Proxy(WebGL2RenderingContext.prototype[name], {
+          apply(target, receiver, args) {
+            draws++;
+            return Reflect.apply(target, receiver, args);
+          },
+        }),
+      });
+    }
+    // Hold the loader after preparation so its covered render budget can be checked.
+    window.addEventListener(
+      'taqueria:scene-settled',
+      (event) => event.stopImmediatePropagation(),
+      { once: true, capture: true },
+    );
+  });
+  try {
+    await page.goto('/');
+    await expect(page.locator('[data-scene-status]')).toHaveAttribute(
+      'data-scene-status',
+      'ready',
+      { timeout: 45000 },
+    );
+    await expect(page.locator('#ascii-taco-loader')).toBeVisible();
+    const draws = () =>
+      page.evaluate(() => Number(Reflect.get(window, '__testWebglDraws')));
+    // Allow the final React commit and initial control invalidations to settle.
+    await page.waitForTimeout(250);
+    const prepared = await draws();
+    expect(prepared).toBeGreaterThan(0);
+    const ascii = page.locator('#ascii-taco-canvas');
+    const frame = async () =>
+      createHash('sha256')
+        .update(
+          await ascii.evaluate((canvas: HTMLCanvasElement) =>
+            canvas.toDataURL(),
+          ),
+        )
+        .digest('hex');
+    const initial = await frame();
+    await expect.poll(frame).not.toBe(initial);
+    await page.waitForTimeout(350);
+    expect(await draws()).toBe(prepared);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+    await expect.poll(draws).toBeGreaterThan(prepared);
+  } finally {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  }
+});
+
 test('the smaller taco and loading bar remain visible for at least two seconds', async ({
   page,
 }) => {

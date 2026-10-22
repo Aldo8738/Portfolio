@@ -101,6 +101,9 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   descend to Reset view over 2.8 seconds. Keep camera input interruptible and skip
   the reveal for reduced motion. See the [entrance review](qa/entrance/REVIEW.md).
   Defer bloom and other postprocessing until measurements justify them.
+- Prepare the stand's first frame behind the ASCII loader, then keep WebGL on
+  demand until actual loader dismissal. Start continuous rendering, the trompo
+  and the entrance only after reveal. See the [handoff check](qa/handoff/REVIEW.md).
 - Keep content in typed `src/content/site.ts`, `portfolio.ts` and `media.ts` files.
   Model absent media explicitly instead of constructing URLs to nonexistent files.
 - Use one shared action/state layer for HTML controls and 3D targets. Work navigation,

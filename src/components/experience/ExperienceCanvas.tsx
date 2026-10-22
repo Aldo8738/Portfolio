@@ -74,7 +74,7 @@ function Model({
   useModelMaterials(scene, invalidate);
   useEffect(() => () => cancelAnimationFrame(readyFrame.current), []);
   useFrame((_, delta) => {
-    if (active && !reducedMotion && trompo)
+    if (active && sceneRevealed && !reducedMotion && trompo)
       trompo.rotation.y += (Math.min(delta, 0.05) * Math.PI * 2) / 13;
     if (reported.current) return;
     reported.current = true;
@@ -169,7 +169,11 @@ export function ExperienceCanvas(props: CanvasProps) {
       aria-label="Interactive Taquería Aldo. Use the HTML controls for keyboard navigation."
       camera={{ fov: 38, near: 0.1, far: 100, position: [0, 3, 10] }}
       dpr={[1, 1.5]}
-      frameloop={props.active && !props.reducedMotion ? 'always' : 'demand'}
+      frameloop={
+        props.active && props.sceneRevealed && !props.reducedMotion
+          ? 'always'
+          : 'demand'
+      }
       shadows={{ type: PCFShadowMap, autoUpdate: false }}
       gl={{
         antialias: true,

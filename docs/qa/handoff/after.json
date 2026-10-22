@@ -1,0 +1,14 @@
+{
+  "browser": "156.0.8078.4",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "method": "Production preview; SwiftShader; DPR 1; loader settled event held to sample the prepared covered scene. Draws count WebGL drawElements/drawArrays calls; RAF callbacks are not GPU presentation FPS.",
+  "sample": {
+    "elapsedMs": 2007.2000000238422,
+    "webglDraws": 0,
+    "rafCallbacks": 50,
+    "loaderVisible": true
+  }
+}
