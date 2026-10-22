@@ -1,6 +1,31 @@
 import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
 
+test('the smaller taco and loading bar remain visible for at least one second', async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date(0) });
+  await page.clock.pauseAt(new Date(1000));
+  await page.route('**/*.js', (route) => route.abort());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const canvas = await page.locator('#ascii-taco-canvas').boundingBox();
+  expect(canvas?.width).toBeLessThanOrEqual(360);
+  const bar = page.getByRole('progressbar', { name: 'Loading Taquería Aldo' });
+  await expect(bar).toBeVisible();
+  await expect(bar).not.toHaveAttribute('aria-valuenow');
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new CustomEvent('taqueria:scene-settled', { detail: 'ready' }),
+    ),
+  );
+  await expect(bar).toHaveAttribute('aria-valuenow', '100');
+  await page.clock.fastForward(999);
+  await expect(page.locator('#ascii-taco-loader')).toBeVisible();
+  await page.clock.fastForward(1);
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+});
+
 test('the inline taco draws before React and offers keyboard navigation', async ({
   page,
 }) => {

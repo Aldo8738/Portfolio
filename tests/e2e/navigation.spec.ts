@@ -75,6 +75,7 @@ test('fullscreen shell keeps navigation and theme controls usable at small sizes
   ]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
+    await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
     const stage = await page.locator('[data-scene-status]').boundingBox();
     expect(stage).toMatchObject({ x: 0, y: 0, ...viewport });
     expect(

@@ -3,7 +3,8 @@
 22 October 2026. Implemented from the creator's
 [v6 source package](../../../ascii-taco-loader-v6/ascii-taco-loader/README.md).
 The latest instruction supersedes the earlier navigation-over-loader presentation:
-the initial view is entirely black, with only the rotating taco visible.
+the initial view is entirely black. The latest revision adds a smaller centered
+taco, a loading bar and a one-second minimum presentation.
 
 ## Before and after
 
@@ -11,6 +12,9 @@ the initial view is entirely black, with only the rotating taco visible.
   the website header/navigation visible.
 - [After, desktop](after-desktop.png): the supplied taco on black, 1280 × 720.
 - [After, mobile](after-mobile.png): the same presentation at 390 × 844.
+
+The images above record the initial full-size version. The compact revision is
+shown on [desktop](compact-desktop.png) and [mobile](compact-mobile.png).
 
 These are real browser captures. The before image uses the dev server; the final
 images use a production preview. Final captures hold the GLB request to inspect
@@ -32,8 +36,11 @@ keeps focus within it. The screen-reader status receives initial focus; Tab reve
 JavaScript, the dialog stays hidden and normal HTML navigation works.
 
 The existing scene-ready callback still waits for an actual rendered frame. React
-then emits `taqueria:scene-settled`; ready or failed status immediately closes and
-removes the dialog. There is no minimum loading duration or extra exit delay.
+then emits `taqueria:scene-settled`; ready or failed status closes the dialog once
+at least 1,000 ms have elapsed since the first taco draw. Slower loading waits for
+the real scene. Escape/skip remain immediate. The centered canvas is at most
+360 px wide, with a 220 px loading track underneath. The track is indeterminate
+until actual readiness, when it fills completely; it never invents percentages.
 Canvas 2D failure falls back to the existing text status. An independent 20-second
 watchdog also releases the dialog if hydration cannot finish.
 
@@ -45,7 +52,8 @@ media/audio loading and the frozen GLB remain unchanged.
 
 ## Measurements and limits
 
-[Raw observations](measurements.json) use Chromium 156, Windows, loopback HTTP,
+[Raw observations](measurements.json) describe the earlier full-size version,
+before compact sizing and the minimum hold. They use Chromium 156, Windows, loopback HTTP,
 DPR 1 and ANGLE SwiftShader software rendering. The isolated setup sample blocks
 external JS so React/Three.js cannot compete with the inline renderer. Each
 condition has three fresh-context samples, with potentially warm system/font
@@ -72,10 +80,12 @@ approval. Representative cold-device/network startup and hardware FPS remain ope
 
 - Formatting, Astro typecheck, lint, production build, 16 unit tests and frozen
   asset validation pass. The existing deferred chunk-size build warning remains.
-- All 18 production browser tests pass, including pre-React drawing, full-screen
+- All 19 production browser tests pass, covering pre-React drawing, full-screen
   modal sizing, Escape/keyboard skip, rotation, hidden-tab pause, motion preference
   changes, real-scene handoff at both sizes, missing Canvas 2D, no JavaScript,
   blocked GLB and missing WebGL.
+- A new virtual-clock regression verifies the compact canvas, loading bar and an
+  exact one-second minimum when readiness arrives immediately.
 - The dev/build regression test also passes: a production build while the dev
   server runs does not break React hydration.
 

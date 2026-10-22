@@ -28,8 +28,9 @@ These user clarifications supersede the handoff's poster-first loading requireme
   remove it after the first usable scene frame or failure. It adds no dependency
   or separate renderer request. The creator's latest direction makes this a
   full-screen black loading dialog covering the entire homepage. Put it first in
-  the body, release it immediately on readiness/failure, and offer keyboard skip
-  and Escape dismissal. A poster remains optional fallback artwork.
+  the body with a smaller centered taco and an indeterminate loading bar. Release
+  it on readiness/failure after a one-second minimum from the first taco draw;
+  keyboard skip and Escape can dismiss it immediately. A poster remains optional.
 - Build introduction and real navigation as initial HTML beneath the loader. With reduced motion,
   show a still taco and status. Failed loading must resolve to useful HTML, not an endless loader.
 - Aim for a usable 3D scene within approximately **2–3 seconds** from navigation start;
@@ -38,8 +39,9 @@ These user clarifications supersede the handoff's poster-first loading requireme
 - This target covers the homepage shell, scene code, embedded previews and production
   GLB. Full-resolution viewer media and guitar audio still load only after interaction.
 - Show genuine download progress only when measurable, then a setup status during
-  parsing/compilation. Add no artificial progress, minimum loader duration or intro
-  animation that delays access to an already-ready scene.
+  parsing/compilation. Use an indeterminate bar rather than fabricated percentages;
+  fill it only on actual readiness. The creator explicitly requests a one-second
+  minimum loading presentation; add no further artificial delay.
 - Verify the target on a production build with cold and warm caches, documented
   network conditions and named desktop/mobile hardware. Record download, parse/setup
   and ready timings separately. Initial software-renderer observations are recorded

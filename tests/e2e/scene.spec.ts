@@ -9,6 +9,7 @@ async function getCrtPosition(page: Page) {
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   const box = await page.locator('[data-scene-status] canvas').boundingBox();
   const target = metrics.targets.HIT_WORK_CRT_SCREEN;
   if (!box || !target) throw new Error('CRT target coordinates are missing');
@@ -104,6 +105,7 @@ test('renders the real frozen stand once, exposes metrics and routes through the
     fullPage: true,
   });
   const screen = metrics.targets.HIT_WORK_CRT_SCREEN;
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   const canvas = await page.locator('[data-scene-status] canvas').boundingBox();
   expect(screen).toBeDefined();
   expect(canvas).not.toBeNull();
@@ -133,6 +135,7 @@ test('drag and scroll explore without activating the CRT, and pointer/keyboard r
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   const canvas = page.locator('[data-scene-status] canvas');
   const box = await canvas.boundingBox();
   if (!box) throw new Error('Canvas is missing');
@@ -238,6 +241,7 @@ test('mobile scene fits and uses the cheaper glass profile', async ({
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   expect(metrics.quality).toBe('mobile');
   // First-frame cost includes one cached shadow bake; steady draws are measured separately.
   expect(metrics.calls).toBeLessThan(400);
