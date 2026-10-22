@@ -4,7 +4,7 @@
 [v6 source package](../../../ascii-taco-loader-v6/ascii-taco-loader/README.md).
 The latest instruction supersedes the earlier navigation-over-loader presentation:
 the initial view is entirely black. The latest revision adds a smaller centered
-taco, a loading bar and a one-second minimum presentation.
+taco, a loading bar and a two-second minimum presentation.
 
 ## Before and after
 
@@ -37,7 +37,7 @@ JavaScript, the dialog stays hidden and normal HTML navigation works.
 
 The existing scene-ready callback still waits for an actual rendered frame. React
 then emits `taqueria:scene-settled`; ready or failed status closes the dialog once
-at least 1,000 ms have elapsed since the first taco draw. Slower loading waits for
+at least 2,000 ms have elapsed since the first taco draw. Slower loading waits for
 the real scene. Escape/skip remain immediate. The centered canvas is at most
 360 px wide, with a 220 px loading track underneath. The track is indeterminate
 until actual readiness, when it fills completely; it never invents percentages.
@@ -80,12 +80,15 @@ approval. Representative cold-device/network startup and hardware FPS remain ope
 
 - Formatting, Astro typecheck, lint, production build, 16 unit tests and frozen
   asset validation pass. The existing deferred chunk-size build warning remains.
-- All 19 production browser tests pass, covering pre-React drawing, full-screen
+- The full compact-loader suite passed 19 production browser tests before the
+  duration-only update, covering pre-React drawing, full-screen
   modal sizing, Escape/keyboard skip, rotation, hidden-tab pause, motion preference
   changes, real-scene handoff at both sizes, missing Canvas 2D, no JavaScript,
   blocked GLB and missing WebGL.
 - A new virtual-clock regression verifies the compact canvas, loading bar and an
-  exact one-second minimum when readiness arrives immediately.
+  exact two-second minimum when readiness arrives immediately.
+- The two-second update passes all three focused timing and desktop/mobile
+  handoff tests; the full suite was not repeated for this constant-only change.
 - The dev/build regression test also passes: a production build while the dev
   server runs does not break React hydration.
 

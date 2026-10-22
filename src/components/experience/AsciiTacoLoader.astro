@@ -7,7 +7,7 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
   const canvas = document.getElementById('ascii-taco-canvas');
   if (!(loader instanceof HTMLDialogElement) || !(canvas instanceof HTMLCanvasElement)) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const minimumVisibleMs = 1000;
+  const minimumVisibleMs = 2000;
   let taco;
   let finished = false;
   let shownAt = 0;

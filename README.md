@@ -59,7 +59,7 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
   unchanged using `node scripts/extract-previews.mjs`. Do not treat them as originals.
 - The supplied rotating ASCII taco is inlined first in the homepage body, before
   React loads. A full-screen black dialog covers the whole site until the first
-  usable scene frame or failure, with a one-second minimum from the taco's first
+  usable scene frame or failure, with a two-second minimum from the taco's first
   draw. The smaller centered taco has an indeterminate loading bar beneath it;
   the bar completes only when the scene is ready. Animation resources are released
   when the dialog closes.

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { createHash } from 'node:crypto';
 
-test('the smaller taco and loading bar remain visible for at least one second', async ({
+test('the smaller taco and loading bar remain visible for at least two seconds', async ({
   page,
 }) => {
   await page.clock.install({ time: new Date(0) });
@@ -20,7 +20,7 @@ test('the smaller taco and loading bar remain visible for at least one second', 
     ),
   );
   await expect(bar).toHaveAttribute('aria-valuenow', '100');
-  await page.clock.fastForward(999);
+  await page.clock.fastForward(1999);
   await expect(page.locator('#ascii-taco-loader')).toBeVisible();
   await page.clock.fastForward(1);
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
