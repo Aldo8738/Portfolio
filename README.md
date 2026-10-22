@@ -29,12 +29,18 @@ npm test
 npm run build               # Static site in dist/
 npm run preview             # Serve the production build locally
 npm run test:e2e            # Playwright against the production preview
+npm run test:e2e:dev        # Verify dev hydration survives a concurrent build
 ```
 
 Install Chromium once with `npx playwright install chromium` before browser tests.
 This checkout's browser binaries are in `.cache/ms-playwright`; when using those
 on Windows, set `$env:PLAYWRIGHT_BROWSERS_PATH = (Resolve-Path '.cache/ms-playwright').Path`
 before running tests. Both toolchain caches are ignored by Git.
+
+Vite dependency caches are separated by mode under `node_modules/.vite/` so a
+production build cannot replace the React runtime used by a running dev server.
+The development browser check builds the site while port 4321 is running, then
+reloads and verifies the real scene hydrates without browser errors.
 
 For an environment without hardware WebGL, set `$env:PLAYWRIGHT_SOFTWARE_WEBGL = '1'`
 before browser tests. This opts into SwiftShader for functional checks; its timings
