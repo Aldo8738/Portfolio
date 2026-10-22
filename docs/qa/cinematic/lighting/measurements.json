@@ -1,0 +1,144 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "metrics": {
+      "readyMs": 5846,
+      "modelParsedMs": 2058,
+      "calls": 514,
+      "triangles": 204317,
+      "textures": 17,
+      "dpr": 1,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "quality": "standard",
+      "rendering": {
+        "toneMapping": 4,
+        "exposure": 1,
+        "outputColorSpace": "srgb",
+        "shadows": true,
+        "shadowMapType": 1
+      },
+      "modelDownloadMs": 468,
+      "targets": {
+        "SALSA_RED_PIVOT": {
+          "x": 0.14010429124397403,
+          "y": -0.11127157773825411
+        },
+        "SALSA_GREEN_PIVOT": {
+          "x": 0.17507481179961068,
+          "y": -0.11469379024559442
+        },
+        "SALSA_ORANGE_PIVOT": {
+          "x": 0.2105972910244892,
+          "y": -0.11817001738672925
+        },
+        "HIT_WORK_CRT_SCREEN": {
+          "x": 0.3540065288096156,
+          "y": -0.011603888271860992
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_0": {
+          "x": -0.22543906612289435,
+          "y": -0.13179943604007358
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_1": {
+          "x": -0.15127318982303173,
+          "y": -0.14007559634570357
+        },
+        "HIT_PHOTOS_POLAROID_0": {
+          "x": 0.3703968044843425,
+          "y": 0.3824293771982385
+        },
+        "HIT_PHOTOS_POLAROID_1": {
+          "x": 0.4617836700638483,
+          "y": 0.3392078009575065
+        },
+        "HIT_PHOTOS_POLAROID_2": {
+          "x": 0.5442618746897308,
+          "y": 0.30047428788936403
+        },
+        "HIT_MUSIC_AMP": {
+          "x": -0.43562080151038457,
+          "y": -0.42455665004926835
+        },
+        "HIT_MUSIC_PEDAL": {
+          "x": -0.43916425599329934,
+          "y": -0.5720038756634829
+        }
+      }
+    },
+    "errors": []
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "metrics": {
+      "readyMs": 2584,
+      "modelParsedMs": 969,
+      "calls": 341,
+      "triangles": 134028,
+      "textures": 16,
+      "dpr": 1,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "quality": "mobile",
+      "rendering": {
+        "toneMapping": 4,
+        "exposure": 1,
+        "outputColorSpace": "srgb",
+        "shadows": true,
+        "shadowMapType": 1
+      },
+      "modelDownloadMs": 96,
+      "targets": {
+        "SALSA_RED_PIVOT": {
+          "x": 0.26894717576795,
+          "y": -0.03855551315540397
+        },
+        "SALSA_GREEN_PIVOT": {
+          "x": 0.3207907047522756,
+          "y": -0.03874492939067661
+        },
+        "SALSA_ORANGE_PIVOT": {
+          "x": 0.3726850512732899,
+          "y": -0.03893453129360489
+        },
+        "HIT_WORK_CRT_SCREEN": {
+          "x": 0.5869051397930298,
+          "y": 0.003327554139426891
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_0": {
+          "x": -0.3047801339971218,
+          "y": -0.05863220911328335
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_1": {
+          "x": -0.17832028313083548,
+          "y": -0.05912089982897227
+        },
+        "HIT_PHOTOS_POLAROID_0": {
+          "x": 0.5205981667601176,
+          "y": 0.15946110507537828
+        },
+        "HIT_PHOTOS_POLAROID_1": {
+          "x": 0.6554646990364419,
+          "y": 0.14224165221839707
+        },
+        "HIT_PHOTOS_POLAROID_2": {
+          "x": 0.7732975372219827,
+          "y": 0.1273002343017913
+        },
+        "HIT_MUSIC_AMP": {
+          "x": -0.5982928702206292,
+          "y": -0.18241494000273994
+        },
+        "HIT_MUSIC_PEDAL": {
+          "x": -0.540783115037497,
+          "y": -0.23431190014556355
+        }
+      }
+    },
+    "errors": []
+  }
+}

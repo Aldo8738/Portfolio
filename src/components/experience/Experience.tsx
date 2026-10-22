@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { SceneErrorBoundary } from './SceneErrorBoundary';
 import { useSceneActivity } from './useSceneActivity';
-import type { CanvasProps, SceneMetrics } from './scene-types';
+import type { CameraActions, CanvasProps, SceneMetrics } from './scene-types';
 import styles from './Experience.module.css';
 
 type SceneState =
@@ -22,6 +22,7 @@ export default function Experience() {
   const [state, setState] = useState<SceneState>({ status: 'loading' });
   const [progress, setProgress] = useState('Preparing the stand…');
   const [debug, setDebug] = useState(false);
+  const cameraActions = useRef<CameraActions | null>(null);
   const { visible, reducedMotion } = useSceneActivity(container);
   const onFailure = useCallback(
     (message: string) => setState({ status: 'failed', message }),
@@ -87,6 +88,8 @@ export default function Experience() {
               <CanvasComponent
                 active={visible}
                 reducedMotion={reducedMotion}
+                cameraActions={cameraActions}
+                sceneReady={state.status === 'ready'}
                 onReady={onReady}
                 onFailure={onFailure}
                 onProgress={setProgress}
@@ -121,9 +124,22 @@ export default function Experience() {
           </div>
         )}
         {state.status === 'ready' && (
+          <div className={styles.cameraTools}>
+            <span>Drag to explore · Scroll to zoom</span>
+            <button
+              type="button"
+              onClick={() => cameraActions.current?.resetView()}
+            >
+              Reset view
+            </button>
+          </div>
+        )}
+        {state.status === 'ready' && (
           <p className="sr-only" role="status">
-            The interactive stand is ready. Click the CRT or use the View work
-            link.
+            The interactive stand is ready. Drag with the left mouse button to
+            explore, or focus the canvas and use arrow keys. Scroll or use plus
+            and minus to zoom. Press Home to reset. Click the CRT or use the
+            View work link.
           </p>
         )}
         <noscript>

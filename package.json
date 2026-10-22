@@ -17,7 +17,8 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "validate:asset": "node scripts/validate-asset.mjs"
+    "validate:asset": "node scripts/validate-asset.mjs",
+    "capture:scene": "node scripts/capture-scene.mjs"
   },
   "dependencies": {
     "@astrojs/react": "7.1.0",

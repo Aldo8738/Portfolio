@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Taquería Aldo — cinematic comparison</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: #0b1420;
+        color: #f4f2ec;
+        font:
+          16px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1200px;
+        margin: auto;
+      }
+      h1,
+      h2 {
+        line-height: 1.15;
+      }
+      a {
+        color: #ff8ac7;
+      }
+      .status {
+        padding: 1rem;
+        border-left: 3px solid #ff63ad;
+        background: #142230;
+      }
+      .comparison {
+        --position: 50%;
+        position: relative;
+        aspect-ratio: 1280 / 720;
+        border: 1px solid #344454;
+      }
+      .comparison img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .after {
+        position: absolute;
+        inset: 0;
+        clip-path: inset(0 0 0 var(--position));
+      }
+      .boundary {
+        position: absolute;
+        inset: 0 auto 0 var(--position);
+        border-left: 2px solid white;
+        pointer-events: none;
+      }
+      .labels {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+      }
+      input {
+        width: 100%;
+        min-height: 44px;
+        accent-color: #ff63ad;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      figure {
+        margin: 1rem 0 3rem;
+      }
+      figcaption,
+      .note {
+        color: #b9c5d0;
+        font-size: 0.9rem;
+      }
+      .mobile {
+        max-width: 390px;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Taquería Aldo: before / after</h1>
+      <p class="status">
+        Visual comparison recorded. Physical-device performance approval remains
+        open.
+      </p>
+      <p>
+        The frozen model and website UI are preserved. Compare lighting, contact
+        shadows, warm practical lamps and material response at the same camera
+        framing.
+      </p>
+      <div class="labels"><span>Before</span><span>After</span></div>
+      <div class="comparison" id="comparison">
+        <img
+          src="before/desktop.png"
+          alt="Before: bright uniform lighting with little contact shading."
+          width="1280"
+          height="720"
+        />
+        <img
+          class="after"
+          src="after/desktop.png"
+          alt="After: warm lamps, controlled fill, metal highlights and grounding shadows."
+          width="1280"
+          height="720"
+        />
+        <span class="boundary" aria-hidden="true"></span>
+      </div>
+      <label for="boundary">Move the comparison boundary</label>
+      <input id="boundary" type="range" min="0" max="100" value="50" />
+      <p class="note">
+        Matching 1280 × 720 viewport and original camera. The small diagnostics
+        block appears only in QA mode.
+      </p>
+      <p>
+        <a href="before/desktop.png">Open before</a> ·
+        <a href="after/desktop.png">Open after</a> ·
+        <a href="REVIEW.md">Measurements and review notes</a>
+      </p>
+      <h2>Refined default camera</h2>
+      <figure>
+        <a href="hero-final/desktop.png"
+          ><img
+            src="hero-final/desktop.png"
+            alt="Refined three-quarter camera with the complete sign and platform in view."
+            width="1280"
+            height="720"
+            loading="lazy"
+        /></a>
+        <figcaption>
+          The default view is framed more tightly. Left-drag or arrow keys
+          explore; scroll or plus/minus zoom; Reset view or Home restores the
+          composition.
+        </figcaption>
+      </figure>
+      <h2>Mobile</h2>
+      <figure class="mobile">
+        <a href="hero-final/mobile.png"
+          ><img
+            src="hero-final/mobile.png"
+            alt="Portrait layout preserving all of the stand and its interactive targets."
+            width="390"
+            height="844"
+            loading="lazy"
+        /></a>
+        <figcaption>
+          390 × 844, lower-cost lighting and a capped pixel ratio. Zoom remains
+          available.
+        </figcaption>
+      </figure>
+    </main>
+    <script>
+      document.getElementById('boundary').addEventListener('input', (event) => {
+        document
+          .getElementById('comparison')
+          .style.setProperty('--position', `${event.target.value}%`);
+      });
+    </script>
+  </body>
+</html>

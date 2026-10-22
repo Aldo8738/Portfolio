@@ -1,16 +1,29 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 import { useProgress } from '@react-three/drei/core/Progress.js';
-import { Box3, PerspectiveCamera, Vector3 } from 'three';
+import {
+  ACESFilmicToneMapping,
+  Box3,
+  PCFShadowMap,
+  SRGBColorSpace,
+  Vector3,
+} from 'three';
+import type { ThreeEvent } from '@react-three/fiber';
 import {
   assertModelContract,
   modelUrl,
   requiredNodeNames,
 } from '../../lib/glb-contract';
-import { fitCamera, getFramingPoints } from '../../lib/camera';
+import { getFramingPoints } from '../../lib/camera';
 import type { CanvasProps } from './scene-types';
 import { useModelMaterials } from './useModelMaterials';
+import { CameraControls } from './CameraControls';
+import { usePointerDrag } from './usePointerDrag';
+import { SceneBenchmark } from './SceneBenchmark';
+import { SceneLighting } from './SceneLighting';
+import { SceneRendering } from './SceneRendering';
+import { chooseSceneQuality, getRendererName } from './scene-quality';
 
 function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
   const { active, item } = useProgress();
@@ -26,13 +39,29 @@ function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
 function Model({
   active,
   reducedMotion,
+  cameraActions,
+  sceneReady,
   onReady,
-}: Pick<CanvasProps, 'active' | 'reducedMotion' | 'onReady'>) {
+}: Pick<
+  CanvasProps,
+  'active' | 'reducedMotion' | 'cameraActions' | 'sceneReady' | 'onReady'
+>) {
   const { scene } = useGLTF(modelUrl);
   const { camera, size, gl, invalidate } = useThree();
+  const quality = useMemo(
+    () =>
+      chooseSceneQuality(
+        size.width,
+        getRendererName(gl),
+        new URLSearchParams(location.search).get('quality'),
+        matchMedia('(pointer: coarse)').matches,
+      ),
+    [size.width, gl],
+  );
   const reported = useRef(false);
   const readyFrame = useRef(0);
   const parsedAt = useRef(performance.now());
+  const dragged = usePointerDrag(gl.domElement);
   const bounds = useMemo(() => {
     assertModelContract(scene);
     return new Box3().setFromObject(scene);
@@ -42,20 +71,7 @@ function Model({
     [scene],
   );
   const framingPoints = useMemo(() => getFramingPoints(scene), [scene]);
-  useModelMaterials(scene, size.width < 700, invalidate);
-  useLayoutEffect(() => {
-    if (!(camera instanceof PerspectiveCamera)) return;
-    const fit = fitCamera(
-      bounds,
-      size.width / size.height,
-      camera.fov,
-      framingPoints,
-    );
-    camera.position.copy(fit.position);
-    camera.lookAt(fit.target);
-    camera.updateProjectionMatrix();
-    invalidate();
-  }, [bounds, framingPoints, camera, size.width, size.height, invalidate]);
+  useModelMaterials(scene, invalidate);
   useEffect(() => () => cancelAnimationFrame(readyFrame.current), []);
   useFrame((_, delta) => {
     if (active && !reducedMotion && trompo)
@@ -81,14 +97,15 @@ function Model({
         triangles: gl.info.render.triangles,
         textures: gl.info.memory.textures,
         dpr: gl.getPixelRatio(),
-        renderer: (() => {
-          const context = gl.getContext();
-          const extension = context.getExtension('WEBGL_debug_renderer_info');
-          return extension
-            ? String(context.getParameter(extension.UNMASKED_RENDERER_WEBGL))
-            : 'Unavailable';
-        })(),
-        quality: size.width < 700 ? 'mobile' : 'standard',
+        renderer: getRendererName(gl),
+        quality: quality.name,
+        rendering: {
+          toneMapping: gl.toneMapping,
+          exposure: gl.toneMappingExposure,
+          outputColorSpace: gl.outputColorSpace,
+          shadows: gl.shadowMap.enabled,
+          shadowMapType: gl.shadowMap.type,
+        },
         modelDownloadMs: (() => {
           const resource = performance
             .getEntriesByName(new URL(modelUrl, location.origin).href)
@@ -102,14 +119,33 @@ function Model({
     });
   });
   return (
-    <primitive
-      object={scene}
-      dispose={null}
-      onClick={(event: { object: { name: string } }) => {
-        if (event.object.name === 'HIT_WORK_CRT_SCREEN')
-          window.location.assign('/work');
-      }}
-    />
+    <>
+      <SceneRendering quality={quality} />
+      <SceneLighting scene={scene} quality={quality} />
+      {new URLSearchParams(location.search).has('benchmark') && (
+        <SceneBenchmark />
+      )}
+      <CameraControls
+        bounds={bounds}
+        framingPoints={framingPoints}
+        active={active}
+        reducedMotion={reducedMotion}
+        cameraActions={cameraActions}
+        sceneReady={sceneReady}
+      />
+      <primitive
+        object={scene}
+        dispose={null}
+        onClick={(event: ThreeEvent<MouseEvent>) => {
+          if (
+            event.button === 0 &&
+            !dragged.current &&
+            event.object.name === 'HIT_WORK_CRT_SCREEN'
+          )
+            window.location.assign('/work');
+        }}
+      />
+    </>
   );
 }
 function ContextLifecycle({ onFailure }: Pick<CanvasProps, 'onFailure'>) {
@@ -134,7 +170,15 @@ export function ExperienceCanvas(props: CanvasProps) {
       camera={{ fov: 38, near: 0.1, far: 100, position: [0, 3, 10] }}
       dpr={[1, 1.5]}
       frameloop={props.active && !props.reducedMotion ? 'always' : 'demand'}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      shadows={{ type: PCFShadowMap, autoUpdate: false }}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+        toneMapping: ACESFilmicToneMapping,
+        toneMappingExposure: 1,
+        outputColorSpace: SRGBColorSpace,
+      }}
       fallback={
         <span>
           Your browser cannot display the 3D stand. Use the page navigation to
@@ -142,20 +186,6 @@ export function ExperienceCanvas(props: CanvasProps) {
         </span>
       }
     >
-      <hemisphereLight args={['#9baed5', '#392024', 1.7]} />
-      <directionalLight position={[2, 7, 5]} color="#ffce98" intensity={3.2} />
-      <directionalLight
-        position={[-4, 4, -3]}
-        color="#7299ff"
-        intensity={2.4}
-      />
-      <pointLight
-        position={[0, 2.7, 0.6]}
-        color="#ffac62"
-        intensity={12}
-        distance={5}
-        decay={2}
-      />
       <ContextLifecycle onFailure={props.onFailure} />
       <LoadingProgress onProgress={props.onProgress} />
       <Suspense fallback={null}>

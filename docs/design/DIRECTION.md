@@ -11,7 +11,12 @@ It supersedes the initial large headline and boxed scene layout.
   complete stand rather than cropping interaction targets to fill the narrow view.
 - Keep direct work navigation and accessible theme controls available during
   loading and on failure. The sound indicator stays inactive until real audio
-  and its controls are implemented. Do not suggest unsupported drag controls.
+  and its controls are implemented.
+- Left-button drag orbits the camera around the stand; scrolling zooms in and out.
+  Keep panning disabled, bound zoom distance and elevation above the floor, and
+  never auto-orbit. Provide arrow-key exploration, plus/minus zoom, Home and a
+  visible Reset view button. Dragging an object
+  must not also activate its click action, even when the pointer returns to its start.
 - Portfolio routes use warm white surfaces, bold sans-serif headings, magenta
   accents, thin dividers and a featured project followed by smaller project cards.
   They remain static HTML and honor the selected theme.
@@ -21,5 +26,7 @@ It supersedes the initial large headline and boxed scene layout.
 The mock contains illustrative artwork and sample case studies. It does not
 authorize editing the frozen GLB or publishing those projects as real content.
 The lower-left CRT close-up guides the forthcoming camera transition; this
-checkpoint retains the existing immediate CRT navigation. Model lighting and
-materials require further fidelity review, particularly on physical devices.
+checkpoint retains the existing immediate CRT navigation. The later
+[cinematic stand direction](TACO-STAND.md) refines lighting, materials and camera
+composition. Its [visual review](../qa/cinematic/REVIEW.md) records accepted local
+captures and outstanding physical-device performance checks.

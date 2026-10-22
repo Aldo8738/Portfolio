@@ -15,6 +15,9 @@ layout with bold sans-serif type and magenta accents. Preserve the frozen model;
 illustrative projects in the mock are not supplied case-study content.
 The [fullscreen checkpoint](qa/FULLSCREEN.md) records the implemented layout,
 screenshots and current browser measurements.
+The creator's later [cinematic stand task](design/TACO-STAND.md) applies to the 3D
+scene only. Preserve the HTML/UI and frozen model; review before/after captures
+before accepting visual changes. See the [cinematic review](qa/cinematic/REVIEW.md).
 
 ## Accepted loading and performance decisions
 
@@ -138,6 +141,10 @@ not block this phase.
    loading status with a clear fallback if the scene cannot initialize.
 2. Build desktop/mobile cameras from model bounds, with +Z as the front. Match the
    approved nighttime view using a small lighting rig and budgeted shadows.
+   Support creator-requested left-button drag exploration and scroll-wheel zoom,
+   with arrow keys, plus/minus and a reset action. Bound camera distance and elevation
+   above the floor; suppress object clicks after dragging.
+   Reduced motion removes camera inertia while keeping direct exploration usable.
 3. Verify sign, transmission material, embedded images and CRT readability. Apply
    narrowly scoped runtime material adjustments where needed; preserve the model.
 4. Reveal the Canvas after a meaningful rendered frame and responsive controls.
@@ -242,6 +249,20 @@ Do not label unavailable device/content checks as passed.
   local, unthrottled single runs with reduced motion, not mobile-device guarantees.
 - Screenshots and remaining size/performance/fidelity concerns are recorded in
   [qa/BASELINE.md](qa/BASELINE.md). Phase 3 object interactions are next.
+
+### Cinematic stand and camera checkpoint
+
+- The creator's stand direction is implemented with a warm key/practical-light
+  rig, cached grounding shadows, scoped material adjustments and a tighter
+  responsive camera. Left-drag, wheel zoom, keyboard exploration and reset work.
+- Matching-camera before/after screenshots and final desktop/mobile views were
+  inspected. The frozen model checksum and interaction targets are preserved.
+- Sixteen unit tests and thirteen browser tests pass. All quality-check scripts
+  pass; hardware FPS and consistent 2–3 second startup remain unverified.
+- Steady desktop draw calls fall from 358 to 185, while shadows add sampling and
+  startup cost. Software-renderer FPS regresses in the recorded comparison. See
+  the [cinematic review](qa/cinematic/REVIEW.md) for raw evidence and limitations.
+  Phase 3 object interactions and real content remain outstanding.
 
 ## Inputs to gather alongside development
 

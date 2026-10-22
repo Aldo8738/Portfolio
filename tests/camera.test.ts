@@ -50,8 +50,32 @@ it('frames transformed meshes tightly without clipping their corners', () => {
     expect(Math.abs(projected.x)).toBeLessThan(1);
     expect(Math.abs(projected.y)).toBeLessThan(1);
   }
+  const boxed = fitCamera(bounds, 1.8, 38);
   expect(fit.position.distanceTo(fit.target)).toBeLessThan(
-    fitCamera(bounds, 1.8, 38).position.distanceTo(fit.target),
+    boxed.position.distanceTo(boxed.target),
   );
   mesh.geometry.dispose();
+});
+
+it('centers a model with uneven depth while using the available frame', () => {
+  const points = [
+    new Vector3(-3, 0, 0),
+    new Vector3(-1, 4, -2),
+    new Vector3(3, 0, 2),
+    new Vector3(3, 3, -1),
+  ];
+  const fit = fitCamera(new Box3().setFromPoints(points), 1.8, 38, points);
+  const camera = new PerspectiveCamera(38, 1.8, 0.1, 100);
+  camera.position.copy(fit.position);
+  camera.lookAt(fit.target);
+  camera.updateMatrixWorld();
+  const projected = points.map((point) => point.clone().project(camera));
+  const top = Math.max(...projected.map((point) => point.y));
+  const bottom = Math.min(...projected.map((point) => point.y));
+  expect(top - bottom).toBeGreaterThan(1.5);
+  expect(Math.abs((top + bottom) / 2)).toBeLessThan(0.05);
+  for (const point of projected) {
+    expect(Math.abs(point.x)).toBeLessThan(1);
+    expect(Math.abs(point.y)).toBeLessThan(1);
+  }
 });

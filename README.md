@@ -56,6 +56,23 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
 - The live model loads once in a deferred homepage chunk. The CRT links to `/work`,
   and the trompo rotates independently. Reduced motion and visibility pause motion.
   Append `?debug=1` locally to see the initial renderer diagnostics.
+  Left-drag or arrow keys explore the stand; scroll or plus/minus zoom. Home or
+  Reset view restores the composition. Reduced motion disables camera inertia and
+  the short entrance without disabling exploration.
+
+The lower-cost profile is automatic on narrow screens and detected software
+renderers. Use `?quality=low` to request it, or `?quality=standard` for controlled
+visual comparisons. The standard profile uses three practical lights and filtered
+shadows; the cheaper mode uses one practical light and single-sample shadows.
+Both use cached 1024-pixel shadow maps and lightweight bottle glass.
+
+For reproducible visual QA, serve a production preview on port 4322 and run
+`npm run capture:scene -- <label>`. `CAPTURE_BENCHMARK=1` adds a short render-loop
+sample; `CAPTURE_HERO=1` captures the refined default camera instead of the original
+comparison camera, and `CAPTURE_LOW=1` requests the lower-cost desktop profile.
+The `after` label asserts matching baseline framing. See the
+[before/after comparison](docs/qa/cinematic/comparison.html) and
+[review](docs/qa/cinematic/REVIEW.md) for measurements and their limits.
 
 Do not add full-resolution media or guitar audio to startup preloads. Do not replace
 the model or bake personal content into 3D textures.

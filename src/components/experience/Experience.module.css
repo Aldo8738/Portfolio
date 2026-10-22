@@ -20,11 +20,43 @@
 .canvas[data-visible='true'] {
   opacity: 1;
 }
+.canvas canvas {
+  cursor: grab;
+}
+.canvas canvas:active {
+  cursor: grabbing;
+}
+.canvas canvas:focus-visible {
+  outline-offset: -5px;
+}
+.cameraTools {
+  position: absolute;
+  z-index: 3;
+  bottom: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.cameraTools button {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: inherit;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  padding: 0.5rem;
+}
 .diagnostics {
   position: absolute;
   z-index: 5;
   left: 1rem;
-  bottom: 5rem;
+  bottom: 8rem;
   display: block;
   margin: 0;
   padding: 0.5rem;
