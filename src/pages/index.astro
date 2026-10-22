@@ -1,11 +1,13 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Experience from '../components/experience/Experience';
+import AsciiTacoLoader from '../components/experience/AsciiTacoLoader.astro';
 import ThemePicker from '../components/ui/ThemePicker.astro';
 import { modelUrl } from '../lib/glb-contract';
 ---
 
 <SiteLayout title="Welcome" immersive>
+  <AsciiTacoLoader slot="loader" />
   <script slot="head" is:inline define:vars={{ modelUrl }}>
     if (typeof WebGL2RenderingContext !== 'undefined') {
       const preload = document.createElement('link');

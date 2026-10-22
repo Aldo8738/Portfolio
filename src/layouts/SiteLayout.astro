@@ -42,6 +42,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     </script>
   </head>
   <body data-layout={immersive ? 'immersive' : 'portfolio'}>
+    <slot name="loader" />
     <a class="skip-link" href="#main">
       Skip to content
     </a>

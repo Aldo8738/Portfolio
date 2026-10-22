@@ -8,6 +8,7 @@ test('HTML navigation works with JavaScript disabled', async ({ browser }) => {
     if (request.url().endsWith('.glb')) modelRequests.push(request.url());
   });
   await page.goto('/');
+  await expect(page.locator('#ascii-taco-loader')).toBeHidden();
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'Taquería Aldo',
   );

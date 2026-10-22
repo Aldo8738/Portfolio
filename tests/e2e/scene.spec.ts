@@ -9,7 +9,7 @@ async function getCrtPosition(page: Page) {
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
-  const box = await page.locator('canvas').boundingBox();
+  const box = await page.locator('[data-scene-status] canvas').boundingBox();
   const target = metrics.targets.HIT_WORK_CRT_SCREEN;
   if (!box || !target) throw new Error('CRT target coordinates are missing');
   return {
@@ -104,7 +104,7 @@ test('renders the real frozen stand once, exposes metrics and routes through the
     fullPage: true,
   });
   const screen = metrics.targets.HIT_WORK_CRT_SCREEN;
-  const canvas = await page.locator('canvas').boundingBox();
+  const canvas = await page.locator('[data-scene-status] canvas').boundingBox();
   expect(screen).toBeDefined();
   expect(canvas).not.toBeNull();
   if (!screen || !canvas) throw new Error('Scene target coordinates missing');
@@ -133,7 +133,7 @@ test('drag and scroll explore without activating the CRT, and pointer/keyboard r
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
-  const canvas = page.locator('canvas');
+  const canvas = page.locator('[data-scene-status] canvas');
   const box = await canvas.boundingBox();
   if (!box) throw new Error('Canvas is missing');
   const initial = await canvas.screenshot();
@@ -217,6 +217,7 @@ test('blocked model falls back to useful HTML navigation', async ({ page }) => {
     'failed',
     { timeout: 30000 },
   );
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   await page.getByRole('link', { name: 'View work' }).first().click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Selected work.',
@@ -240,7 +241,9 @@ test('mobile scene fits and uses the cheaper glass profile', async ({
   expect(metrics.quality).toBe('mobile');
   // First-frame cost includes one cached shadow bake; steady draws are measured separately.
   expect(metrics.calls).toBeLessThan(400);
-  expect(await page.locator('canvas').boundingBox()).toMatchObject({
+  expect(
+    await page.locator('[data-scene-status] canvas').boundingBox(),
+  ).toMatchObject({
     x: 0,
     y: 0,
     width: 390,
@@ -277,6 +280,7 @@ test('unsupported WebGL preserves navigation without requesting the model', asyn
     'failed',
   );
   expect(requests.some((url) => url.endsWith('.glb'))).toBe(false);
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   await page.getByRole('link', { name: 'View work' }).first().click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Selected work.',

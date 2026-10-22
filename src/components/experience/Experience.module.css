@@ -90,33 +90,6 @@
   font-size: 0.8rem;
   line-height: 1.6;
 }
-.loader {
-  display: flex;
-  align-items: flex-end;
-  gap: 7px;
-  height: 30px;
-}
-.loader span {
-  width: 8px;
-  height: 18px;
-  background: var(--salsa-red);
-  border-radius: 3px 3px 1px 1px;
-  animation: simmer 1s ease-in-out infinite alternate;
-}
-.loader span:nth-child(2) {
-  background: var(--salsa-green);
-  animation-delay: 0.2s;
-}
-.loader span:nth-child(3) {
-  background: var(--salsa-orange);
-  animation-delay: 0.4s;
-}
-@keyframes simmer {
-  to {
-    transform: translateY(-8px);
-    opacity: 0.5;
-  }
-}
 :global(html:not(.js)) .loading {
   display: none;
 }
@@ -124,9 +97,4 @@
   padding: 6rem 2rem;
   display: grid;
   place-items: center;
-}
-@media (prefers-reduced-motion: reduce) {
-  .loader span {
-    animation: none;
-  }
 }

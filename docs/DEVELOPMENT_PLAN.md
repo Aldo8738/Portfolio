@@ -23,10 +23,15 @@ before accepting visual changes. See the [cinematic review](qa/cinematic/REVIEW.
 
 These user clarifications supersede the handoff's poster-first loading requirement:
 
-- Use a lightweight CSS loading animation and clear status as the primary loading
-  presentation. A poster is optional fallback artwork, not a prerequisite for launch.
-- Keep introduction and real navigation available immediately. With reduced motion,
-  show a static status. Failed loading must resolve to useful HTML, not an endless loader.
+- Use the creator's supplied rotating ASCII taco as the loading presentation,
+  replacing the original CSS bars. Inline its Canvas 2D renderer before React;
+  remove it after the first usable scene frame or failure. It adds no dependency
+  or separate renderer request. The creator's latest direction makes this a
+  full-screen black loading dialog covering the entire homepage. Put it first in
+  the body, release it immediately on readiness/failure, and offer keyboard skip
+  and Escape dismissal. A poster remains optional fallback artwork.
+- Build introduction and real navigation as initial HTML beneath the loader. With reduced motion,
+  show a still taco and status. Failed loading must resolve to useful HTML, not an endless loader.
 - Aim for a usable 3D scene within approximately **2–3 seconds** from navigation start;
   earlier is better. Ready means the stand is rendered and its configured controls
   and hit targets respond, not merely that the GLB download has finished.

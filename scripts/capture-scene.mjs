@@ -104,13 +104,15 @@ try {
       await page.waitForFunction(
         () =>
           document
-            .querySelector('canvas')
+            .querySelector('[data-scene-status] canvas')
             ?.getAttribute('data-scene-benchmark'),
         null,
         { timeout: 90000 },
       );
       results[name].benchmark = JSON.parse(
-        await page.locator('canvas').getAttribute('data-scene-benchmark'),
+        await page
+          .locator('[data-scene-status] canvas')
+          .getAttribute('data-scene-benchmark'),
       );
       await context.close();
     }

@@ -57,8 +57,13 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
   `/models/taqueria_aldo_v3_12_9_selectively_merged.glb`.
 - `public/media/previews/` contains only original embedded JPEG previews, extracted
   unchanged using `node scripts/extract-previews.mjs`. Do not treat them as originals.
-- A CSS loading animation is the primary loading presentation. Navigation remains
-  usable while the scene initializes or if WebGL fails. No poster is required.
+- The supplied rotating ASCII taco is inlined first in the homepage body, before
+  React loads. A full-screen black dialog covers the whole site until the first
+  usable scene frame or failure, then releases all animation resources immediately.
+  It uses Canvas 2D without extra network requests. Reduced motion shows a still
+  taco; hidden tabs pause it. Tab exposes a skip-to-work link; Escape dismisses it.
+  Without JavaScript, the dialog stays hidden and HTML navigation works normally.
+  The source reference is preserved in `ascii-taco-loader-v6/`.
 - The live model loads once in a deferred homepage chunk. The CRT links to `/work`,
   and the trompo rotates independently. Reduced motion and visibility pause motion.
   Append `?debug=1` locally to see the initial renderer diagnostics.

@@ -1,0 +1,50 @@
+---
+// Include this component EARLY in the page, before the Three.js scene.
+// Importing the renderer as source and inlining it removes the network/JS
+// hydration dependency from the critical loading path. It still draws the
+// real, rotating 3D point cloud — no static image and no placeholder.
+import rendererSource from '../lib/ascii-taco.js?raw';
+interface Props { active?: boolean; }
+const { active = true } = Astro.props;
+const inlineScript = `${rendererSource.replace('export function createAsciiTaco', 'function createAsciiTaco')}
+(() => {
+  const loader = document.getElementById('ascii-taco-loader');
+  const canvas = document.getElementById('ascii-taco-canvas');
+  if (!loader || !(canvas instanceof HTMLCanvasElement)) return;
+  const taco = createAsciiTaco(canvas);
+  function visibility() { document.hidden ? taco.pause() : taco.resume(); }
+  document.addEventListener('visibilitychange', visibility);
+  let exiting = false;
+  function finish() {
+    if (exiting) return;
+    exiting = true;
+    loader.classList.add('is-exiting');
+    function remove() {
+      taco.destroy();
+      document.removeEventListener('visibilitychange', visibility);
+      loader.remove();
+    }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) remove();
+    else loader.addEventListener('animationend', remove, {once:true});
+  }
+  window.addEventListener('taqueria:scene-ready', finish, {once:true});
+  // Set window.__TAQUERIA_SCENE_READY__ too if the hero may become ready
+  // before this component runs; this avoids a missed-event race.
+  if (window.__TAQUERIA_SCENE_READY__) finish();
+})();`;
+---
+{active && (
+  <div id="ascii-taco-loader" class="ascii-taco-loader" role="status" aria-label="Calentando el comal… loading Taquería Aldo">
+    <canvas id="ascii-taco-canvas" aria-hidden="true"></canvas>
+    <span class="sr-only">Calentando el comal…</span>
+    <script is:inline set:html={inlineScript}></script>
+  </div>
+)}
+<style>
+  .ascii-taco-loader {position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden}
+  #ascii-taco-canvas {display:block;width:100%;height:100%}
+  .sr-only {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .ascii-taco-loader.is-exiting {pointer-events:none;animation:loader-out .55s ease forwards}
+  @keyframes loader-out {to{opacity:0;visibility:hidden}}
+  @media(prefers-reduced-motion:reduce){.ascii-taco-loader.is-exiting{animation:none;display:none}}
+</style>

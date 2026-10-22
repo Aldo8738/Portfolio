@@ -1,0 +1,93 @@
+---
+import rendererSource from '../../lib/ascii-taco.js?raw';
+
+const inlineScript = `(() => {
+${rendererSource.replace('export function createAsciiTaco', 'function createAsciiTaco')}
+  const loader = document.getElementById('ascii-taco-loader');
+  const canvas = document.getElementById('ascii-taco-canvas');
+  if (!(loader instanceof HTMLDialogElement) || !(canvas instanceof HTMLCanvasElement)) return;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  let taco;
+  let finished = false;
+  function visibility() {
+    if (!finished) document.hidden ? taco?.pause() : taco?.resume();
+  }
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timeout);
+    taco?.destroy();
+    document.removeEventListener('visibilitychange', visibility);
+    motion.removeEventListener('change', restart);
+    window.removeEventListener('taqueria:scene-settled', finish);
+    loader.removeEventListener('cancel', finish);
+    loader.close();
+    canvas.width = canvas.height = 1;
+    loader.remove();
+  }
+  function restart() {
+    if (finished) return;
+    taco?.destroy();
+    try {
+      taco = createAsciiTaco(canvas, { reducedMotion: motion.matches });
+      visibility();
+    } catch (error) {
+      console.warn('ASCII taco unavailable; using the loading status.', error);
+      finish();
+    }
+  }
+  const timeout = setTimeout(finish, 20000);
+  document.addEventListener('visibilitychange', visibility);
+  motion.addEventListener('change', restart);
+  window.addEventListener('taqueria:scene-settled', finish);
+  loader.addEventListener('cancel', finish);
+  loader.hidden = false;
+  loader.showModal();
+  performance.mark('taqueria:loader-start');
+  restart();
+  performance.mark('taqueria:loader-first-frame');
+  performance.measure('taqueria:loader-setup', 'taqueria:loader-start', 'taqueria:loader-first-frame');
+})();`;
+---
+
+<dialog id="ascii-taco-loader" aria-labelledby="taco-loading-status" hidden>
+  <p
+    id="taco-loading-status"
+    class="sr-only"
+    tabindex="-1"
+    autofocus
+    role="status"
+  >
+    Calentando el comal… Loading Taquería Aldo.
+  </p>
+  <a class="skip-link" href="/work">
+    Skip loading and view work
+  </a>
+  <canvas id="ascii-taco-canvas" aria-hidden="true"></canvas>
+  <script is:inline set:html={inlineScript} />
+</dialog>
+
+<style>
+  #ascii-taco-loader {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+  }
+  #ascii-taco-loader::backdrop {
+    background: #000;
+  }
+  #ascii-taco-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

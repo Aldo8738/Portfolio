@@ -36,6 +36,12 @@ export default function Experience() {
     [],
   );
   useEffect(() => {
+    if (state.status !== 'loading')
+      window.dispatchEvent(
+        new CustomEvent('taqueria:scene-settled', { detail: state.status }),
+      );
+  }, [state.status]);
+  useEffect(() => {
     let disposed = false;
     if (typeof WebGL2RenderingContext === 'undefined') {
       onFailure(
@@ -99,13 +105,6 @@ export default function Experience() {
         )}
         {state.status !== 'ready' && (
           <div className={styles.loading} role="status">
-            {state.status === 'loading' && (
-              <div className={styles.loader} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-            )}
             <p>
               {state.status === 'failed'
                 ? 'The portfolio is still open.'

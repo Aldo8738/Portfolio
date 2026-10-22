@@ -13,6 +13,7 @@ export default defineConfig(
       '.tools/**',
       '.cache/**',
       'node_modules/**',
+      'ascii-taco-loader-v6/**',
       'test-results/**',
       'playwright-report/**',
     ],
