@@ -17,6 +17,11 @@ It supersedes the initial large headline and boxed scene layout.
   never auto-orbit. Provide arrow-key exploration, plus/minus zoom, Home and a
   visible Reset view button. Dragging an object
   must not also activate its click action, even when the pointer returns to its start.
+- The latest creator direction replaces the subtle wide-to-close entrance with
+  a rear-to-front half-turn, including a gentle rise and fall. Start only after
+  the black taco loader closes and finish at the exact Reset view. This camera
+  movement supersedes the original brief's restriction on large entry rotations;
+  preserve the frozen model. Reduced motion opens directly at the front.
 - Portfolio routes use warm white surfaces, bold sans-serif headings, magenta
   accents, thin dividers and a featured project followed by smaller project cards.
   They remain static HTML and honor the selected theme.

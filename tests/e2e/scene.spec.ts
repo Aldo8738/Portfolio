@@ -24,14 +24,25 @@ test('normal-motion camera entrance can be interrupted and reset without blockin
 }) => {
   test.setTimeout(60000);
   await page.setViewportSize({ width: 640, height: 720 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const screen = await getCrtPosition(page);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   try {
     await page.goto('/');
-    const screen = await getCrtPosition(page);
+    await expect(page.locator('[data-scene-status]')).toHaveAttribute(
+      'data-scene-status',
+      'ready',
+      { timeout: 45000 },
+    );
+    await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+    const canvas = page.locator('[data-scene-status] canvas');
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'running');
     await page.mouse.move(300, 340);
     await page.mouse.down();
     await page.mouse.move(380, 320);
     await page.mouse.up();
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'interrupted');
     await expect(page).toHaveURL(/\/$/);
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await page.mouse.click(screen.x, screen.y);
@@ -40,6 +51,64 @@ test('normal-motion camera entrance can be interrupted and reset without blockin
     await page.emulateMedia({ reducedMotion: 'reduce' });
   }
 });
+
+for (const viewport of [
+  { width: 1280, height: 720 },
+  { width: 390, height: 844 },
+]) {
+  test(`the rear orbit waits for the loader, pauses when hidden and ends at Reset view at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    test.setTimeout(90000);
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const screen = await getCrtPosition(page);
+    await page.addInitScript(() => {
+      window.addEventListener(
+        'taqueria:scene-settled',
+        (event) => event.stopImmediatePropagation(),
+        { once: true, capture: true },
+      );
+    });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    await expect(page.locator('[data-scene-status]')).toHaveAttribute(
+      'data-scene-status',
+      'ready',
+      { timeout: 45000 },
+    );
+    const canvas = page.locator('[data-scene-status] canvas');
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'waiting');
+    await page.waitForTimeout(200);
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'waiting');
+    await page.keyboard.press('Escape');
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'running');
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {
+        value: true,
+        configurable: true,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForTimeout(100);
+    const paused = await canvas.screenshot();
+    await page.waitForTimeout(250);
+    expect((await canvas.screenshot()).equals(paused)).toBe(true);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {
+        value: false,
+        configurable: true,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete', {
+      timeout: 15000,
+    });
+    await page.mouse.click(screen.x, screen.y);
+    await expect(page).toHaveURL(/\/work$/, { timeout: 15000 });
+  });
+}
 
 test('mobile touch keeps the CRT navigation available', async ({ browser }) => {
   test.setTimeout(60000);

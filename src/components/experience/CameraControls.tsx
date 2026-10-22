@@ -9,19 +9,21 @@ import {
 import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box3, PerspectiveCamera, Vector3 } from 'three';
+import { gsap } from 'gsap/gsap-core';
 import { fitCamera } from '../../lib/camera';
+import { createCameraEntrance } from '../../lib/camera-entrance';
 import type { CanvasProps } from './scene-types';
 
 interface Props extends Pick<
   CanvasProps,
-  'active' | 'reducedMotion' | 'cameraActions' | 'sceneReady'
+  'active' | 'reducedMotion' | 'cameraActions' | 'sceneRevealed'
 > {
   bounds: Box3;
   framingPoints: Vector3[];
 }
 
 const keyboardStep = Math.PI / 18;
-const entranceDurationMs = 700;
+const entranceDurationSeconds = 2.8;
 
 export function CameraControls({
   bounds,
@@ -29,22 +31,30 @@ export function CameraControls({
   active,
   reducedMotion,
   cameraActions,
-  sceneReady,
+  sceneRevealed,
 }: Props) {
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const { camera, size, gl, invalidate } = useThree();
   const comparison = new URLSearchParams(location.search).has('compare');
   const initialView = useRef(true);
   const entrance = useRef<{
-    started: number | null;
-    from: Vector3;
-    to: Vector3;
+    sample: ReturnType<typeof createCameraEntrance>;
+    progress: number;
+    elapsed: number;
+    previous: number | null;
+    tween?: ReturnType<typeof gsap.to>;
   } | null>(null);
   const cancelEntrance = useCallback(() => {
+    const transition = entrance.current;
+    if (!transition) return;
     entrance.current = null;
-  }, []);
+    transition.tween?.kill();
+    if (controls.current) controls.current.enableDamping = !reducedMotion;
+    gl.domElement.dataset.cameraEntrance = 'interrupted';
+  }, [gl, reducedMotion]);
   const resetView = useCallback(() => {
     if (!(camera instanceof PerspectiveCamera) || !controls.current) return;
+    cancelEntrance();
     const fit = fitCamera(
       bounds,
       size.width / size.height,
@@ -64,14 +74,18 @@ export function CameraControls({
     camera.position.copy(fit.position);
     controls.current.update();
     controls.current.enableDamping = damping;
-    entrance.current = null;
+    gl.domElement.dataset.cameraEntrance = 'complete';
     if (initialView.current && !reducedMotion && !comparison) {
-      const from = fit.target
-        .clone()
-        .addScaledVector(fit.position.clone().sub(fit.target), 1.035);
-      entrance.current = { started: null, from, to: fit.position.clone() };
-      camera.position.copy(from);
+      const sample = createCameraEntrance(
+        fit,
+        framingPoints,
+        size.width / size.height,
+        camera.fov,
+      );
+      entrance.current = { sample, progress: 0, elapsed: 0, previous: null };
+      sample(0, camera.position);
       controls.current.update();
+      gl.domElement.dataset.cameraEntrance = 'waiting';
     }
     initialView.current = false;
     camera.updateProjectionMatrix();
@@ -86,26 +100,62 @@ export function CameraControls({
     invalidate,
     reducedMotion,
     comparison,
+    cancelEntrance,
+    gl,
   ]);
   useImperativeHandle(cameraActions, () => ({ resetView }), [resetView]);
   useLayoutEffect(() => resetView(), [resetView]);
+  useEffect(() => {
+    const transition = entrance.current;
+    const orbit = controls.current;
+    if (!transition || !orbit || !sceneRevealed) return;
+    orbit.enableDamping = false;
+    transition.tween = gsap.to(transition, {
+      progress: 1,
+      duration: entranceDurationSeconds,
+      ease: 'power2.inOut',
+      paused: true,
+      onStart: () => {
+        gl.domElement.dataset.cameraEntrance = 'running';
+      },
+      onUpdate: () => {
+        transition.sample(transition.progress, camera.position);
+        orbit.update();
+        camera.updateMatrixWorld();
+        invalidate();
+      },
+      onComplete: () => {
+        transition.tween?.kill();
+        entrance.current = null;
+        orbit.enableDamping = !reducedMotion;
+        gl.domElement.dataset.cameraEntrance = 'complete';
+      },
+    });
+    return cancelEntrance;
+  }, [
+    sceneRevealed,
+    resetView,
+    camera,
+    gl,
+    invalidate,
+    reducedMotion,
+    cancelEntrance,
+  ]);
+  useEffect(() => {
+    if (entrance.current) entrance.current.previous = null;
+  }, [active]);
   useFrame(() => {
     const transition = entrance.current;
-    if (!transition || !active || !sceneReady) return;
+    if (!transition?.tween || !active || !sceneRevealed) return;
     const now = performance.now();
-    transition.started ??= now;
-    const progress = Math.min(
-      (now - transition.started) / entranceDurationMs,
-      1,
+    transition.elapsed +=
+      transition.previous === null ? 0 : (now - transition.previous) / 1000;
+    transition.previous = now;
+    // Advance the paused GSAP tween from the existing scene clock.
+    transition.tween.time(
+      Math.min(transition.elapsed, entranceDurationSeconds),
+      false,
     );
-    camera.position.lerpVectors(
-      transition.from,
-      transition.to,
-      1 - (1 - progress) ** 3,
-    );
-    controls.current?.update();
-    if (progress === 1) entrance.current = null;
-    else invalidate();
   });
 
   useEffect(() => {

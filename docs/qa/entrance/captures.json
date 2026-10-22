@@ -1,0 +1,24 @@
+{
+  "browser": "156.0.8078.4",
+  "method": "Production preview; natural timing; initial loader held/hidden for rear capture; midpoint frozen through simulated document visibility; SwiftShader; DPR 1. Visual samples, not startup or FPS measurements.",
+  "views": {
+    "desktop": {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "middlePhase": "running",
+      "finalPhase": "complete",
+      "errors": []
+    },
+    "mobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "middlePhase": "running",
+      "finalPhase": "complete",
+      "errors": []
+    }
+  }
+}

@@ -22,6 +22,7 @@ export default function Experience() {
   const [state, setState] = useState<SceneState>({ status: 'loading' });
   const [progress, setProgress] = useState('Preparing the stand…');
   const [debug, setDebug] = useState(false);
+  const [loaderDismissed, setLoaderDismissed] = useState(false);
   const cameraActions = useRef<CameraActions | null>(null);
   const { visible, reducedMotion } = useSceneActivity(container);
   const onFailure = useCallback(
@@ -35,6 +36,13 @@ export default function Experience() {
       ),
     [],
   );
+  useEffect(() => {
+    const reveal = () => setLoaderDismissed(true);
+    window.addEventListener('taqueria:loader-dismissed', reveal);
+    if (!document.getElementById('ascii-taco-loader')) reveal();
+    return () =>
+      window.removeEventListener('taqueria:loader-dismissed', reveal);
+  }, []);
   useEffect(() => {
     if (state.status !== 'loading')
       window.dispatchEvent(
@@ -95,7 +103,7 @@ export default function Experience() {
                 active={visible}
                 reducedMotion={reducedMotion}
                 cameraActions={cameraActions}
-                sceneReady={state.status === 'ready'}
+                sceneRevealed={state.status === 'ready' && loaderDismissed}
                 onReady={onReady}
                 onFailure={onFailure}
                 onProgress={setProgress}

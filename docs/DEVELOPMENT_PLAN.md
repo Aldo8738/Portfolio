@@ -96,8 +96,11 @@ the official React integration, strict TypeScript, npm and the committed lockfil
 - Use scoped Astro CSS, React CSS modules and shared CSS variables for tokens.
   Keep scene/viewer state in one React tree; share theme actions through a small
   browser module. Introduce no additional state library without need.
-- Add GSAP with the camera/object interaction work. Keep continuous animation in
-  `useFrame`. Defer bloom and other postprocessing until measurements justify them.
+- GSAP 3.15.0 core now drives the initial camera reveal through the existing
+  `useFrame` clock. After the loader closes, rotate from the rear, rise gently and
+  descend to Reset view over 2.8 seconds. Keep camera input interruptible and skip
+  the reveal for reduced motion. See the [entrance review](qa/entrance/REVIEW.md).
+  Defer bloom and other postprocessing until measurements justify them.
 - Keep content in typed `src/content/site.ts`, `portfolio.ts` and `media.ts` files.
   Model absent media explicitly instead of constructing URLs to nonexistent files.
 - Use one shared action/state layer for HTML controls and 3D targets. Work navigation,

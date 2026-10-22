@@ -40,11 +40,11 @@ function Model({
   active,
   reducedMotion,
   cameraActions,
-  sceneReady,
+  sceneRevealed,
   onReady,
 }: Pick<
   CanvasProps,
-  'active' | 'reducedMotion' | 'cameraActions' | 'sceneReady' | 'onReady'
+  'active' | 'reducedMotion' | 'cameraActions' | 'sceneRevealed' | 'onReady'
 >) {
   const { scene } = useGLTF(modelUrl);
   const { camera, size, gl, invalidate } = useThree();
@@ -131,7 +131,7 @@ function Model({
         active={active}
         reducedMotion={reducedMotion}
         cameraActions={cameraActions}
-        sceneReady={sceneReady}
+        sceneRevealed={sceneRevealed}
       />
       <primitive
         object={scene}

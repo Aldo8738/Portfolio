@@ -72,7 +72,14 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
   Append `?debug=1` locally to see the initial renderer diagnostics.
   Left-drag or arrow keys explore the stand; scroll or plus/minus zoom. Home or
   Reset view restores the composition. Reduced motion disables camera inertia and
-  the short entrance without disabling exploration.
+  the entrance without disabling exploration.
+
+After the taco loader closes, a 2.8-second GSAP camera orbit reveals the stand
+from the rear, rises gently, then descends into the exact Reset view. Camera input
+interrupts it immediately; Reset/Home restore the front without replaying it.
+Hidden tabs pause the motion. The tween uses GSAP core inside the deferred scene
+chunk and advances from the existing Three.js frame loop. See the
+[entrance review and screenshots](docs/qa/entrance/REVIEW.md).
 
 The lower-cost profile is automatic on narrow screens and detected software
 renderers. Use `?quality=low` to request it, or `?quality=standard` for controlled

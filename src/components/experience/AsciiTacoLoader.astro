@@ -28,6 +28,7 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
     loader.close();
     canvas.width = canvas.height = 1;
     loader.remove();
+    window.dispatchEvent(new Event('taqueria:loader-dismissed'));
   }
   function settle(event) {
     if (event.detail === 'ready') {

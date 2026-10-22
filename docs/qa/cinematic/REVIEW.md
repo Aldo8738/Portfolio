@@ -93,6 +93,8 @@ instead of centering an oversized world box. This enlarges the miniature while
 keeping the full sign/platform visible. Narrow screens use a near-front view.
 `?compare=1` restores the original camera for reproducible comparisons.
 
+The entrance below records this earlier checkpoint; the creator later replaced
+it with the [rear-to-front camera reveal](../entrance/REVIEW.md).
 After the first rendered frame, a 700 ms eased entrance moves from 3.5% wider to
 the fitted view. It never gates readiness; pointer/keyboard input cancels it.
 Reduced motion disables entrance and damping. Left-drag, scroll, arrow keys,

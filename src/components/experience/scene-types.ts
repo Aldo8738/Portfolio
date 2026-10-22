@@ -27,7 +27,7 @@ export interface CanvasProps {
   active: boolean;
   reducedMotion: boolean;
   cameraActions: RefObject<CameraActions | null>;
-  sceneReady: boolean;
+  sceneRevealed: boolean;
   onReady: (metrics: SceneMetrics) => void;
   onFailure: (message: string) => void;
   onProgress: (message: string) => void;
