@@ -1,0 +1,171 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1600"
+  height="900"
+  viewBox="0 0 1600 900"
+  fill="none"
+>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020e20" />
+      <stop offset=".46" stop-color="#091e38" />
+      <stop offset=".69" stop-color="#162438" />
+      <stop offset="1" stop-color="#071521" />
+    </linearGradient>
+    <radialGradient
+      id="horizon"
+      cx="0"
+      cy="0"
+      r="1"
+      gradientTransform="translate(670 514) scale(1040 195)"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#d37b59" stop-opacity=".58" />
+      <stop offset=".35" stop-color="#a6555d" stop-opacity=".4" />
+      <stop offset=".73" stop-color="#5c496b" stop-opacity=".22" />
+      <stop offset="1" stop-color="#182c49" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient
+      id="distance"
+      x2="0"
+      y1="480"
+      y2="690"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#202f49" />
+      <stop offset="1" stop-color="#13243a" />
+    </linearGradient>
+    <linearGradient
+      id="near"
+      x2="0"
+      y1="540"
+      y2="760"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#102139" />
+      <stop offset="1" stop-color="#09192b" />
+    </linearGradient>
+    <linearGradient id="tower" x1="375" x2="398" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12223a" />
+      <stop offset=".62" stop-color="#14283f" />
+      <stop offset="1" stop-color="#25334a" />
+    </linearGradient>
+    <radialGradient
+      id="mist"
+      cx="0"
+      cy="0"
+      r="1"
+      gradientTransform="translate(810 646) scale(1000 118)"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#6c7486" stop-opacity=".18" />
+      <stop offset=".5" stop-color="#607a98" stop-opacity=".12" />
+      <stop offset="1" stop-color="#385575" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient
+      id="fade"
+      x2="0"
+      y1="600"
+      y2="860"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#071521" stop-opacity="0" />
+      <stop offset="1" stop-color="#071521" />
+    </linearGradient>
+    <radialGradient id="moonGlow">
+      <stop stop-color="#ffb75e" stop-opacity=".2" />
+      <stop offset="1" stop-color="#ffb75e" stop-opacity="0" />
+    </radialGradient>
+    <filter id="farBlur" x="-2%" y="-8%" width="104%" height="116%">
+      <feGaussianBlur stdDeviation="2.2" />
+    </filter>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation=".9" />
+    </filter>
+    <filter id="lightGlow" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="3" />
+    </filter>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1600v900H0z" />
+  <path fill="url(#horizon)" d="M0 260h1600v430H0z" />
+  <g fill="#b0baca" opacity=".5">
+    <circle cx="170" cy="144" r=".7" />
+    <circle cx="370" cy="88" r=".7" />
+    <circle cx="655" cy="159" r=".8" />
+    <circle cx="795" cy="65" r="1" />
+    <circle cx="843" cy="88" r=".6" />
+    <circle cx="1047" cy="83" r=".7" />
+    <circle cx="1280" cy="62" r=".8" />
+    <circle cx="1395" cy="157" r=".7" />
+    <circle cx="209" cy="300" r=".6" />
+    <circle cx="617" cy="240" r=".7" />
+    <circle cx="1005" cy="194" r=".7" />
+    <circle cx="1475" cy="287" r=".6" />
+  </g>
+  <g fill="#d39b76" opacity=".55">
+    <circle cx="143" cy="160" r=".7" />
+    <circle cx="913" cy="307" r=".7" />
+    <circle cx="1235" cy="348" r=".6" />
+    <circle cx="544" cy="323" r=".7" />
+  </g>
+  <g transform="translate(135 -18)">
+    <ellipse cx="1284" cy="207" rx="51" ry="62" fill="url(#moonGlow)" />
+    <path
+      d="M1280 178a31 31 0 0 1 0 62 25 31 0 0 0 0-62Z"
+      fill="#ffb85e"
+      filter="url(#lightGlow)"
+    />
+    <path d="M1280 178a31 31 0 0 1 0 62 25 31 0 0 0 0-62Z" fill="#ffd18b" />
+  </g>
+  <!-- Distant roofline is deliberately soft: the stand remains the focal point. -->
+  <g filter="url(#farBlur)" fill="url(#distance)">
+    <path
+      d="M0 504h18v-7h23v6h18v-10h16v10h23v-4h20v-7h20v9h27v-12h21v5h14v-8h19v10h22v-12h18v13h32v-5h21v6h24v-13h28v8h22v-4h24v-10h19v10h22v-7h27v11h20v-4h32v-13h22v6h21v9h30v-7h23v-8h23v5h14v-7h25v12h23v-3h24v-9h19v8h31v-13h29v7h22v10h23v-9h28v-6h19v11h27v-6h23v-10h25v10h24v-3h28v-13h23v8h24v-4h24v14h25v-11h22v6h21v-12h23v10h28v-7h27v4h24v-9h19v10h26v-4h29v-11h18v6h23v-7h25v14h23v-8h27v6h24v-12h24v10h26v-5h27v-9h20v12h22v-6h22v9h29v-13h24v4h23v-7h22v11h26v-5h23v6h29v-10h24v5h22v-8h27v11h26v-6h22v180H0Z"
+    />
+    <path d="M252 546v-68h9v-18l8-17 8 17v18h9v68Z" />
+    <path d="M1180 549v-58h10v-15l8-13 8 13v15h9v58Z" />
+  </g>
+  <!-- Fernsehturm: slender concrete shaft, spherical observation deck and antenna. -->
+  <g filter="url(#soft)">
+    <path d="m375 550 5-178h11l5 178Z" fill="url(#tower)" />
+    <path d="M378 375h15v-10h-15zM382 334h8v-20h-8z" fill="#172840" />
+    <path
+      d="M366 358c0-12 9-22 20-22s20 10 20 22c0 9-9 14-20 14s-20-5-20-14Z"
+      fill="url(#tower)"
+    />
+    <path d="M370 363c10 4 20 4 32 0l-4 5h-24Z" fill="#b88558" opacity=".42" />
+    <path d="M385 313V198h2v115Z" fill="#253347" />
+    <path d="M382 320h8v-7h-8Z" fill="#172840" />
+    <g fill="#ff3152">
+      <circle cx="386" cy="199" r="1.6" />
+      <circle cx="386" cy="230" r="1" />
+      <circle cx="386" cy="257" r=".9" />
+      <circle cx="386" cy="300" r="1.1" />
+    </g>
+    <circle
+      cx="386"
+      cy="199"
+      r="3.5"
+      fill="#ff3152"
+      opacity=".55"
+      filter="url(#lightGlow)"
+    />
+  </g>
+  <g fill="url(#near)" filter="url(#soft)">
+    <path
+      d="M0 580h43v-26h20v-8h9v8h36v-12h34v7h22v-9h16v9h29v26h26v-17h32v10h26v-22h34v-9h9v9h27v25h36v-16h23v12h31v-11h22v18h30v-31h29v10h26v-16h27v8h30v33h38v-22h23v10h27v-17h22v21h39v-27h30v12h29v19h33v-9h32v16h25v-33h34v14h28v-23h33v9h25v25h30v-15h26v-9h24v10h28v-24h30v13h25v16h31v-28h28v9h33v-20h22v14h23v27h33v-14h32v19h28v-28h35v11h27v-7h23v21h29v-12h37v-8h29v17h26v-26h28v9h34v-13h29v12h35v210H0Z"
+    />
+    <path d="M1165 568v-84h10v-16h8v-15l6-11 6 11v15h8v16h10v84Z" />
+    <path
+      d="M1456 557v-101h8v-14c0-18 10-29 19-31v-13h4v13c11 2 20 13 20 31v14h9v101Z"
+    />
+    <path d="M1467 444h37v5h-37z" fill="#1b2b42" />
+  </g>
+  <g fill="#d6934e" opacity=".7" filter="url(#soft)">
+    <path
+      d="M141 550h4v8h-4zm8 0h4v8h-4zM316 549h4v9h-4zm8 0h4v9h-4zM1268 503h4v9h-4zm8-2h4v11h-4zM1370 548h4v8h-4zm8 0h4v8h-4zM1125 583h4v9h-4zm8-2h4v11h-4z"
+    />
+  </g>
+  <path fill="url(#mist)" d="M0 500h1600v290H0z" />
+  <path fill="url(#fade)" d="M0 600h1600v300H0z" />
+</svg>
