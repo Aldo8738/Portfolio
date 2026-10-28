@@ -1,7 +1,12 @@
 import type { RefObject } from 'react';
+import type { Box3, Mesh } from 'three';
 
 export interface CameraActions {
   resetView: () => void;
+  focusOn: (
+    target: Box3 | Mesh,
+    onSettled?: (completed: boolean) => void,
+  ) => void;
 }
 
 export interface SceneMetrics {
@@ -24,6 +29,13 @@ export interface SceneMetrics {
   targets: Record<string, { x: number; y: number }>;
 }
 export interface CanvasProps {
+  onCameraMotion: (moving: boolean) => void;
+  onSalsaPress: () => void;
+  onMusicToggle: () => void;
+  onMusicPause: () => void;
+  photoId: string | null;
+  onPhotoRequest: (id: string) => void;
+  onPhotoSettled: (completed: boolean) => void;
   active: boolean;
   reducedMotion: boolean;
   cameraActions: RefObject<CameraActions | null>;

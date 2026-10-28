@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="2048" viewBox="0 0 4096 2048" role="img" aria-label="Seamless, restrained Berlin twilight panorama with mist and four distant landmarks">
+  <!-- Taqueria Aldo / Berlin after dark.
+       2:1 seamless 360 panorama. Front-facing center: x=2048, horizon ~y=1215.
+       LANDMARKS: Oberbaumbruecke x~610, Fernsehturm x~1828,
+       Berliner Dom x~2340, Brandenburger Tor x~2940.
+       Intentionally STATIC. No Gaussian blur, turbulence, masks over large areas,
+       heavy filters, volumetric fog, raster embeds or looping animations. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#030d1b"/>
+      <stop offset=".39" stop-color="#07162e"/>
+      <stop offset=".52" stop-color="#102039"/>
+      <stop offset=".585" stop-color="#1c2a42"/>
+      <stop offset=".665" stop-color="#0c2037"/>
+      <stop offset="1" stop-color="#030e20"/>
+    </linearGradient>
+    <linearGradient id="twilight" x1="0" y1=".0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c77a74" stop-opacity="0"/>
+      <stop offset=".30" stop-color="#b36a74" stop-opacity=".04"/>
+      <stop offset=".49" stop-color="#c27373" stop-opacity=".27"/>
+      <stop offset=".67" stop-color="#a86273" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#7a617d" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="warmHorizon">
+      <stop offset="0" stop-color="#d58970" stop-opacity=".40"/>
+      <stop offset=".45" stop-color="#b76e73" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#9c5e73" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="softHorizon">
+      <stop offset="0" stop-color="#815f82" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#746787" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="farBuildings" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#243450"/>
+      <stop offset="1" stop-color="#182b45"/>
+    </linearGradient>
+    <linearGradient id="midBuildings" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#112741"/>
+      <stop offset="1" stop-color="#081b31"/>
+    </linearGradient>
+    <linearGradient id="tvTower" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#11253e"/>
+      <stop offset=".67" stop-color="#172941"/>
+      <stop offset="1" stop-color="#27374f"/>
+    </linearGradient>
+    <radialGradient id="fogWarm">
+      <stop offset="0" stop-color="#c49b8a" stop-opacity=".25"/>
+      <stop offset=".35" stop-color="#a38a91" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#7f7991" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fogCool">
+      <stop offset="0" stop-color="#8c91a4" stop-opacity=".21"/>
+      <stop offset=".52" stop-color="#7b8b9f" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#6a829a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hazeVeil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#74859a" stop-opacity="0"/>
+      <stop offset=".35" stop-color="#75869b" stop-opacity=".15"/>
+      <stop offset=".59" stop-color="#71869c" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#38516d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="groundFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06172b" stop-opacity="0"/>
+      <stop offset=".46" stop-color="#06172b" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#030e20" stop-opacity=".99"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Night / blue hour. All base layers span the full circumference. -->
+  <path fill="url(#sky)" d="M0 0h4096v2048H0Z"/>
+  <path fill="url(#twilight)" d="M0 1010h4096v380H0Z"/>
+  <!-- Glow ellipses disappear long before the left/right panorama seam. -->
+  <ellipse cx="1650" cy="1181" rx="850" ry="195" fill="url(#warmHorizon)"/>
+  <ellipse cx="2510" cy="1187" rx="760" ry="175" fill="url(#softHorizon)"/>
+  <ellipse cx="3305" cy="1179" rx="650" ry="172" fill="url(#softHorizon)"/>
+
+  <!-- Sparse sky, no star motion. -->
+  <g fill="#ccd6e6"><circle cx="2977" cy="625" r="0.75" opacity="0.26"/>
+    <circle cx="2584" cy="180" r="1.15" opacity="0.22"/>
+    <circle cx="2571" cy="892" r="0.9" opacity="0.19"/>
+    <circle cx="3017" cy="308" r="0.75" opacity="0.21"/>
+    <circle cx="2516" cy="386" r="1" opacity="0.28"/>
+    <circle cx="811" cy="720" r="0.9" opacity="0.21"/>
+    <circle cx="1912" cy="793" r="0.75" opacity="0.33"/>
+    <circle cx="2905" cy="954" r="1" opacity="0.30"/>
+    <circle cx="1123" cy="872" r="1.15" opacity="0.18"/>
+    <circle cx="2907" cy="657" r="0.9" opacity="0.24"/>
+    <circle cx="2954" cy="772" r="0.9" opacity="0.16"/>
+    <circle cx="332" cy="448" r="1.15" opacity="0.24"/>
+    <circle cx="503" cy="801" r="0.75" opacity="0.33"/>
+    <circle cx="3861" cy="475" r="1" opacity="0.19"/>
+    <circle cx="543" cy="722" r="1" opacity="0.27"/>
+    <circle cx="702" cy="414" r="0.9" opacity="0.14"/>
+    <circle cx="2235" cy="337" r="0.9" opacity="0.15"/>
+    <circle cx="1477" cy="382" r="0.9" opacity="0.30"/>
+    <circle cx="2688" cy="383" r="1" opacity="0.32"/>
+    <circle cx="467" cy="242" r="1.15" opacity="0.29"/>
+    <circle cx="2558" cy="1010" r="0.9" opacity="0.26"/>
+    <circle cx="444" cy="759" r="1.15" opacity="0.29"/>
+    <circle cx="2323" cy="828" r="1" opacity="0.17"/>
+    <circle cx="3025" cy="700" r="0.75" opacity="0.16"/>
+    <circle cx="1575" cy="562" r="1.15" opacity="0.31"/>
+    <circle cx="1010" cy="770" r="0.9" opacity="0.25"/>
+    <circle cx="1330" cy="311" r="0.9" opacity="0.15"/>
+    <circle cx="3596" cy="186" r="0.75" opacity="0.18"/>
+    <circle cx="3961" cy="532" r="1.15" opacity="0.25"/>
+    <circle cx="1141" cy="904" r="0.75" opacity="0.30"/>
+    <circle cx="2814" cy="627" r="0.65" opacity="0.28"/>
+    <circle cx="2256" cy="429" r="0.9" opacity="0.19"/>
+    <circle cx="3745" cy="574" r="1.15" opacity="0.24"/>
+    <circle cx="2366" cy="659" r="0.9" opacity="0.17"/>
+    <circle cx="1502" cy="955" r="0.65" opacity="0.15"/>
+    <circle cx="278" cy="952" r="1.15" opacity="0.31"/>
+    <circle cx="2133" cy="855" r="0.9" opacity="0.18"/>
+    <circle cx="4004" cy="233" r="0.75" opacity="0.14"/>
+    <circle cx="2982" cy="940" r="0.65" opacity="0.13"/>
+    <circle cx="3870" cy="895" r="0.75" opacity="0.16"/>
+    <circle cx="3504" cy="543" r="0.75" opacity="0.14"/>
+    <circle cx="2314" cy="512" r="1" opacity="0.22"/>
+    <circle cx="503" cy="891" r="0.75" opacity="0.20"/>
+    <circle cx="1379" cy="478" r="0.9" opacity="0.19"/>
+    <circle cx="606" cy="502" r="1.15" opacity="0.29"/>
+    <circle cx="2511" cy="250" r="1" opacity="0.25"/>
+    <circle cx="2441" cy="440" r="0.9" opacity="0.14"/>
+    <circle cx="1487" cy="709" r="0.65" opacity="0.21"/>
+    <circle cx="177" cy="330" r="1.15" opacity="0.19"/>
+    <circle cx="3946" cy="640" r="1.15" opacity="0.13"/>
+    <circle cx="2973" cy="423" r="0.9" opacity="0.29"/>
+    <circle cx="3334" cy="429" r="0.65" opacity="0.16"/>
+    <circle cx="2654" cy="298" r="1" opacity="0.29"/>
+    <circle cx="1679" cy="392" r="1.15" opacity="0.17"/>
+    <circle cx="300" cy="1038" r="1" opacity="0.21"/>
+    <circle cx="1546" cy="971" r="0.65" opacity="0.16"/>
+    <circle cx="3486" cy="907" r="0.75" opacity="0.13"/>
+    <circle cx="2523" cy="695" r="0.65" opacity="0.32"/>
+    <circle cx="2058" cy="290" r="0.75" opacity="0.19"/>
+    <circle cx="1511" cy="281" r="0.75" opacity="0.19"/>
+    <circle cx="3694" cy="621" r="0.65" opacity="0.15"/>
+    <circle cx="1081" cy="240" r="1.15" opacity="0.30"/>
+    <circle cx="151" cy="847" r="1" opacity="0.28"/>
+    <circle cx="2913" cy="184" r="1.15" opacity="0.29"/>
+    <circle cx="3880" cy="859" r="0.75" opacity="0.23"/>
+    <circle cx="3167" cy="577" r="1" opacity="0.19"/>
+    <circle cx="844" cy="617" r="1" opacity="0.22"/>
+    <circle cx="2253" cy="975" r="1" opacity="0.19"/></g>
+
+  <!-- A single moon in the hero angle; narrow crescent, softened by color alone. -->
+  <g opacity=".85">
+    <path d="M2305 1048 A17 17 0 1 1 2289 1079 A17.5 17.5 0 0 0 2305 1048Z" fill="#ffba80"/>
+  </g>
+
+  <!-- Background roofline: skyline texture, not a tourist postcard. -->
+  <path fill="url(#farBuildings)" d="M0 1196 h64 V1200 h92 V1191 h63 V1203 h61 V1207 h68 V1197 h47 V1190 h78 V1187 h54 V1189 h80 V1190 h83 V1205 h57 V1204 h87 V1198 h39 V1196 h86 V1181 h45 V1187 h83 V1202 h66 V1191 h63 V1181 h60 V1197 h68 V1197 h69 V1196 h71 V1186 h64 V1181 h57 V1201 h54 V1181 h74 V1203 h38 V1203 h74 V1205 h42 V1193 h74 V1193 h55 V1191 h86 V1197 h62 V1182 h85 V1194 h74 V1206 h59 V1181 h89 V1184 h63 V1193 h47 V1194 h38 V1191 h66 V1197 h55 V1182 h69 V1183 h63 V1190 h88 V1200 h64 V1200 h90 V1202 h65 V1207 h81 V1183 h69 V1189 h45 V1206 h54 V1198 h79 V1190 h42 V1202 h88 V1182 h92 V1187 h76 V1203 h71 V1204 h86 V1205 h70 V1196 h64 V2048 H0Z"/>
+  <!-- Quiet hand-drawn spires distributed as generic Berlin rooftops -->
+  <g fill="#22324e" opacity=".8">
+    <path d="M1057 1218v-43h5v-12l7-24 7 24v12h5v43Z"/>
+    <path d="M3497 1218v-30h6v-8l5-16 5 16v8h5v30Z"/>
+    <path d="M3750 1218v-33h10v-10l6-15 6 15v10h10v33Z"/>
+  </g>
+
+  <!-- Four distant landmarks across 360 degrees. Landmark silhouettes are
+       atmospheric, low contrast and shape-led, rather than detailed. -->
+
+  <!-- Oberbaumbruecke | x ~ 620 | rear/left rotation -->
+  <g fill="#192c46" opacity=".80">
+    <!-- two neo-gothic bridge towers -->
+    <path d="M530 1218v-51l7-6v-12l5-15 5 15v12l7 6v51Z"/>
+    <path d="M673 1218v-51l7-6v-12l5-15 5 15v12l7 6v51Z"/>
+    <path d="M534 1153h16v5h-16zm143 0h16v5h-16Z"/>
+    <!-- simple arcade and upper viaduct -->
+    <path fill-rule="evenodd" d="M553 1187h121v30H553Z M564 1196a6 6 0 0 0-6 6v15h12v-15a6 6 0 0 0-6-6Zm21 0a6 6 0 0 0-6 6v15h12v-15a6 6 0 0 0-6-6Zm21 0a6 6 0 0 0-6 6v15h12v-15a6 6 0 0 0-6-6Zm21 0a6 6 0 0 0-6 6v15h12v-15a6 6 0 0 0-6-6Zm21 0a6 6 0 0 0-6 6v15h12v-15a6 6 0 0 0-6-6Z"/>
+    <path d="M548 1182h131v7H548Z"/>
+  </g>
+
+  <!-- Fernsehturm | front-left x ~ 1830 -->
+  <g>
+    <path d="M1827 1229l4-90h7l4 90Z" fill="url(#tvTower)"/>
+    <path d="M1827 1140h15v-8h-15z" fill="#172b43"/>
+    <path d="M1817 1126a14 14 0 1 1 28 0c0 8-6 12-14 12s-14-4-14-12Z" fill="url(#tvTower)"/>
+    <path d="M1820 1133q11 4 22 0l-3 4h-16Z" fill="#b9876d" opacity=".23"/>
+    <path d="M1827 1108h8v-6h-8Z" fill="#14273e"/>
+    <path d="M1830 1102l.5-57h2l.5 57Z" fill="#1d2e45"/>
+    <g fill="#ff5264" opacity=".28">
+      <circle cx="1831.5" cy="1046" r="1.25"/>
+      <circle cx="1831.5" cy="1069" r=".85"/>
+      <circle cx="1831.5" cy="1091" r=".8"/>
+    </g>
+  </g>
+
+  <!-- Berliner Dom | front-right x ~ 2340 -->
+  <g fill="#1a2c46" opacity=".66" transform="translate(2346 1219) scale(.73) translate(-2346 -1219)">
+    <path d="M2309 1219v-49h7v-14l4-6v-8h3v8c16-29 31-28 46 0v-8h3v8l4 6v14h7v49Z"/>
+    <path d="M2325 1157c1-25 11-42 24-43 14 1 24 18 25 43Z"/>
+    <path d="M2346 1114v-7h6v7Zm2-7v-13h2v13Z"/>
+    <path d="M2303 1219v-43h5v-13l4-4 4 4v13h5v43Zm72 0v-43h5v-13l4-4 4 4v13h5v43Z"/>
+  </g>
+
+  <!-- Brandenburger Tor | right-hand angle x ~ 2920 -->
+  <g fill="#1d304a" opacity=".70">
+    <!-- Entablature, five openings, six columns: recognizable by negative space. -->
+    <path d="M2865 1167h114v12h-114ZM2872 1161h100v5h-100Z"/>
+    <path d="M2910 1161l5-8 5 2 5-8 6 7 10-1 6 8Z"/>
+    <path d="M2870 1179h8v37h-8Zm19 0h8v37h-8Zm19 0h8v37h-8Zm19 0h8v37h-8Zm19 0h8v37h-8Zm19 0h8v37h-8Z"/>
+    <path d="M2868 1215h108v3h-108Z"/>
+  </g>
+
+  <!-- Intermediate rooftops, integrated into fog. -->
+  <path fill="url(#midBuildings)" opacity=".84" d="M0 1247 h64 V1214 h63 V1215 h40 V1233 h41 V1244 h73 V1250 h47 V1241 h56 V1219 h86 V1244 h58 V1247 h87 V1234 h65 V1248 h62 V1250 h57 V1250 h48 V1234 h67 V1235 h41 V1232 h50 V1216 h59 V1223 h70 V1252 h56 V1219 h73 V1215 h76 V1236 h48 V1250 h73 V1239 h44 V1216 h87 V1218 h75 V1249 h82 V1247 h40 V1237 h54 V1221 h90 V1215 h50 V1240 h61 V1237 h56 V1238 h55 V1245 h77 V1236 h72 V1235 h76 V1237 h46 V1250 h38 V1229 h50 V1215 h89 V1241 h55 V1244 h39 V1214 h57 V1216 h68 V1228 h67 V1217 h42 V1226 h91 V1249 h83 V1242 h45 V1237 h63 V1248 h61 V1246 h71 V1232 h56 V1228 h88 V1240 h88 V1247 h55 V1229 h91 V1222 h69 V1252 h71 V1251 h40 V1252 h75 V1227 h38 V1246 h17 V1247 h64 V2048 H0Z"/>
+  <!-- A small number of windows is sufficient to imply Berlin at night. -->
+  <g fill="#e8a66b" opacity=".23"><rect x="123" y="1276" width="3" height="6" rx=".5"/>
+    <rect x="245" y="1278" width="3" height="6" rx=".5"/>
+    <rect x="484" y="1240" width="3" height="6" rx=".5"/>
+    <rect x="725" y="1240" width="3" height="6" rx=".5"/>
+    <rect x="731" y="1240" width="3" height="6" rx=".5"/>
+    <rect x="1024" y="1248" width="3" height="6" rx=".5"/>
+    <rect x="1930" y="1256" width="3" height="6" rx=".5"/>
+    <rect x="1936" y="1256" width="3" height="6" rx=".5"/>
+    <rect x="2134" y="1279" width="3" height="6" rx=".5"/>
+    <rect x="2140" y="1279" width="3" height="6" rx=".5"/>
+    <rect x="2216" y="1258" width="3" height="6" rx=".5"/>
+    <rect x="2222" y="1258" width="3" height="6" rx=".5"/>
+    <rect x="2576" y="1270" width="3" height="6" rx=".5"/>
+    <rect x="2917" y="1262" width="3" height="6" rx=".5"/>
+    <rect x="2923" y="1262" width="3" height="6" rx=".5"/>
+    <rect x="3035" y="1270" width="3" height="6" rx=".5"/>
+    <rect x="3146" y="1259" width="3" height="6" rx=".5"/>
+    <rect x="3884" y="1247" width="3" height="6" rx=".5"/>
+    <rect x="4122" y="1259" width="3" height="6" rx=".5"/>
+    <rect x="4128" y="1259" width="3" height="6" rx=".5"/></g>
+
+  <!-- Fog is the art direction: 100% static SVG gradients, NO feGaussianBlur.
+       SVG <ellipse> is an intentional soft radial-gradient cheap to rasterize. -->
+  <path fill="url(#hazeVeil)" d="M0 1160h4096v290H0Z"/>
+  <ellipse cx="2048" cy="1270" rx="840" ry="122" fill="url(#fogWarm)"/>
+  <ellipse cx="1510" cy="1286" rx="790" ry="128" fill="url(#fogCool)"/>
+  <ellipse cx="2710" cy="1302" rx="850" ry="132" fill="url(#fogCool)"/>
+  <ellipse cx="900" cy="1310" rx="740" ry="135" fill="url(#fogCool)"/>
+  <ellipse cx="3450" cy="1297" rx="640" ry="126" fill="url(#fogCool)"/>
+  <!-- Let the scene disappear into a dark ink-like lower half. -->
+  <path fill="url(#groundFade)" d="M0 1270h4096v778H0Z"/>
+</svg>

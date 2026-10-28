@@ -9,6 +9,7 @@ import {
 } from 'three';
 import type { SceneQuality } from './scene-quality';
 import { getCookingPlacement } from '../../lib/cooking-effects';
+import { useSceneTheme } from './useSceneTheme';
 
 const bulbNames = [
   'LIGHT_0_glowing_bulb',
@@ -24,6 +25,7 @@ export function SceneLighting({
   quality: SceneQuality;
 }) {
   const key = useRef<DirectionalLight>(null);
+  const synthwave = useSceneTheme() === 'synthwave';
   const { gl, invalidate } = useThree();
   const cooking = useMemo(() => getCookingPlacement(scene), [scene]);
   const fireLight = cooking?.fireLight;
@@ -60,7 +62,12 @@ export function SceneLighting({
       const materials = Array.isArray(node.material)
         ? node.material
         : [node.material];
+      // Shadow normal bias pushes these thin, reversed-normal decals into their backing.
+      const tileOverlay =
+        node.name === 'COUNTER_TILES_MERGED_MAT_13' ||
+        node.name === 'COUNTER_TILES_MERGED_MAT_11';
       node.castShadow =
+        !tileOverlay &&
         !animated &&
         !materials.some(
           (material) =>
@@ -69,7 +76,7 @@ export function SceneLighting({
               material.transmission > 0) ||
             material.name === '28 · pendant amber filament.009',
         );
-      node.receiveShadow = true;
+      node.receiveShadow = !tileOverlay;
     });
     if (key.current) key.current.shadow.needsUpdate = true;
     gl.shadowMap.needsUpdate = true;
@@ -89,12 +96,14 @@ export function SceneLighting({
   }, [scene, quality, gl, invalidate]);
   return (
     <>
-      <hemisphereLight args={['#9dbbd0', '#2a171e', 0.16]} />
+      <hemisphereLight
+        args={[synthwave ? '#b5a0df' : '#9dbbd0', '#2a171e', 0.28]}
+      />
       <directionalLight
         ref={key}
         position={[-3.5, 7, 5]}
         color="#ffe3bf"
-        intensity={1.1}
+        intensity={1.35}
         castShadow
         shadow-mapSize={[quality.shadowSize, quality.shadowSize]}
         shadow-camera-left={-5.2}
@@ -109,8 +118,8 @@ export function SceneLighting({
       />
       <directionalLight
         position={[3, 4, -4]}
-        color="#6aadc8"
-        intensity={0.75}
+        color={synthwave ? '#38cbff' : '#6aadc8'}
+        intensity={0.9}
       />
       {(quality.practicalLights === 3
         ? cooking
@@ -126,10 +135,10 @@ export function SceneLighting({
           color="#ffd09a"
           intensity={
             cooking
-              ? [0.85, 0.75][index]
+              ? [2.4, 2.08][index]
               : quality.practicalLights === 3
-                ? [6, 8, 5][index]
-                : 13
+                ? [4.8, 6.4, 4][index]
+                : 10.4
           }
           distance={4.5}
           decay={2}
@@ -139,8 +148,8 @@ export function SceneLighting({
         <pointLight
           position={fireLight}
           color="#ff842d"
-          intensity={quality.practicalLights === 3 ? 4 : 5.5}
-          distance={3}
+          intensity={quality.practicalLights === 3 ? 5 : 6.5}
+          distance={4}
           decay={2}
         />
       )}

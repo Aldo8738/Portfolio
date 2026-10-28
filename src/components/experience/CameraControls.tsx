@@ -8,22 +8,36 @@ import {
 } from 'react';
 import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Box3, PerspectiveCamera, Vector3 } from 'three';
+import { Box3, Mesh, PerspectiveCamera, Vector3 } from 'three';
 import { gsap } from 'gsap/gsap-core';
-import { fitCamera } from '../../lib/camera';
-import { createCameraEntrance } from '../../lib/camera-entrance';
+import { fitCamera, heroCamera } from '../../lib/camera';
+import { fitMonitorCamera } from '../../lib/monitor-camera';
+import {
+  createPhotoCameraApproach,
+  createPhotoCameraSlide,
+  fitPhotoCamera,
+  photoCamera,
+} from '../../lib/photo-camera';
+import {
+  createCameraEntrance,
+  createCameraReset,
+} from '../../lib/camera-entrance';
 import type { CanvasProps } from './scene-types';
 
 interface Props extends Pick<
   CanvasProps,
-  'active' | 'reducedMotion' | 'cameraActions' | 'sceneRevealed'
+  | 'active'
+  | 'reducedMotion'
+  | 'cameraActions'
+  | 'sceneRevealed'
+  | 'onCameraMotion'
 > {
   bounds: Box3;
   framingPoints: Vector3[];
+  onReset: () => void;
 }
 
 const keyboardStep = Math.PI / 18;
-const entranceDurationSeconds = 2.8;
 
 export function CameraControls({
   bounds,
@@ -32,115 +46,313 @@ export function CameraControls({
   reducedMotion,
   cameraActions,
   sceneRevealed,
+  onReset,
+  onCameraMotion,
 }: Props) {
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const { camera, size, gl, invalidate } = useThree();
   const comparison = new URLSearchParams(location.search).has('compare');
   const initialView = useRef(true);
+  const focusedPhoto = useRef<Mesh | null>(null);
   const entrance = useRef<{
-    sample: ReturnType<typeof createCameraEntrance>;
+    sample: (progress: number, position: Vector3, target: Vector3) => void;
+    duration: number;
+    kind: 'entrance' | 'reset';
     progress: number;
     elapsed: number;
     previous: number | null;
     tween?: ReturnType<typeof gsap.to>;
+    onSettled?: (completed: boolean) => void;
   } | null>(null);
   const cancelEntrance = useCallback(() => {
     const transition = entrance.current;
     if (!transition) return;
     entrance.current = null;
+    focusedPhoto.current = null;
     transition.tween?.kill();
+    onCameraMotion(false);
+    transition.onSettled?.(false);
     if (controls.current) controls.current.enableDamping = !reducedMotion;
     gl.domElement.dataset.cameraEntrance = 'interrupted';
-  }, [gl, reducedMotion]);
-  const resetView = useCallback(() => {
-    if (!(camera instanceof PerspectiveCamera) || !controls.current) return;
-    cancelEntrance();
-    const fit = fitCamera(
-      bounds,
-      size.width / size.height,
-      camera.fov,
-      framingPoints,
-      comparison ? 'comparison' : 'hero',
-    );
-    camera.position.copy(fit.position);
-    controls.current.target.copy(fit.target);
-    const distance = fit.position.distanceTo(fit.target);
-    controls.current.minDistance = distance * 0.35;
-    controls.current.maxDistance = distance * 1.8;
-    // Clear any pending damping before restoring the exact initial composition.
-    const damping = controls.current.enableDamping;
-    controls.current.enableDamping = false;
-    controls.current.update();
-    camera.position.copy(fit.position);
-    controls.current.update();
-    controls.current.enableDamping = damping;
-    gl.domElement.dataset.cameraEntrance = 'complete';
-    if (initialView.current && !reducedMotion && !comparison) {
-      const sample = createCameraEntrance(
-        fit,
-        framingPoints,
-        size.width / size.height,
-        camera.fov,
-      );
-      entrance.current = { sample, progress: 0, elapsed: 0, previous: null };
-      sample(0, camera.position);
-      controls.current.update();
-      gl.domElement.dataset.cameraEntrance = 'waiting';
-    }
-    initialView.current = false;
-    camera.updateProjectionMatrix();
-    camera.updateMatrixWorld();
-    invalidate();
-  }, [
-    bounds,
-    framingPoints,
-    camera,
-    size.width,
-    size.height,
-    invalidate,
-    reducedMotion,
-    comparison,
-    cancelEntrance,
-    gl,
-  ]);
-  useImperativeHandle(cameraActions, () => ({ resetView }), [resetView]);
-  useLayoutEffect(() => resetView(), [resetView]);
-  useEffect(() => {
+  }, [gl, reducedMotion, onCameraMotion]);
+  const playTransition = useCallback(() => {
     const transition = entrance.current;
     const orbit = controls.current;
-    if (!transition || !orbit || !sceneRevealed) return;
+    if (!transition || !orbit || transition.tween) return;
     orbit.enableDamping = false;
+    onCameraMotion(true);
     transition.tween = gsap.to(transition, {
       progress: 1,
-      duration: entranceDurationSeconds,
+      duration: transition.duration,
       ease: 'power2.inOut',
       paused: true,
       onStart: () => {
-        gl.domElement.dataset.cameraEntrance = 'running';
+        gl.domElement.dataset.cameraEntrance =
+          transition.kind === 'reset' ? 'resetting' : 'running';
       },
       onUpdate: () => {
-        transition.sample(transition.progress, camera.position);
+        transition.sample(transition.progress, camera.position, orbit.target);
         orbit.update();
         camera.updateMatrixWorld();
         invalidate();
       },
       onComplete: () => {
+        onCameraMotion(false);
         transition.tween?.kill();
         entrance.current = null;
         orbit.enableDamping = !reducedMotion;
         gl.domElement.dataset.cameraEntrance = 'complete';
+        transition.onSettled?.(true);
       },
     });
-    return cancelEntrance;
-  }, [
-    sceneRevealed,
-    resetView,
-    camera,
-    gl,
-    invalidate,
-    reducedMotion,
-    cancelEntrance,
-  ]);
+    invalidate();
+  }, [camera, gl, invalidate, reducedMotion, onCameraMotion]);
+  const resetView = useCallback(
+    (smooth = true) => {
+      if (!(camera instanceof PerspectiveCamera) || !controls.current) return;
+      const photo = focusedPhoto.current;
+      if (!smooth && photo && !entrance.current) {
+        const fit = fitPhotoCamera(photo, size.width / size.height, camera.fov);
+        camera.position.copy(fit.position);
+        controls.current.target.copy(fit.target);
+        controls.current.update();
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        invalidate();
+        return;
+      }
+      cancelEntrance();
+      focusedPhoto.current = null;
+      const fit = fitCamera(
+        bounds,
+        size.width / size.height,
+        camera.fov,
+        framingPoints,
+        comparison ? 'comparison' : 'hero',
+      );
+      const photoReturn =
+        smooth && photo
+          ? createPhotoCameraApproach(
+              fit.position,
+              fit.target,
+              fit,
+              {
+                position: camera.position.clone(),
+                target: controls.current.target.clone(),
+              },
+              bounds.max.z,
+            )
+          : null;
+      const resetSample = photoReturn
+        ? (progress: number, position: Vector3, target: Vector3) =>
+            photoReturn(1 - progress, position, target)
+        : createCameraReset(camera.position, controls.current.target, fit);
+      const distance = fit.position.distanceTo(fit.target);
+      const smoothReset = smooth && !initialView.current && !reducedMotion;
+      // Keep the close-up inside the controls' limits until the return finishes.
+      controls.current.minDistance = smoothReset
+        ? Math.min(
+            distance * 0.15,
+            camera.position.distanceTo(controls.current.target),
+          )
+        : distance * 0.15;
+      controls.current.maxDistance = distance * 1.8;
+      // Clear any pending damping before restoring the exact initial composition.
+      const damping = controls.current.enableDamping;
+      controls.current.enableDamping = false;
+      const startPosition = camera.position.clone();
+      const startTarget = controls.current.target.clone();
+      controls.current.update();
+      camera.position.copy(startPosition);
+      controls.current.target.copy(startTarget);
+      if (smoothReset) {
+        entrance.current = {
+          sample: (progress, position, target) => {
+            resetSample(progress, position, target);
+            if (progress >= 1 && controls.current)
+              controls.current.minDistance = distance * 0.15;
+          },
+          duration: heroCamera.resetSeconds,
+          kind: 'reset',
+          progress: 0,
+          elapsed: 0,
+          previous: null,
+        };
+        playTransition();
+        return;
+      }
+      camera.position.copy(fit.position);
+      controls.current.target.copy(fit.target);
+      controls.current.update();
+      controls.current.enableDamping = damping;
+      gl.domElement.dataset.cameraEntrance = 'complete';
+      if (initialView.current && !reducedMotion && !comparison) {
+        const sample = createCameraEntrance(
+          fit,
+          framingPoints,
+          size.width / size.height,
+          camera.fov,
+          fitCamera(
+            bounds,
+            size.width / size.height,
+            camera.fov,
+            framingPoints,
+            'entrance',
+          ),
+        );
+        entrance.current = {
+          sample: (progress, position, target) => {
+            sample(progress, position);
+            target.copy(fit.target);
+          },
+          duration: heroCamera.entranceSeconds,
+          kind: 'entrance',
+          progress: 0,
+          elapsed: 0,
+          previous: null,
+        };
+        sample(0, camera.position);
+        controls.current.update();
+        gl.domElement.dataset.cameraEntrance = 'waiting';
+      }
+      initialView.current = false;
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+      invalidate();
+    },
+    [
+      bounds,
+      framingPoints,
+      camera,
+      size.width,
+      size.height,
+      invalidate,
+      reducedMotion,
+      comparison,
+      cancelEntrance,
+      gl,
+      playTransition,
+    ],
+  );
+  useImperativeHandle(
+    cameraActions,
+    () => ({
+      resetView: () => {
+        onReset();
+        resetView(true);
+      },
+      focusOn: (focus: Box3 | Mesh, onSettled) => {
+        if (!(camera instanceof PerspectiveCamera) || !controls.current) {
+          onSettled?.(false);
+          return;
+        }
+        const isPhoto =
+          focus instanceof Mesh &&
+          focus.name.startsWith('HIT_PHOTOS_POLAROID_');
+        const previousPhoto = focusedPhoto.current;
+        const slide = isPhoto && previousPhoto !== null;
+        cancelEntrance();
+        focusedPhoto.current = slide ? previousPhoto : null;
+        const rest = fitCamera(
+          bounds,
+          size.width / size.height,
+          camera.fov,
+          framingPoints,
+        );
+        const focusBounds =
+          focus instanceof Mesh ? new Box3().setFromObject(focus) : focus;
+        const target = focusBounds.getCenter(new Vector3());
+        const extent = focusBounds.getSize(new Vector3());
+        const distance = Math.max(
+          1.4,
+          extent.x /
+            (Math.tan((camera.fov * Math.PI) / 360) *
+              (size.width / size.height) *
+              0.65),
+        );
+        const fit =
+          focus instanceof Mesh
+            ? isPhoto
+              ? fitPhotoCamera(focus, size.width / size.height, camera.fov)
+              : fitMonitorCamera(
+                  focus,
+                  camera.position,
+                  size.width / size.height,
+                  camera.fov,
+                )
+            : {
+                target,
+                position: target
+                  .clone()
+                  .add(new Vector3(0, distance * 0.2, distance)),
+              };
+        controls.current.minDistance = Math.min(
+          0.6,
+          fit.position.distanceTo(fit.target) * 0.5,
+        );
+        if (reducedMotion) {
+          focusedPhoto.current =
+            isPhoto && focus instanceof Mesh ? focus : null;
+          camera.position.copy(fit.position);
+          controls.current.target.copy(fit.target);
+          controls.current.update();
+          invalidate();
+          onSettled?.(true);
+          return;
+        }
+        entrance.current = {
+          sample: isPhoto
+            ? slide
+              ? createPhotoCameraSlide(
+                  camera.position,
+                  controls.current.target,
+                  fit,
+                )
+              : createPhotoCameraApproach(
+                  camera.position,
+                  controls.current.target,
+                  rest,
+                  fit,
+                  bounds.max.z,
+                )
+            : createCameraReset(camera.position, controls.current.target, fit),
+          duration: isPhoto
+            ? slide
+              ? photoCamera.slideSeconds
+              : photoCamera.approachSeconds
+            : 0.8,
+          kind: 'reset',
+          progress: 0,
+          elapsed: 0,
+          previous: null,
+          onSettled: (completed) => {
+            if (completed && isPhoto && focus instanceof Mesh)
+              focusedPhoto.current = focus;
+            onSettled?.(completed);
+          },
+        };
+        playTransition();
+      },
+    }),
+    [
+      resetView,
+      bounds,
+      framingPoints,
+      onReset,
+      camera,
+      cancelEntrance,
+      size.width,
+      size.height,
+      reducedMotion,
+      invalidate,
+      playTransition,
+    ],
+  );
+  useLayoutEffect(() => resetView(false), [resetView]);
+  useEffect(() => {
+    if (sceneRevealed) playTransition();
+  }, [sceneRevealed, playTransition, resetView]);
+  useEffect(() => cancelEntrance, [cancelEntrance]);
   useEffect(() => {
     if (entrance.current) entrance.current.previous = null;
   }, [active]);
@@ -153,7 +365,7 @@ export function CameraControls({
     transition.previous = now;
     // Advance the paused GSAP tween from the existing scene clock.
     transition.tween.time(
-      Math.min(transition.elapsed, entranceDurationSeconds),
+      Math.min(transition.elapsed, transition.duration),
       false,
     );
   });
@@ -184,6 +396,7 @@ export function CameraControls({
           orbit.setPolarAngle(orbit.getPolarAngle() + keyboardStep);
           break;
         case 'Home':
+          onReset();
           resetView();
           break;
         case '+':
@@ -201,7 +414,7 @@ export function CameraControls({
     };
     canvas.addEventListener('keydown', onKeyDown);
     return () => canvas.removeEventListener('keydown', onKeyDown);
-  }, [gl, resetView, cancelEntrance]);
+  }, [gl, resetView, cancelEntrance, onReset]);
 
   return (
     <OrbitControls

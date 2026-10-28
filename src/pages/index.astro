@@ -6,7 +6,7 @@ import ThemePicker from '../components/ui/ThemePicker.astro';
 import { modelUrl } from '../lib/glb-contract';
 ---
 
-<SiteLayout title="Welcome" immersive>
+<SiteLayout title="Hola" immersive>
   <AsciiTacoLoader slot="loader" />
   <script slot="head" is:inline define:vars={{ modelUrl }}>
     if (typeof WebGL2RenderingContext !== 'undefined') {
@@ -42,7 +42,13 @@ import { modelUrl } from '../lib/glb-contract';
       <a class="scene-work-link" href="/work">
         View work <span aria-hidden="true">↗</span>
       </a>
-      <span class="sound-status" title="Guitar recording coming soon">
+      <button
+        class="sound-status"
+        type="button"
+        data-music-toggle
+        aria-pressed="false"
+        title="Turn sound on"
+      >
         <svg
           aria-hidden="true"
           width="16"
@@ -52,10 +58,17 @@ import { modelUrl } from '../lib/glb-contract';
           stroke="currentColor"
           stroke-width="1.5"
         >
-          <path d="M11 5 6 9H3v6h3l5 4V5ZM16 9l5 6m0-6-5 6" />
+          <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+          <path class="sound-muted" d="M16 9l5 6m0-6-5 6" />
+          <path
+            class="sound-playing"
+            d="M16 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+          />
         </svg>
-        Sound off
-      </span>
+        <span data-music-label aria-live="polite">
+          Sound off
+        </span>
+      </button>
     </div>
   </section>
 </SiteLayout>
@@ -128,12 +141,22 @@ import { modelUrl } from '../lib/glb-contract';
     text-decoration: underline;
   }
   .sound-status {
+    pointer-events: auto;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
     display: inline-flex;
     gap: 0.5rem;
     align-items: center;
     justify-self: end;
     min-height: 44px;
     color: var(--muted);
+  }
+  .sound-status[aria-pressed='true'] .sound-muted,
+  .sound-status[aria-pressed='false'] .sound-playing {
+    display: none;
   }
   @media (max-width: 380px) {
     .scene-controls {

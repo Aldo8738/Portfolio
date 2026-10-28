@@ -3,7 +3,7 @@
 // Importing the renderer as source and inlining it removes the network/JS
 // hydration dependency from the critical loading path. It still draws the
 // real, rotating 3D point cloud — no static image and no placeholder.
-import rendererSource from '../lib/ascii-taco.js?raw';
+import rendererSource from '../src/ascii-taco.js?raw';
 interface Props { active?: boolean; }
 const { active = true } = Astro.props;
 const inlineScript = `${rendererSource.replace('export function createAsciiTaco', 'function createAsciiTaco')}
@@ -11,10 +11,18 @@ const inlineScript = `${rendererSource.replace('export function createAsciiTaco'
   const loader = document.getElementById('ascii-taco-loader');
   const canvas = document.getElementById('ascii-taco-canvas');
   if (!loader || !(canvas instanceof HTMLCanvasElement)) return;
-  const taco = createAsciiTaco(canvas);
+  let taco = createAsciiTaco(canvas);
   function visibility() { document.hidden ? taco.pause() : taco.resume(); }
   document.addEventListener('visibilitychange', visibility);
   let exiting = false;
+  document.fonts.ready.then(() => document.fonts.load('700 12px "Fira Code"'))
+    .then(() => {
+      if (exiting) return;
+      taco.destroy();
+      taco = createAsciiTaco(canvas);
+      visibility();
+    })
+    .catch(() => { /* Keep the immediately rendered monospace fallback. */ });
   function finish() {
     if (exiting) return;
     exiting = true;
@@ -34,14 +42,19 @@ const inlineScript = `${rendererSource.replace('export function createAsciiTaco'
 })();`;
 ---
 {active && (
+  <>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet" />
   <div id="ascii-taco-loader" class="ascii-taco-loader" role="status" aria-label="Calentando el comal… loading Taquería Aldo">
     <canvas id="ascii-taco-canvas" aria-hidden="true"></canvas>
     <span class="sr-only">Calentando el comal…</span>
     <script is:inline set:html={inlineScript}></script>
   </div>
+  </>
 )}
 <style>
-  .ascii-taco-loader {position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden}
+  .ascii-taco-loader {position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;font-family:'Fira Code',monospace}
   #ascii-taco-canvas {display:block;width:100%;height:100%}
   .sr-only {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
   .ascii-taco-loader.is-exiting {pointer-events:none;animation:loader-out .55s ease forwards}

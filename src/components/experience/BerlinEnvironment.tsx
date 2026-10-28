@@ -2,6 +2,7 @@ import { useLayoutEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei/core/Texture.js';
 import { BackSide, SRGBColorSpace } from 'three';
+import { useSceneTheme } from './useSceneTheme';
 
 const vertexShader = /* glsl */ `
   varying vec2 vUv;
@@ -14,26 +15,33 @@ const vertexShader = /* glsl */ `
 `;
 const fragmentShader = /* glsl */ `
   uniform sampler2D panorama;
+  uniform bool synthwave;
   varying vec2 vUv;
   void main() {
-    gl_FragColor = texture2D(panorama, vUv);
-    // Draw the small crescent analytically so it stays smooth on the compact atlas.
-    vec2 moon = (vUv - vec2(0.576875, 0.50225)) * vec2(2.0, 1.0);
-    if (abs(moon.x) < 0.03 && abs(moon.y) < 0.03) {
-      float edge = max(fwidth(length(moon)), 0.00005);
-      float outer = 1.0 - smoothstep(0.00775 - edge, 0.00775 + edge, length(moon));
-      float inner = 1.0 - smoothstep(0.0076 - edge, 0.0076 + edge,
-        length(moon + vec2(0.0028, -0.0007)));
-      float crescent = outer * (1.0 - inner);
-      float glow = exp(-dot(moon, moon) * 14000.0) * 0.035;
-      gl_FragColor.rgb += vec3(1.0, 0.58, 0.2) * (crescent + glow);
+    // The new artwork's horizon is at y=1215/2048, below its equator.
+    // Shift it up 36 degrees so downward views sample its dark ground.
+    // Compress skyline height by 28% around its raised horizon; preserve the 360° seam.
+    float horizon = 1.0 - 1215.0 / 2048.0;
+    float panoramaY = horizon + (vUv.y - 0.20 - horizon) / 0.72;
+    vec2 panoramaUv = vec2(vUv.x, clamp(panoramaY, 0.0, 1.0));
+    gl_FragColor = texture2D(panorama, panoramaUv);
+    // Soften and dim the city without lifting the foreground's black levels.
+    float city = 1.0 - smoothstep(horizon + 0.03, horizon + 0.20, panoramaUv.y);
+    vec3 distantCity = mix(gl_FragColor.rgb * 0.55, vec3(0.025, 0.05, 0.08), 0.12);
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, distantCity, city);
+    if (synthwave) {
+      float haze = exp(-pow((panoramaUv.y - horizon - 0.035) / 0.16, 2.0));
+      float silhouette = smoothstep(0.025, 0.13, max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b)));
+      gl_FragColor.rgb *= vec3(0.85, 0.65, 1.08);
+      gl_FragColor.rgb += vec3(0.12, 0.012, 0.085) * haze * mix(0.2, 1.0, silhouette);
     }
     #include <colorspace_fragment>
   }
 `;
 
 export function BerlinEnvironment() {
-  const panorama = useTexture('/images/berlin-panorama.svg');
+  const synthwave = useSceneTheme() === 'synthwave';
+  const panorama = useTexture('/images/berlin-blue-hour-360-v2.svg');
   const { invalidate } = useThree();
   useLayoutEffect(() => {
     panorama.colorSpace = SRGBColorSpace;
@@ -50,7 +58,10 @@ export function BerlinEnvironment() {
     >
       <sphereGeometry args={[1, 48, 24]} />
       <shaderMaterial
-        uniforms={{ panorama: { value: panorama } }}
+        uniforms={{
+          panorama: { value: panorama },
+          synthwave: { value: synthwave },
+        }}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         side={BackSide}

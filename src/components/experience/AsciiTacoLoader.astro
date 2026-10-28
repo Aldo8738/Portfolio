@@ -7,11 +7,31 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
   const canvas = document.getElementById('ascii-taco-canvas');
   if (!(loader instanceof HTMLDialogElement) || !(canvas instanceof HTMLCanvasElement)) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const minimumVisibleMs = 2000;
+  const minimumVisibleMs = 400;
   let taco;
   let finished = false;
   let shownAt = 0;
   let minimumTimer;
+  let progress = 0;
+  const bar = loader.querySelector('[role="progressbar"]');
+  const caption = loader.querySelector('.loading-caption');
+  function updateProgress(value, message) {
+    progress = Math.max(progress, value);
+    bar?.setAttribute('aria-valuenow', String(progress));
+    bar?.setAttribute('aria-valuetext', message);
+    bar?.style.setProperty('--progress', progress + '%');
+    if (caption) caption.textContent = message;
+  }
+  function download(event) {
+    const detail = event.detail;
+    if (!detail || !Number.isFinite(detail.loaded) || !Number.isFinite(detail.total) ||
+        detail.total <= 0 || detail.loaded < 0) return;
+    const percent = Math.min(100, Math.floor(detail.loaded / detail.total * 100));
+    // Reserve completion for the first usable frame, including textures and GPU setup.
+    updateProgress(Math.min(99, percent), percent === 100
+      ? 'Download complete. Preparing the scene…'
+      : 'Downloading the stand… ' + percent + '%');
+  }
   function visibility() {
     if (!finished) document.hidden ? taco?.pause() : taco?.resume();
   }
@@ -24,6 +44,7 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
     document.removeEventListener('visibilitychange', visibility);
     motion.removeEventListener('change', restart);
     window.removeEventListener('taqueria:scene-settled', settle);
+    window.removeEventListener('taqueria:scene-progress', download);
     loader.removeEventListener('cancel', finish);
     loader.close();
     canvas.width = canvas.height = 1;
@@ -32,9 +53,7 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
   }
   function settle(event) {
     if (event.detail === 'ready') {
-      const bar = loader.querySelector('[role="progressbar"]');
-      bar?.setAttribute('aria-valuenow', '100');
-      bar?.setAttribute('data-complete', 'true');
+      updateProgress(100, 'Taquería Aldo is ready.');
     }
     const remaining = minimumVisibleMs - (performance.now() - shownAt);
     if (remaining <= 0) finish();
@@ -58,11 +77,16 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
   document.addEventListener('visibilitychange', visibility);
   motion.addEventListener('change', restart);
   window.addEventListener('taqueria:scene-settled', settle);
+  window.addEventListener('taqueria:scene-progress', download);
   loader.addEventListener('cancel', finish);
   loader.hidden = false;
   loader.showModal();
   performance.mark('taqueria:loader-start');
   restart();
+  // Redraw even in reduced motion when the optional web font becomes available.
+  document.fonts.ready.then(() => document.fonts.load('700 12px "Fira Code"'))
+    .then(restart)
+    .catch(() => { /* Keep the immediately rendered monospace fallback. */ });
   shownAt = performance.now();
   performance.mark('taqueria:loader-first-frame');
   performance.measure('taqueria:loader-setup', 'taqueria:loader-start', 'taqueria:loader-first-frame');
@@ -88,9 +112,21 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
       class="loading-bar"
       role="progressbar"
       aria-label="Loading Taquería Aldo"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-valuetext="Preparing the download"
     >
-      <span></span>
+      <span class="ascii-track" aria-hidden="true">
+        [░░░░░░░░░░░░░░░░░░░░]
+      </span>
+      <span class="ascii-fill" aria-hidden="true">
+        [████████████████████]
+      </span>
     </div>
+    <p class="loading-caption" aria-hidden="true">
+      Loading Taquería Aldo…
+    </p>
   </div>
   <script is:inline set:html={inlineScript} />
 </dialog>
@@ -108,7 +144,8 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
     border: 0;
     overflow: hidden;
     background: #000;
-    color: #fff;
+    color: #e4e4e7;
+    font-family: 'Fira Code', monospace;
   }
   #ascii-taco-loader::backdrop {
     background: #000;
@@ -127,37 +164,29 @@ ${rendererSource.replace('export function createAsciiTaco', 'function createAsci
     aspect-ratio: 4 / 3;
   }
   .loading-bar {
-    width: min(220px, 80%);
-    height: 3px;
+    position: relative;
+    width: max-content;
     margin: 1rem auto 0;
-    overflow: hidden;
-    border-radius: 2px;
-    background: #242424;
+    font:
+      14px / 1.5 'Fira Code',
+      monospace;
+    white-space: pre;
   }
-  .loading-bar span {
+  .ascii-track {
     display: block;
-    width: 40%;
-    height: 100%;
-    background: #ffd342;
-    animation: loading-sweep 1s ease-in-out infinite;
+    opacity: 0.35;
   }
-  .loading-bar[data-complete='true'] span {
-    width: 100%;
-    animation: none;
-    transform: none;
+  .ascii-fill {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--progress, 0%)) 0 0);
   }
-  @keyframes loading-sweep {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(250%);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .loading-bar span {
-      animation: none;
-      transform: translateX(75%);
-    }
+  .loading-caption {
+    margin: 16px 0 0;
+    text-align: center;
+    font:
+      14px / 1.5 'Fira Code',
+      monospace;
+    opacity: 0.8;
   }
 </style>

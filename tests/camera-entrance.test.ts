@@ -1,7 +1,10 @@
 import { expect, it } from 'vitest';
 import { Box3, PerspectiveCamera, Spherical, Vector3 } from 'three';
 import { fitCamera } from '../src/lib/camera';
-import { createCameraEntrance } from '../src/lib/camera-entrance';
+import {
+  createCameraEntrance,
+  createCameraReset,
+} from '../src/lib/camera-entrance';
 
 it.each([0.46, 1, 1.78])(
   'keeps the rising rear-to-front orbit framed at aspect %s',
@@ -16,7 +19,8 @@ it.each([0.46, 1, 1.78])(
         for (const z of [bounds.min.z, bounds.max.z])
           points.push(new Vector3(x, y, z));
     const fit = fitCamera(bounds, aspect, 38, points);
-    const sample = createCameraEntrance(fit, points, aspect, 38);
+    const rearFit = fitCamera(bounds, aspect, 38, points, 'entrance');
+    const sample = createCameraEntrance(fit, points, aspect, 38, rearFit);
     const camera = new PerspectiveCamera(38, aspect, 0.1, 100);
     const start = sample(0, new Vector3());
     const endOffset = fit.position.clone().sub(fit.target);
@@ -43,3 +47,24 @@ it.each([0.46, 1, 1.78])(
     expect(sample(1, new Vector3()).toArray()).toEqual(fit.position.toArray());
   },
 );
+
+it('resets along a continuous short orbit to the exact shared hero pose', () => {
+  const from = new Vector3(-8, 4, -6);
+  const target = new Vector3(0, 2, 0);
+  const fit = fitCamera(
+    new Box3(new Vector3(-3, 0, -2), new Vector3(3, 4, 2)),
+    1.78,
+    38,
+  );
+  const sample = createCameraReset(from, target, fit);
+  const position = new Vector3();
+  const lookAt = new Vector3();
+  sample(0, position, lookAt);
+  expect(position.distanceTo(from)).toBeLessThan(1e-10);
+  expect(lookAt.toArray()).toEqual(target.toArray());
+  sample(0.99999, position, lookAt);
+  expect(position.distanceTo(fit.position)).toBeLessThan(0.001);
+  sample(1, position, lookAt);
+  expect(position.toArray()).toEqual(fit.position.toArray());
+  expect(lookAt.toArray()).toEqual(fit.target.toArray());
+});

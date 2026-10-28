@@ -46,5 +46,14 @@ describe('frozen production asset', () => {
         ),
       ),
     ).toThrow(/metadata/);
+    expect(() =>
+      assertNodeContract(
+        asset.nodes.map((node) =>
+          node.name === 'PHOTOS_PRINT_lucha'
+            ? { ...node, parentName: 'STATIC_ENVIRONMENT' }
+            : node,
+        ),
+      ),
+    ).toThrow(/POLAROID_0_SWING_PIVOT/);
   });
 });

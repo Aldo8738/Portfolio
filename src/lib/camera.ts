@@ -1,5 +1,14 @@
 import { Box3, MathUtils, Mesh, Object3D, Vector3 } from 'three';
 
+export const heroCamera = {
+  desktopWidth: 0.33,
+  mobileWidth: 0.8,
+  maxHeight: 0.6,
+  elevation: 0.18,
+  entranceSeconds: 2.8,
+  resetSeconds: 0.9,
+} as const;
+
 export function getFramingPoints(scene: Object3D) {
   const points: Vector3[] = [];
   scene.updateWorldMatrix(true, true);
@@ -31,19 +40,32 @@ export function fitCamera(
   aspect: number,
   fov: number,
   points = boxCorners(bounds),
-  view: 'hero' | 'comparison' = 'hero',
+  view: 'hero' | 'comparison' | 'entrance' = 'hero',
 ) {
   const center = bounds.getCenter(new Vector3());
   const direction = new Vector3(
-    aspect < 1 ? 0.06 : view === 'comparison' ? 0.38 : 0.55,
-    view === 'comparison' ? 0.12 : 0.2,
+    view === 'hero'
+      ? 0
+      : aspect < 1
+        ? 0.06
+        : view === 'comparison'
+          ? 0.38
+          : 0.55,
+    view === 'hero' ? heroCamera.elevation : view === 'comparison' ? 0.12 : 0.2,
     1,
   ).normalize();
   const right = new Vector3(0, 1, 0).cross(direction).normalize();
   const up = direction.clone().cross(right).normalize();
-  const tanY = Math.tan(MathUtils.degToRad(fov / 2));
-  const tanX = tanY * Math.max(aspect, 0.1);
-  if (view === 'hero') {
+  const viewportTanY = Math.tan(MathUtils.degToRad(fov / 2));
+  const width = MathUtils.lerp(
+    heroCamera.mobileWidth,
+    heroCamera.desktopWidth,
+    MathUtils.smoothstep(aspect, 0.75, 1.4),
+  );
+  const tanY = viewportTanY * (view === 'hero' ? heroCamera.maxHeight : 1);
+  const tanX =
+    viewportTanY * Math.max(aspect, 0.1) * (view === 'hero' ? width : 1);
+  if (view !== 'comparison') {
     let minX = Infinity,
       maxX = -Infinity,
       minY = Infinity,
@@ -75,7 +97,10 @@ export function fitCamera(
       target,
       position: target
         .clone()
-        .addScaledVector(direction, (depth - targetDepth) * 1.06),
+        .addScaledVector(
+          direction,
+          (depth - targetDepth) * (view === 'hero' ? 1 : 1.06),
+        ),
     };
   }
   let distance = 0;

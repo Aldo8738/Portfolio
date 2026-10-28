@@ -12,8 +12,8 @@ export const themes = [
     node: 'SALSA_GREEN_PIVOT',
   },
   {
-    id: 'vintage',
-    label: 'Vintage',
+    id: 'synthwave',
+    label: 'Synthwave',
     salsa: 'Orange salsa',
     node: 'SALSA_ORANGE_PIVOT',
   },
@@ -21,6 +21,7 @@ export const themes = [
 export type ThemeId = (typeof themes)[number]['id'];
 
 export function parseTheme(value: unknown): ThemeId {
+  if (value === 'vintage') return 'synthwave';
   return themes.find((theme) => theme.id === value)?.id ?? 'original';
 }
 

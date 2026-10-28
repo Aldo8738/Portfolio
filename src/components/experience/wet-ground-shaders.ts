@@ -1,15 +1,20 @@
 export const wetGroundVertex = /* glsl */ `
+  #include <fog_pars_vertex>
   varying vec3 vWorld;
   void main() {
     vec4 world = modelMatrix * vec4(position, 1.0);
     vWorld = world.xyz;
-    gl_Position = projectionMatrix * viewMatrix * world;
+    vec4 mvPosition = viewMatrix * world;
+    gl_Position = projectionMatrix * mvPosition;
+    #include <fog_vertex>
   }
 `;
 
 // shortcut: analytic light pools suit blurred wet ground; profile planar reflections if mirrored model detail becomes necessary.
 export const wetGroundFragment = /* glsl */ `
+  #include <fog_pars_fragment>
   uniform vec3 firePosition;
+  uniform bool synthwave;
   varying vec3 vWorld;
   float grainHash(vec2 p) {
     vec3 q = fract(vec3(p.xyx) * 0.1031);
@@ -51,8 +56,19 @@ export const wetGroundFragment = /* glsl */ `
     float contact = (1.0 - smoothstep(2.8, 3.6, abs(p.x)))
       * (1.0 - smoothstep(1.8, 2.5, abs(p.y)));
     color *= 1.0 - contact * 0.65;
+    // A faint continuous amber veil anchors the stand without mist particles.
+    float baseMist = exp(-dot(p * vec2(0.22, 0.30), p * vec2(0.22, 0.30)));
+    color += vec3(0.018, 0.007, 0.002) * baseMist;
+    if (synthwave) {
+      float ripple = mix(0.35, 1.0, wet) * (0.7 + aggregate * 0.3);
+      vec2 pinkOffset = (p - vec2(-3.0, 2.0)) * vec2(0.38, 0.22);
+      vec2 cyanOffset = (p - vec2(3.5, 1.2)) * vec2(0.42, 0.25);
+      color += vec3(0.48, 0.008, 0.19) * exp(-dot(pinkOffset, pinkOffset)) * ripple;
+      color += vec3(0.005, 0.19, 0.34) * exp(-dot(cyanOffset, cyanOffset)) * ripple;
+    }
     gl_FragColor = vec4(color, fade * 0.92);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
+    #include <fog_fragment>
   }
 `;

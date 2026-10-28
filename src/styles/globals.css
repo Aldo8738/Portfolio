@@ -1,5 +1,46 @@
 @import url('./tokens.css');
 
+.portfolio-flight[data-pixel-mask] [data-scene-status] {
+  background: transparent;
+}
+
+.portfolio-flight [data-camera-tools],
+.portfolio-flight [data-photo-picker],
+.portfolio-flight [data-scene-debug] {
+  visibility: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+.portfolio-replay {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1001;
+  padding: 0.75rem;
+}
+
+.portfolio-flight {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+.portfolio-destination {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  overflow: auto;
+  background: var(--background);
+  opacity: 0;
+}
+.portfolio-destination--ready {
+  position: relative;
+  opacity: 1;
+  overflow: visible;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -56,6 +97,7 @@ button:disabled {
 }
 .site-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
@@ -124,6 +166,8 @@ button:disabled {
 }
 .site-header nav {
   display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   gap: 2rem;
   margin-left: auto;
 }

@@ -9,6 +9,13 @@ test('the prepared stand stops redrawing behind the ASCII loader', async ({
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.addInitScript(() => {
     let draws = 0;
+    let downloaded = 0;
+    Object.defineProperty(window, '__testDownloadedBytes', {
+      get: () => downloaded,
+    });
+    window.addEventListener('taqueria:scene-progress', (event) => {
+      downloaded = (event as CustomEvent<{ loaded: number }>).detail.loaded;
+    });
     Object.defineProperty(window, '__testWebglDraws', { get: () => draws });
     for (const name of ['drawElements', 'drawArrays'] as const) {
       Object.defineProperty(WebGL2RenderingContext.prototype, name, {
@@ -35,6 +42,11 @@ test('the prepared stand stops redrawing behind the ASCII loader', async ({
       { timeout: 45000 },
     );
     await expect(page.locator('#ascii-taco-loader')).toBeVisible();
+    expect(
+      await page.evaluate(() =>
+        Number(Reflect.get(window, '__testDownloadedBytes')),
+      ),
+    ).toBeGreaterThan(0);
     const draws = () =>
       page.evaluate(() => Number(Reflect.get(window, '__testWebglDraws')));
     // Allow the final React commit and initial control invalidations to settle.
@@ -62,7 +74,7 @@ test('the prepared stand stops redrawing behind the ASCII loader', async ({
   }
 });
 
-test('the smaller taco and loading bar remain visible for at least two seconds', async ({
+test('the taco and ASCII progress bar remain visible for at least 400 ms', async ({
   page,
 }) => {
   await page.clock.install({ time: new Date(0) });
@@ -74,14 +86,39 @@ test('the smaller taco and loading bar remain visible for at least two seconds',
   expect(canvas?.width).toBeLessThanOrEqual(360);
   const bar = page.getByRole('progressbar', { name: 'Loading Taquería Aldo' });
   await expect(bar).toBeVisible();
-  await expect(bar).not.toHaveAttribute('aria-valuenow');
+  await expect(bar.locator('.ascii-track')).toHaveText(
+    '[░░░░░░░░░░░░░░░░░░░░]',
+  );
+  await expect(bar.locator('.ascii-fill')).toHaveCSS('animation-name', 'none');
+  await expect(page.locator('.loading-caption')).toHaveText(
+    'Loading Taquería Aldo…',
+  );
+  await expect(bar).toHaveAttribute('aria-valuenow', '0');
+  for (const loaded of [25, 75, 100]) {
+    await page.evaluate(
+      (loaded) =>
+        window.dispatchEvent(
+          new CustomEvent('taqueria:scene-progress', {
+            detail: { loaded, total: 100 },
+          }),
+        ),
+      loaded,
+    );
+    await expect(bar).toHaveAttribute(
+      'aria-valuenow',
+      String(Math.min(99, loaded)),
+    );
+  }
+  await expect(page.locator('.loading-caption')).toHaveText(
+    'Download complete. Preparing the scene…',
+  );
   await page.evaluate(() =>
     window.dispatchEvent(
       new CustomEvent('taqueria:scene-settled', { detail: 'ready' }),
     ),
   );
   await expect(bar).toHaveAttribute('aria-valuenow', '100');
-  await page.clock.fastForward(1999);
+  await page.clock.fastForward(399);
   await expect(page.locator('#ascii-taco-loader')).toBeVisible();
   await page.clock.fastForward(1);
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);

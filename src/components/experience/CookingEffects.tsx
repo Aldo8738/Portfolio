@@ -3,6 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import {
   InstancedMesh,
   Matrix4,
+  UniformsLib,
+  UniformsUtils,
   Vector3,
   type Object3D,
   type ShaderMaterial,
@@ -16,6 +18,7 @@ import {
   smokeVertex,
 } from './cooking-shaders';
 import { wetGroundFragment, wetGroundVertex } from './wet-ground-shaders';
+import { useSceneTheme } from './useSceneTheme';
 
 const ignoreRaycast = () => {};
 
@@ -33,25 +36,22 @@ export function CookingEffects({
   reducedMotion: boolean;
 }) {
   const placement = useMemo(() => getCookingPlacement(scene), [scene]);
-  const count = quality.name === 'standard' ? 16 : 12;
+  const synthwave = useSceneTheme() === 'synthwave';
+  const count = quality.name === 'standard' ? 8 : 6;
   const seeds = useMemo(
     () =>
       Float32Array.from({ length: count }, (_, i) => (i * 0.61803398875) % 1),
     [count],
   );
-  const atmosphere = useMemo(
-    () =>
-      Float32Array.from({ length: count }, (_, i) =>
-        i >= (count * 3) / 4 ? 2 : i >= count / 2 ? 1 : 0,
-      ),
-    [count],
-  );
+  const atmosphere = useMemo(() => new Float32Array(count), [count]);
   const uniforms = useMemo(
     () => ({
+      ...UniformsUtils.clone(UniformsLib.fog),
       time: { value: 0 },
+      synthwave: { value: synthwave },
       firePosition: { value: placement?.fireLight ?? new Vector3() },
     }),
-    [placement],
+    [placement, synthwave],
   );
   const smoke = useRef<InstancedMesh>(null);
   const flameMaterial = useRef<ShaderMaterial>(null);
@@ -61,14 +61,7 @@ export function CookingEffects({
     if (!placement || !smoke.current) return;
     const matrix = new Matrix4();
     for (let i = 0; i < count; i++) {
-      const source =
-        i < count / 4
-          ? placement.smoke
-          : i < count / 2
-            ? placement.stove
-            : i < (count * 3) / 4
-              ? placement.haze
-              : (placement.ground[i - (count * 3) / 4] ?? placement.haze);
+      const source = i < count / 2 ? placement.smoke : placement.stove;
       smoke.current.setMatrixAt(
         i,
         matrix.makeTranslation(source.x, source.y, source.z),
@@ -101,6 +94,7 @@ export function CookingEffects({
           uniforms={uniforms}
           vertexShader={wetGroundVertex}
           fragmentShader={wetGroundFragment}
+          fog
           transparent
           depthWrite={false}
         />

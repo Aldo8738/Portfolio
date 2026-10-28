@@ -5,19 +5,34 @@ export function createCameraEntrance(
   points: readonly Vector3[],
   aspect: number,
   fov: number,
-) {
+  rearFit?: { position: Vector3; target: Vector3 },
+): (progress: number, position: Vector3) => Vector3 {
   const end = new Spherical().setFromVector3(
     fit.position.clone().sub(fit.target),
   );
+  const start = rearFit
+    ? new Spherical().setFromVector3(
+        createCameraEntrance(
+          rearFit,
+          points,
+          aspect,
+          fov,
+        )(0, new Vector3()).sub(fit.target),
+      )
+    : new Spherical(end.radius, end.phi - 0.04, end.theta + Math.PI);
+  start.theta =
+    end.theta + MathUtils.euclideanModulo(start.theta - end.theta, Math.PI * 2);
   const direction = new Vector3();
   const right = new Vector3();
   const up = new Vector3();
   const worldUp = new Vector3(0, 1, 0);
   const tanY = Math.tan(MathUtils.degToRad(fov / 2));
   const tanX = tanY * aspect;
-  const theta = (progress: number) => end.theta + Math.PI * (1 - progress);
+  const theta = (progress: number) =>
+    MathUtils.lerp(start.theta, end.theta, progress);
   const phi = (progress: number) =>
-    end.phi - 0.04 * (1 - progress) - 0.12 * Math.sin(Math.PI * progress);
+    MathUtils.lerp(start.phi, end.phi, progress) -
+    0.12 * Math.sin(Math.PI * progress);
   function requiredRadius(progress: number) {
     direction.setFromSphericalCoords(1, phi(progress), theta(progress));
     right.crossVectors(worldUp, direction).normalize();
@@ -40,7 +55,10 @@ export function createCameraEntrance(
     }
     return radius * 1.06;
   }
-  const startRadius = Math.max(end.radius, requiredRadius(0));
+  const startRadius = Math.max(
+    rearFit ? start.radius : end.radius,
+    requiredRadius(0),
+  );
   let clearance = 0;
   // Fit the whole orbit once; each animated frame only evaluates a smooth arc.
   for (let step = 1; step < 32; step++) {
@@ -62,5 +80,35 @@ export function createCameraEntrance(
         theta(progress),
       )
       .add(fit.target);
+  };
+}
+
+export function createCameraReset(
+  position: Vector3,
+  target: Vector3,
+  fit: { position: Vector3; target: Vector3 },
+) {
+  const fromTarget = target.clone();
+  const start = new Spherical().setFromVector3(position.clone().sub(target));
+  const end = new Spherical().setFromVector3(
+    fit.position.clone().sub(fit.target),
+  );
+  const turn =
+    MathUtils.euclideanModulo(end.theta - start.theta + Math.PI, Math.PI * 2) -
+    Math.PI;
+  return (progress: number, nextPosition: Vector3, nextTarget: Vector3) => {
+    if (progress >= 1) {
+      nextPosition.copy(fit.position);
+      nextTarget.copy(fit.target);
+      return;
+    }
+    nextTarget.lerpVectors(fromTarget, fit.target, progress);
+    nextPosition
+      .setFromSphericalCoords(
+        MathUtils.lerp(start.radius, end.radius, progress),
+        MathUtils.lerp(start.phi, end.phi, progress),
+        start.theta + turn * progress,
+      )
+      .add(nextTarget);
   };
 }

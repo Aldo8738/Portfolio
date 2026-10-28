@@ -29,12 +29,23 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     <meta name="theme-color" content="#0b1020" />
     <title>{title} · {siteContent.brand}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {immersive && (
+      <>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap"
+          rel="stylesheet"
+        />
+      </>
+    )}
     <slot name="head" />
     <script is:inline>
       document.documentElement.classList.add('js');
       try {
-        const theme = localStorage.getItem('taqueria-theme');
-        if (['original', 'noir', 'vintage'].includes(theme))
+        const stored = localStorage.getItem('taqueria-theme');
+        const theme = stored === 'vintage' ? 'synthwave' : stored;
+        if (['original', 'noir', 'synthwave'].includes(theme))
           document.documentElement.dataset.theme = theme;
       } catch {
         /* The default theme remains available without storage. */

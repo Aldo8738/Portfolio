@@ -1,5 +1,12 @@
 # Rear-to-front camera entrance
 
+23 October 2026 update: the endpoint is now a centered, front-facing miniature
+hero at 33% desktop width, with responsive framing and a shared smooth Reset.
+The original rear framing is retained as the starting pose. See the current
+[development plan](../../DEVELOPMENT_PLAN.md) and `heroCamera` configuration.
+The images and results below document the earlier close-up endpoint; visual
+review of the new endpoint and landmark separation is pending creator inspection.
+
 22 October 2026. The creator requested a rear three-quarter start matching their
 image, rotating into the existing Reset view, with a gentle vertical rise and fall.
 This replaces the earlier 700 ms wide-to-close movement. Visual frames were

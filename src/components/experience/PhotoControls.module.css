@@ -1,0 +1,40 @@
+.controls {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.controls button {
+  position: absolute;
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+  padding: 0.65rem 1rem;
+  font-size: 0.8rem;
+}
+.previous,
+.next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.controls .previous,
+.controls .next {
+  font-size: 1.4rem;
+  padding: 0.3rem;
+}
+.previous {
+  left: max(1rem, env(safe-area-inset-left));
+}
+.next {
+  right: max(1rem, env(safe-area-inset-right));
+}
+.back {
+  left: 50%;
+  bottom: 5rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}

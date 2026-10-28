@@ -57,7 +57,7 @@ it('frames transformed meshes tightly without clipping their corners', () => {
   mesh.geometry.dispose();
 });
 
-it('centers a model with uneven depth while using the available frame', () => {
+it('centers a model with uneven depth in a miniature desktop frame', () => {
   const points = [
     new Vector3(-3, 0, 0),
     new Vector3(-1, 4, -2),
@@ -72,7 +72,13 @@ it('centers a model with uneven depth while using the available frame', () => {
   const projected = points.map((point) => point.clone().project(camera));
   const top = Math.max(...projected.map((point) => point.y));
   const bottom = Math.min(...projected.map((point) => point.y));
-  expect(top - bottom).toBeGreaterThan(1.5);
+  const left = Math.min(...projected.map((point) => point.x));
+  const right = Math.max(...projected.map((point) => point.x));
+  expect((right - left) / 2).toBeGreaterThanOrEqual(0.3);
+  expect((right - left) / 2).toBeLessThanOrEqual(0.35);
+  expect((top - bottom) / 2).toBeLessThanOrEqual(0.61);
+  expect(Math.abs((left + right) / 2)).toBeLessThan(0.05);
+  expect(fit.position.x).toBeCloseTo(fit.target.x);
   expect(Math.abs((top + bottom) / 2)).toBeLessThan(0.05);
   for (const point of projected) {
     expect(Math.abs(point.x)).toBeLessThan(1);

@@ -8,8 +8,12 @@ Double-click `ascii-taco-demo.html`. The HTML is self-contained and works offlin
 
 ## Astro integration (inline critical renderer)
 
+The Astro component loads optional Google Fonts Fira Code and redraws the canvas
+after the font loads. It starts with a local monospace fallback. The standalone
+HTML demo is unchanged and remains fully offline.
+
 1. Copy `src/ascii-taco.js` to `<your-app>/src/lib/ascii-taco.js`.
-2. Copy `astro/AsciiTacoLoader.astro` to `<your-app>/src/components/AsciiTacoLoader.astro`.
+2. Copy `astro/AsciiTacoLoader.astro` to `<your-app>/src/components/AsciiTacoLoader.astro` and change its renderer import to `../lib/ascii-taco.js?raw`.
 3. Put `<AsciiTacoLoader />` as early as possible in your site's layout, **before** the hydrated interactive scene. It embeds the same renderer inline in the initial HTML: no additional JS request or hydration to initialize the taco.
 4. When the 3D scene renders its **first usable frame**, run:
 

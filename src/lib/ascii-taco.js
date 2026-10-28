@@ -344,7 +344,7 @@ export function createAsciiTaco(canvas, options = {}) {
     rows = Math.ceil(height / cellH);
     winners = new Int32Array(cols * rows);
     depths = new Float32Array(cols * rows);
-    ctx.font = `700 ${Math.round(cellH * 1.27)}px monospace`;
+    ctx.font = `700 ${Math.round(cellH * 1.27)}px "Fira Code", monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     draw();

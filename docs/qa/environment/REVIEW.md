@@ -6,6 +6,19 @@ from the [earlier checkpoint](../berlin/REVIEW.md).
 
 ## Behavior and implementation
 
+Update, 23 October 2026: the creator supplied
+[berlin-blue-hour-360-v2.svg](../../../public/images/berlin-blue-hour-360-v2.svg)
+(4096 × 2048). The shader shifts sampling down by 0.20 of the texture height,
+raising the visible city by 36 degrees after the creator requested a further lift. Its authored horizon at y≈1215 now sits
+slightly above eye level; downward views sample the dark ground. Sampling clamps
+at the poles. The old procedural crescent is removed for this replacement artwork.
+The descriptions and measurements below record the previous panorama checkpoint.
+The creator later requested smaller, more distant buildings. Vertical sampling
+now compresses skyline height to 72% around the raised horizon after a further
+request for a slightly higher, smaller skyline. Horizontal
+mapping is unchanged to preserve the seamless 360° panorama; building widths do
+not shrink. The sky remains at infinity rather than introducing translation parallax.
+
 An inward-facing sky dome uses a surrounding
 [2048 × 1024 SVG panorama](../../../public/images/berlin-panorama.svg), expanded
 from the earlier artwork. Rooflines continue around the horizon; the TV Tower

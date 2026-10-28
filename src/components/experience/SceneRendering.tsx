@@ -2,8 +2,10 @@ import { useLayoutEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { BasicShadowMap, Mesh, PCFShadowMap } from 'three';
 import type { SceneQuality } from './scene-quality';
+import { useSceneTheme } from './useSceneTheme';
 
 export function SceneRendering({ quality }: { quality: SceneQuality }) {
+  const theme = useSceneTheme();
   const { gl, scene, invalidate, setDpr, viewport } = useThree();
   useLayoutEffect(() => {
     setDpr(Math.min(viewport.initialDpr, quality.maxDpr));
@@ -22,5 +24,10 @@ export function SceneRendering({ quality }: { quality: SceneQuality }) {
       invalidate();
     }
   }, [quality, viewport.initialDpr, setDpr, gl, scene, invalidate]);
-  return null;
+  return (
+    <fogExp2
+      attach="fog"
+      args={[theme === 'synthwave' ? '#211932' : '#14243b', 0.035]}
+    />
+  );
 }

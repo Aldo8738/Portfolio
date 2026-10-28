@@ -9,6 +9,7 @@ out/
 coverage/
 playwright-report/
 test-results/
+test-results-dev/
 *.tsbuildinfo
 
 # Local environment values; keep the documented template trackable

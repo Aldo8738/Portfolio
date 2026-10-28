@@ -23,11 +23,17 @@
 .canvas canvas {
   cursor: grab;
 }
+.canvas canvas[data-interactive='true'] {
+  cursor: pointer;
+}
 .canvas canvas:active {
   cursor: grabbing;
 }
 .canvas canvas:focus-visible {
   outline-offset: -5px;
+}
+.stage[data-photo-state='focused'] .canvas canvas {
+  cursor: default;
 }
 .cameraTools {
   position: absolute;
@@ -97,4 +103,32 @@
   padding: 6rem 2rem;
   display: grid;
   place-items: center;
+}
+
+.photoPicker {
+  position: absolute;
+  right: 1rem;
+  bottom: 8rem;
+  z-index: 4;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+.photoPicker summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.photoPicker nav {
+  display: grid;
+  padding: 0.5rem;
+  background: var(--background);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.photoPicker a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.75rem;
 }

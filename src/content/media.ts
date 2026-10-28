@@ -26,24 +26,36 @@ export const photos: MediaItem[] = [
   {
     id: 'lucha',
     title: 'Lucha',
-    alt: 'Embedded preview of the Polaroid identified as Lucha.',
+    alt: 'Two people wearing blue lucha libre masks in a wrestling arena.',
     preview: '/media/previews/lucha.jpg',
-    original: null,
+    original: '/images/pictures/lucha-libre-left-image.jpg',
   },
   {
     id: 'paris',
     title: 'Paris',
-    alt: 'Embedded preview of the Polaroid identified as Paris.',
+    alt: 'A portrait in front of the illuminated Eiffel Tower at night.',
     preview: '/media/previews/paris.jpg',
-    original: null,
+    original: '/images/pictures/paris-middle-image.png',
   },
   {
     id: 'canal',
     title: 'Canal',
-    alt: 'Embedded preview of the Polaroid identified as Canal.',
+    alt: 'A person wearing a captain hat on a boat beside a tree-lined canal.',
     preview: '/media/previews/canal.jpg',
-    original: null,
+    original: '/images/pictures/captain-right-image.jpg',
   },
 ];
-export const guitarTrack: { src: string; title: string } | null = null;
-// TODO: supply original media, accurate descriptions and the guitar recording before release.
+export const guitarTrack: { src: string; title: string } | null = {
+  src: '/media/music/original/h6.mp3',
+  title: 'h6',
+};
+export const backgroundTrack = {
+  src: '/media/sound%20effects/grilling-meat.mp3',
+};
+export const salsaSound = {
+  src: '/media/sound%20effects/cartoon-splat.mp3',
+};
+export const cameraSound = {
+  src: '/media/sound%20effects/soft-whoosh.mp3',
+};
+// TODO: supply original drawings before release.

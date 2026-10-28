@@ -19,6 +19,9 @@ export const requiredNodeNames = [
   'HIT_PHOTOS_POLAROID_0',
   'HIT_PHOTOS_POLAROID_1',
   'HIT_PHOTOS_POLAROID_2',
+  'PHOTOS_PRINT_lucha',
+  'PHOTOS_PRINT_paris',
+  'PHOTOS_PRINT_canal',
   'HIT_MUSIC_AMP',
   'HIT_MUSIC_PEDAL',
 ] as const;
@@ -32,6 +35,9 @@ const requiredParents: Record<string, string> = {
   POLAROID_1_SWING_PIVOT: 'POLAROIDS',
   POLAROID_2_SWING_PIVOT: 'POLAROIDS',
   HIT_WORK_CRT_SCREEN: 'CRT_INTERACTION',
+  PHOTOS_PRINT_lucha: 'POLAROID_0_SWING_PIVOT',
+  PHOTOS_PRINT_paris: 'POLAROID_1_SWING_PIVOT',
+  PHOTOS_PRINT_canal: 'POLAROID_2_SWING_PIVOT',
 };
 
 export interface NamedNode {

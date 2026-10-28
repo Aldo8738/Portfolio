@@ -1,6 +1,44 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { SceneMetrics } from '../../src/components/experience/scene-types';
 
+test('Synthwave switches live and renders on desktop and mobile', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(90000);
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (
+      message.type() === 'error' &&
+      /THREE|shader|WebGL/i.test(message.text())
+    )
+      errors.push(message.text());
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?quality=standard');
+  await expect(page.locator('[data-scene-status]')).toHaveAttribute(
+    'data-scene-status',
+    'ready',
+    { timeout: 45000 },
+  );
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+  await page.getByText('Choose salsa', { exact: true }).click();
+  await page.getByRole('button', { name: 'Synthwave', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'synthwave');
+  for (const viewport of [
+    { width: 1280, height: 720 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.screenshot({
+      path: testInfo.outputPath(`synthwave-${viewport.width}.png`),
+    });
+  }
+  await page.getByRole('button', { name: 'Original', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'original');
+  expect(errors).toEqual([]);
+});
+
 async function getCrtPosition(page: Page) {
   const stage = page.locator('[data-scene-status]');
   await expect(stage).toHaveAttribute('data-scene-status', 'ready', {
@@ -18,6 +56,210 @@ async function getCrtPosition(page: Page) {
     y: box.y + ((1 - target.y) * box.height) / 2,
   };
 }
+
+test('stand sauce bottles select themes and keep HTML controls synchronized', async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await getCrtPosition(page);
+  const stage = page.locator('[data-scene-status]');
+  const metrics: SceneMetrics = JSON.parse(
+    (await stage.getAttribute('data-scene-metrics')) ?? '{}',
+  );
+  const box = await stage.locator('canvas').boundingBox();
+  if (!box) throw new Error('Scene canvas missing');
+  for (const [node, theme] of [
+    ['SALSA_ORANGE_PIVOT', 'synthwave'],
+    ['SALSA_GREEN_PIVOT', 'noir'],
+    ['SALSA_RED_PIVOT', 'original'],
+  ] as const) {
+    const target = metrics.targets[node];
+    if (!target) throw new Error(`Bottle target missing: ${node}`);
+    await page.mouse.click(
+      box.x + ((target.x + 1) * box.width) / 2,
+      box.y + ((1 - target.y) * box.height) / 2,
+    );
+    await expect(
+      page.getByRole('button', { name: 'Back to stand', exact: true }),
+    ).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme',
+      'original',
+    );
+    const label = {
+      synthwave: 'Synthwave',
+      noir: 'Noir',
+      original: 'Original',
+    }[theme];
+    await page.screenshot({ path: `test-results/salsa-closeup-${theme}.png` });
+    await page.getByRole('button', { name: label, exact: true }).click();
+    await expect(
+      page.getByRole('button', { name: label, exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      page.getByRole('button', { name: label, exact: true }),
+    ).toHaveCSS('border-top-width', '3px');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+    await expect(page.locator(`[data-theme-id="${theme}"]`)).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(
+      await page.evaluate(() => localStorage.getItem('taqueria-theme')),
+    ).toBe(theme);
+    await page
+      .getByRole('button', { name: 'Back to stand', exact: true })
+      .click();
+    await expect(
+      page.getByRole('button', { name: 'Back to stand', exact: true }),
+    ).toHaveCount(0);
+    await page.evaluate(() => {
+      document.documentElement.dataset.theme = 'original';
+      window.dispatchEvent(new CustomEvent('taqueria:theme'));
+    });
+  }
+});
+
+test('monitor tile activation restores the original screen on browser Back', async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await page.setViewportSize({ width: 640, height: 720 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const point = await getCrtPosition(page);
+  const canvas = page.locator('[data-scene-status] canvas');
+  const original = await canvas.screenshot();
+  await page.mouse.click(point.x, point.y);
+  await expect(page).toHaveURL(/\/work$/, { timeout: 30000 });
+  await expect(canvas).not.toHaveAttribute(
+    'data-matrix-rain',
+    /playing|holding/,
+  );
+  await page.goBack();
+  await expect(canvas).toHaveAttribute('data-portfolio-phase', 'idle');
+  await expect
+    .poll(async () => (await canvas.screenshot()).equals(original))
+    .toBe(true);
+});
+
+test('interactive objects show a pointer and empty scene restores grab', async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const crt = await getCrtPosition(page);
+  const canvas = page.locator('[data-scene-status] canvas');
+  await page.mouse.move(crt.x, crt.y);
+  await expect(canvas).toHaveCSS('cursor', 'pointer');
+  await page.mouse.move(350, 150);
+  await expect(canvas).toHaveCSS('cursor', 'grab');
+});
+
+test('sauce close-up returns with an animated reset', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.addInitScript(() => {
+    const prototype = WebGL2RenderingContext.prototype;
+    const deleteProgram = prototype.deleteProgram;
+    const deleteTexture = prototype.deleteTexture;
+    prototype.deleteProgram = function (program) {
+      document.documentElement.dataset.deletedPrograms = String(
+        Number(document.documentElement.dataset.deletedPrograms ?? 0) + 1,
+      );
+      return deleteProgram.call(this, program);
+    };
+    prototype.deleteTexture = function (texture) {
+      document.documentElement.dataset.deletedTextures = String(
+        Number(document.documentElement.dataset.deletedTextures ?? 0) + 1,
+      );
+      return deleteTexture.call(this, texture);
+    };
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await getCrtPosition(page);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  const canvas = page.locator('[data-scene-status] canvas');
+  await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
+  const stage = page.locator('[data-scene-status]');
+  const metrics: SceneMetrics = JSON.parse(
+    (await stage.getAttribute('data-scene-metrics')) ?? '{}',
+  );
+  const box = await canvas.boundingBox();
+  const target = metrics.targets.SALSA_ORANGE_PIVOT;
+  if (!box || !target) throw new Error('Sauce target missing');
+  await canvas.evaluate((element) => {
+    let zooming = false;
+    let earlyLabels = false;
+    const observer = new MutationObserver(() => {
+      const state = element.getAttribute('data-camera-entrance');
+      if (state === 'resetting') {
+        zooming = true;
+        earlyLabels ||= document.querySelector('[data-salsa-label]') !== null;
+      }
+      if (zooming && state === 'complete') {
+        element.setAttribute('data-labels-during-zoom', String(earlyLabels));
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['data-camera-entrance'],
+    });
+  });
+  await page.mouse.click(
+    box.x + ((target.x + 1) * box.width) / 2,
+    box.y + ((1 - target.y) * box.height) / 2,
+  );
+  await expect(
+    page.getByRole('button', { name: 'Back to stand', exact: true }),
+  ).toBeVisible();
+  await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
+  await expect(canvas).toHaveAttribute('data-labels-during-zoom', 'false');
+  await expect(page.locator('[data-salsa-label]')).toHaveCount(3);
+  await page.evaluate(() => {
+    document.documentElement.dataset.deletedPrograms = '0';
+    document.documentElement.dataset.deletedTextures = '0';
+  });
+  for (const theme of ['Synthwave', 'Original', 'Synthwave']) {
+    await page.getByRole('button', { name: theme, exact: true }).click();
+    await expect(
+      page.getByRole('button', { name: theme, exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+  }
+  await canvas.evaluate((element) => {
+    const observer = new MutationObserver((records) => {
+      if (records.some((record) => record.oldValue === 'resetting')) {
+        element.setAttribute('data-observed-reset', 'true');
+        observer.disconnect();
+      }
+    });
+    observer.observe(element, {
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ['data-camera-entrance'],
+    });
+  });
+  await page
+    .getByRole('button', { name: 'Back to stand', exact: true })
+    .click();
+  await expect(canvas).toHaveAttribute('data-observed-reset', 'true');
+  await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-deleted-programs',
+    '0',
+  );
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-deleted-textures',
+    '0',
+  );
+});
 
 test('normal-motion camera entrance can be interrupted and reset without blocking work navigation', async ({
   page,
@@ -45,8 +287,26 @@ test('normal-motion camera entrance can be interrupted and reset without blockin
     await expect(canvas).toHaveAttribute('data-camera-entrance', 'interrupted');
     await expect(page).toHaveURL(/\/$/);
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
+    await canvas.evaluate((element) => {
+      const observer = new MutationObserver(() => {
+        if (element.getAttribute('data-camera-entrance') === 'resetting') {
+          sessionStorage.setItem('monitor-zoom-observed', 'true');
+          observer.disconnect();
+        }
+      });
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['data-camera-entrance'],
+      });
+    });
     await page.mouse.click(screen.x, screen.y);
     await expect(page).toHaveURL(/\/work$/, { timeout: 15000 });
+    expect(
+      await page.evaluate(() =>
+        sessionStorage.getItem('monitor-zoom-observed'),
+      ),
+    ).toBe('true');
   } finally {
     await page.emulateMedia({ reducedMotion: 'reduce' });
   }

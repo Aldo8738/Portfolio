@@ -5,6 +5,9 @@ import {
   useState,
   type ComponentType,
 } from 'react';
+import { photos, type MediaItem } from '../../content/media';
+import { PhotoControls } from './PhotoControls';
+import { AmpAudio, type AmpAudioActions } from './AmpAudio';
 import { SceneErrorBoundary } from './SceneErrorBoundary';
 import { useSceneActivity } from './useSceneActivity';
 import type { CameraActions, CanvasProps, SceneMetrics } from './scene-types';
@@ -20,15 +23,28 @@ export default function Experience() {
   const [CanvasComponent, setCanvasComponent] =
     useState<ComponentType<CanvasProps> | null>(null);
   const [state, setState] = useState<SceneState>({ status: 'loading' });
+  const [photoView, setPhotoView] = useState<{
+    photo: MediaItem;
+    phase: 'zooming' | 'focused';
+  } | null>(null);
+  const photoOpener = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState('Preparing the stand…');
   const [debug, setDebug] = useState(false);
   const [loaderDismissed, setLoaderDismissed] = useState(false);
   const cameraActions = useRef<CameraActions | null>(null);
-  const { visible, reducedMotion } = useSceneActivity(container);
-  const onFailure = useCallback(
-    (message: string) => setState({ status: 'failed', message }),
+  const ampAudio = useRef<AmpAudioActions | null>(null);
+  const toggleMusic = useCallback(() => ampAudio.current?.toggle(), []);
+  const pauseMusic = useCallback(() => ampAudio.current?.pause(), []);
+  const playSalsa = useCallback(() => ampAudio.current?.splat(), []);
+  const cameraMotion = useCallback(
+    (moving: boolean) => ampAudio.current?.cameraMotion(moving),
     [],
   );
+  const { visible, reducedMotion } = useSceneActivity(container);
+  const onFailure = useCallback((message: string) => {
+    setState({ status: 'failed', message });
+    setPhotoView(null);
+  }, []);
   const onReady = useCallback(
     (metrics: SceneMetrics) =>
       setState((previous) =>
@@ -36,6 +52,31 @@ export default function Experience() {
       ),
     [],
   );
+  const onPhotoRequest = useCallback(
+    (id: string) => {
+      const photo = photos.find((item) => item.id === id);
+      if (!photo || state.status !== 'ready') return;
+      if (!photoView && document.activeElement instanceof HTMLElement)
+        photoOpener.current = document.activeElement;
+      setPhotoView({
+        photo,
+        phase: 'zooming',
+      });
+    },
+    [photoView, state.status],
+  );
+  const onPhotoSettled = useCallback((completed: boolean) => {
+    setPhotoView((previous) =>
+      previous && completed ? { ...previous, phase: 'focused' } : null,
+    );
+  }, []);
+  const closePhoto = useCallback(() => {
+    setPhotoView(null);
+    cameraActions.current?.resetView();
+    requestAnimationFrame(() =>
+      photoOpener.current?.focus({ preventScroll: true }),
+    );
+  }, []);
   useEffect(() => {
     const reveal = () => setLoaderDismissed(true);
     window.addEventListener('taqueria:loader-dismissed', reveal);
@@ -89,6 +130,8 @@ export default function Experience() {
       <div
         className={styles.stage}
         data-scene-status={state.status}
+        data-photo-id={photoView?.photo.id}
+        data-photo-state={photoView?.phase}
         data-scene-metrics={
           state.status === 'ready' ? JSON.stringify(state.metrics) : undefined
         }
@@ -100,7 +143,14 @@ export default function Experience() {
           >
             <SceneErrorBoundary onFailure={onFailure}>
               <CanvasComponent
-                active={visible}
+                onCameraMotion={cameraMotion}
+                onSalsaPress={playSalsa}
+                onMusicToggle={toggleMusic}
+                onMusicPause={pauseMusic}
+                photoId={photoView?.photo.id ?? null}
+                onPhotoRequest={onPhotoRequest}
+                onPhotoSettled={onPhotoSettled}
+                active={visible && photoView?.phase !== 'focused'}
                 reducedMotion={reducedMotion}
                 cameraActions={cameraActions}
                 sceneRevealed={state.status === 'ready' && loaderDismissed}
@@ -111,6 +161,29 @@ export default function Experience() {
             </SceneErrorBoundary>
           </div>
         )}
+        <AmpAudio ref={ampAudio} />
+        <details
+          className={styles.photoPicker}
+          data-photo-picker
+          hidden={Boolean(photoView)}
+        >
+          <summary>Photos</summary>
+          <nav aria-label="Photos">
+            {photos.map((photo) => (
+              <a
+                key={photo.id}
+                href={photo.original ?? photo.preview}
+                onClick={(event) => {
+                  if (state.status !== 'ready') return;
+                  event.preventDefault();
+                  onPhotoRequest(photo.id);
+                }}
+              >
+                {photo.title}
+              </a>
+            ))}
+          </nav>
+        </details>
         {state.status !== 'ready' && (
           <div className={styles.loading} role="status">
             <p>
@@ -130,8 +203,16 @@ export default function Experience() {
             )}
           </div>
         )}
-        {state.status === 'ready' && (
-          <div className={styles.cameraTools}>
+        {photoView && (
+          <PhotoControls
+            photo={photoView.photo}
+            moving={photoView.phase === 'zooming'}
+            onClose={closePhoto}
+            onSelect={onPhotoRequest}
+          />
+        )}
+        {state.status === 'ready' && !photoView && (
+          <div className={styles.cameraTools} data-camera-tools>
             <span>Drag to explore · Scroll to zoom</span>
             <button
               type="button"
@@ -157,7 +238,11 @@ export default function Experience() {
         </noscript>
       </div>
       {debug && state.status === 'ready' && (
-        <output className={styles.diagnostics} aria-label="Scene diagnostics">
+        <output
+          className={styles.diagnostics}
+          aria-label="Scene diagnostics"
+          data-scene-debug
+        >
           Ready {state.metrics.readyMs} ms · {state.metrics.calls} draw calls ·{' '}
           {state.metrics.triangles} triangles · DPR {state.metrics.dpr}
         </output>
