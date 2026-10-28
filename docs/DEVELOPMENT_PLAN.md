@@ -310,6 +310,10 @@ does not replace the frozen GLB; exact Blender-material fidelity remains unverif
    Repeated clicks coalesce. Back restores materials, camera, visibility and clear
    state. Debug replay is available through `/?debug=1`. Physical-device performance
    and creator approval of visual continuity remain manual acceptance gates.
+   The monitor handoff skips Work's standalone entrance animation because the
+   reconstruction already revealed that content. Initially visible projects stay
+   visible; subsequent scroll reveals and ordinary app-bar entry retain their
+   existing animations. See the Work entrance regression in the transition review.
 3. **Shared media viewer and sketchbook:** implement a semantic dialog with Escape,
    focus containment/restoration, scroll locking and drawing selection. Use embedded
    previews when originals are absent; request supplied originals only on opening.

@@ -1,6 +1,82 @@
 import { expect, test } from '@playwright/test';
 import type { SceneMetrics } from '../../src/components/experience/scene-types';
 
+test('monitor handoff does not replay the Work page entrance', async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  const workRequests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname === '/work')
+      workRequests.push(request.resourceType());
+  });
+  await page.setViewportSize({ width: 640, height: 720 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const stage = page.locator('[data-scene-status]');
+  const canvas = stage.locator('canvas');
+  await expect(stage).toHaveAttribute('data-scene-status', 'ready', {
+    timeout: 45000,
+  });
+  await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+  const metrics: SceneMetrics = JSON.parse(
+    (await stage.getAttribute('data-scene-metrics')) ?? '{}',
+  );
+  const box = await canvas.boundingBox();
+  const target = metrics.targets.HIT_WORK_CRT_SCREEN;
+  if (!box || !target) throw new Error('Monitor target missing');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(canvas).toHaveAttribute('data-salsa-motion', 'full');
+  await page.evaluate(() => {
+    document.documentElement.dataset.workEntranceReplayed = 'false';
+    const observer = new MutationObserver(() => {
+      if (document.querySelector('canvas[data-portfolio-phase="portfolio"]')) {
+        const content = document.querySelectorAll(
+          '.portfolio-destination .work-header > *, .portfolio-destination [data-project-title]',
+        );
+        for (const element of content) {
+          const rect = element.getBoundingClientRect();
+          if (
+            rect.top < innerHeight &&
+            rect.bottom > 0 &&
+            Number(getComputedStyle(element).opacity) < 0.99
+          )
+            document.documentElement.dataset.workEntranceReplayed = 'true';
+        }
+      }
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'data-portfolio-phase', 'data-work-ready'],
+    });
+  });
+  await page.mouse.click(
+    box.x + ((target.x + 1) * box.width) / 2,
+    box.y + ((1 - target.y) * box.height) / 2,
+  );
+  await expect(page).toHaveURL(/\/work$/, { timeout: 30000 });
+  const work = page.locator('[data-work-experience]');
+  await expect(work).toHaveAttribute('data-work-ready', 'true');
+  await expect(work.locator('h1')).toHaveCSS('opacity', '1');
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-work-entrance-replayed',
+    'false',
+  );
+  expect(workRequests).toEqual(['fetch']);
+  const first = work.locator('[data-project-section]').first();
+  await work.locator('[data-project-section]').last().scrollIntoViewIfNeeded();
+  await expect(first).not.toBeInViewport();
+  await first.evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  const title = first.locator('[data-project-title]');
+  await expect
+    .poll(() =>
+      title.evaluate((element) => Number(getComputedStyle(element).opacity)),
+    )
+    .toBeLessThan(0.99);
+  await expect(title).toHaveCSS('opacity', '1');
+});
+
 for (const motion of ['reduce', 'no-preference'] as const) {
   test(`mobile ${motion} monitor entry reveals usable work content`, async ({
     page,

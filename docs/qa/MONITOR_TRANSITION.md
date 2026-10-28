@@ -64,6 +64,26 @@ approval remain pending. Missing project content remains an explicit empty state
 The DOM import targets the current static Work page. If hydrated widgets are added,
 initialize them explicitly before relying on this path.
 
+## Work entrance replay regression
+
+The monitor already reveals the real Work heading and exhibition during its
+reconstruction. Previously, activating Work afterwards replayed its normal page
+entrance, briefly resetting the heading and visible project content to transparent.
+This looked like a second load. A browser regression reproduced the opacity reset.
+
+The monitor now mounts Work with `animateEntrance: false`. The first intersection
+notifications retain the content just revealed by the monitor. Later scroll entries
+still animate normally. Direct/app-bar navigation retains the default Work entrance.
+The transition, route preparation, URL/history and reduced-motion behavior are
+unchanged. The regression checks continuous content visibility after handoff, one
+Work fetch without a document reload, and project reveals after scrolling away/back.
+
+Validation: the new browser regression failed before the fix and passes afterwards.
+All 11 monitor/Work browser checks pass in Chromium/SwiftShader, including normal
+and reduced motion, mobile handoff, Back/replay, scrolling, static routes and layout.
+All 57 unit tests, formatting, lint, typechecking and the static production build
+pass. The build retains its chunk-size warning. Physical-device review was not run.
+
 ## Development stylesheet regression
 
 Astro's development response supplies CSS in inline head styles, while production

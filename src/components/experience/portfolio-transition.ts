@@ -155,7 +155,7 @@ export function activatePortfolio(destination: HTMLElement) {
     void import('../work/work-experience')
       .then(({ mountWorkExperience }) => {
         if (!events.signal.aborted && destination.isConnected)
-          disposeWork = mountWorkExperience(work);
+          disposeWork = mountWorkExperience(work, { animateEntrance: false });
       })
       .catch((error: unknown) =>
         console.error('Work enhancements could not load', error),

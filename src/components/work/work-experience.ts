@@ -12,7 +12,10 @@ const motion = {
   visualTravel: 36,
 } as const;
 
-export function mountWorkExperience(root: HTMLElement): () => void {
+export function mountWorkExperience(
+  root: HTMLElement,
+  { animateEntrance = true }: { animateEntrance?: boolean } = {},
+): () => void {
   const existing = mounted.get(root);
   if (existing) return existing;
   const events = new AbortController();
@@ -21,6 +24,7 @@ export function mountWorkExperience(root: HTMLElement): () => void {
   const sections = Array.from(
     root.querySelectorAll<HTMLElement>('[data-project-section]'),
   );
+  const initiallyRevealed = new Set<Element>(animateEntrance ? [] : sections);
   let context = gsap.context(() => {}, root);
   let timeline: ReturnType<typeof gsap.timeline> | null = null;
   root.dataset.workReady = 'true';
@@ -140,6 +144,12 @@ export function mountWorkExperience(root: HTMLElement): () => void {
 
   const observer = new IntersectionObserver(
     (entries) => {
+      // The monitor already revealed visible sections; later scroll entries still animate.
+      const initialEntries = new Set(
+        entries
+          .filter((entry) => initiallyRevealed.delete(entry.target))
+          .map((entry) => entry.target),
+      );
       const visible = entries
         .filter((entry) => entry.isIntersecting)
         .sort(
@@ -150,7 +160,7 @@ export function mountWorkExperience(root: HTMLElement): () => void {
       const section = visible[0]?.target;
       if (!(section instanceof HTMLElement)) return;
       select(section.dataset.projectSection ?? null);
-      animateSection(section);
+      if (!initialEntries.has(section)) animateSection(section);
     },
     { threshold: 0, rootMargin: '-10% 0px -10% 0px' },
   );
@@ -164,7 +174,7 @@ export function mountWorkExperience(root: HTMLElement): () => void {
     options,
   );
   fromHistory();
-  if (!reduced.matches && !location.hash)
+  if (animateEntrance && !reduced.matches && !location.hash)
     context.add(() => {
       timeline = gsap.timeline();
       timeline.fromTo(
