@@ -8,6 +8,12 @@ replacement of the embedded photograph textures. No original photo request is
 made during 3D photo browsing. Without a working scene, the existing HTML photo
 links open their original image files normally.
 
+Visible Polaroids also remain raycast targets during photo mode: clicking another
+photo slides directly to it, while clicking the current photo leaves it focused.
+Other stand interactions remain disabled until photo mode closes. Salsa splats
+are triggered by theme selection only. The [animated salsa interaction](SALSA_INTERACTION.md)
+now selects at counter impact and does not move the camera.
+
 The first approach still aligns outside the stand before moving inward. Subsequent
 photos use a 0.65-second straight slide; returning reverses the safe approach.
 Framing reserves room for controls and survives viewport resizing. Stable close-ups

@@ -41,56 +41,29 @@ test('salsa splats and camera whooshes are lazy, replayable, and obey mute', asy
       box.y + ((1 - bottle.y) * box.height) / 2,
     );
   await clickBottle();
-  await expect(page.locator('[data-salsa-label]')).toHaveCount(3);
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'synthwave');
   await expect(salsa).not.toHaveAttribute('src');
   await expect(whoosh).not.toHaveAttribute('src');
-  await page.getByRole('button', { name: 'Reset view', exact: true }).click();
   await page.getByRole('button', { name: 'Sound off' }).click();
+  await expect
+    .poll(() =>
+      salsa.evaluate((audio) => (audio as HTMLAudioElement).readyState),
+    )
+    .toBeGreaterThanOrEqual(2);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(canvas).toHaveAttribute('data-salsa-motion', 'full');
   await clickBottle();
-  await expect(page.locator('[data-salsa-label]')).toHaveCount(3);
   await expect(salsa).toHaveAttribute('data-plays', '1');
-  await expect(whoosh).toHaveAttribute('data-plays', '1');
-  expect(
-    await whoosh.evaluate((audio) => (audio as HTMLAudioElement).paused),
-  ).toBe(true);
-  await page.locator('[data-salsa-label]').filter({ hasText: 'Noir' }).click();
-  await expect(salsa).toHaveAttribute('data-plays', '2');
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'idle');
+  await expect(whoosh).toHaveAttribute('data-plays', '0');
   await expect(page.locator('[data-music-toggle]')).toHaveAttribute(
     'data-music-source',
     'ambient',
   );
-  await canvas.evaluate((element) => {
-    // Interrupt in the click's event turn, before a slow frame can finish the reset.
-    document.addEventListener(
-      'click',
-      () => {
-        element.dispatchEvent(
-          new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
-        );
-      },
-      { once: true },
-    );
-  });
-  await page
-    .getByRole('button', { name: 'Back to stand', exact: true })
-    .click();
-  await expect(canvas).toHaveAttribute('data-camera-entrance', 'interrupted');
-  expect(
-    await whoosh.evaluate((audio) => (audio as HTMLAudioElement).paused),
-  ).toBe(true);
-  const whooshPlays = (await whoosh.getAttribute('data-plays')) ?? '0';
   await page.getByRole('button', { name: 'Sound on' }).click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.getByRole('button', { name: 'Reset view', exact: true }).click();
   await clickBottle();
-  await expect(page.locator('[data-salsa-label]')).toHaveCount(3);
-  await page
-    .locator('[data-salsa-label]')
-    .filter({ hasText: 'Original' })
-    .click();
-  await expect(salsa).toHaveAttribute('data-plays', '2');
-  await expect(whoosh).toHaveAttribute('data-plays', whooshPlays);
+  await expect(salsa).toHaveAttribute('data-plays', '1');
   expect(
     await salsa.evaluate((audio) => (audio as HTMLAudioElement).paused),
   ).toBe(true);

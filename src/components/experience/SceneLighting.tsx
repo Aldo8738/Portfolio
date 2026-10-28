@@ -1,6 +1,9 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
+import { gsap } from 'gsap';
 import {
+  Color,
+  HemisphereLight,
   DirectionalLight,
   Mesh,
   MeshPhysicalMaterial,
@@ -25,8 +28,31 @@ export function SceneLighting({
   quality: SceneQuality;
 }) {
   const key = useRef<DirectionalLight>(null);
+  const fill = useRef<HemisphereLight>(null);
+  const rim = useRef<DirectionalLight>(null);
   const synthwave = useSceneTheme() === 'synthwave';
   const { gl, invalidate } = useThree();
+  useLayoutEffect(() => {
+    const transition = gsap.timeline({ onUpdate: invalidate });
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 0
+      : 0.45;
+    for (const [light, target] of [
+      [fill.current, synthwave ? '#b5a0df' : '#9dbbd0'],
+      [rim.current, synthwave ? '#38cbff' : '#6aadc8'],
+    ] as const) {
+      if (!light) continue;
+      const color = new Color(target);
+      transition.to(
+        light.color,
+        { r: color.r, g: color.g, b: color.b, duration },
+        0,
+      );
+    }
+    return () => {
+      transition.kill();
+    };
+  }, [synthwave, invalidate]);
   const cooking = useMemo(() => getCookingPlacement(scene), [scene]);
   const fireLight = cooking?.fireLight;
   const bulbs = useMemo(
@@ -96,9 +122,7 @@ export function SceneLighting({
   }, [scene, quality, gl, invalidate]);
   return (
     <>
-      <hemisphereLight
-        args={[synthwave ? '#b5a0df' : '#9dbbd0', '#2a171e', 0.28]}
-      />
+      <hemisphereLight ref={fill} args={['#9dbbd0', '#2a171e', 0.28]} />
       <directionalLight
         ref={key}
         position={[-3.5, 7, 5]}
@@ -117,8 +141,9 @@ export function SceneLighting({
         shadow-radius={2}
       />
       <directionalLight
+        ref={rim}
         position={[3, 4, -4]}
-        color={synthwave ? '#38cbff' : '#6aadc8'}
+        color="#6aadc8"
         intensity={0.9}
       />
       {(quality.practicalLights === 3

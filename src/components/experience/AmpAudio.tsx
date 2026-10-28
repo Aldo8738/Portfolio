@@ -16,7 +16,6 @@ import {
 export interface AmpAudioActions {
   toggle: () => void;
   pause: () => void;
-  splat: () => void;
   cameraMotion: (moving: boolean) => void;
 }
 
@@ -101,11 +100,11 @@ export function AmpAudio({ ref }: { ref: Ref<AmpAudioActions> }) {
     }
     changeMode(mode.current === 'off' ? 'ambient' : 'off');
   }, [changeMode, state]);
-  useImperativeHandle(
-    ref,
-    () => ({ toggle: toggleAmp, pause, splat, cameraMotion }),
-    [toggleAmp, pause, splat, cameraMotion],
-  );
+  useImperativeHandle(ref, () => ({ toggle: toggleAmp, pause, cameraMotion }), [
+    toggleAmp,
+    pause,
+    cameraMotion,
+  ]);
   useEffect(() => {
     window.addEventListener('taqueria:theme', splat);
     return () => window.removeEventListener('taqueria:theme', splat);

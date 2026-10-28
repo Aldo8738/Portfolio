@@ -15,7 +15,7 @@
   --salsa-red: #ef797f;
   --salsa-green: #a2d59f;
   --salsa-orange: #efb16a;
-  --scene-filter: none;
+  --scene-filter: grayscale(0);
 }
 :root[data-theme='noir'] {
   --background: #f4f4f4;
@@ -53,5 +53,5 @@
   --salsa-red: #ef797f;
   --salsa-green: #a2d59f;
   --salsa-orange: #efb16a;
-  --scene-filter: none;
+  --scene-filter: grayscale(0);
 }

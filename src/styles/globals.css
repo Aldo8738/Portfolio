@@ -50,6 +50,17 @@ html {
   color: var(--text);
   font-family: 'Segoe UI', Arial, system-ui, sans-serif;
 }
+@media (prefers-reduced-motion: no-preference) {
+  html,
+  [data-theme-id],
+  .salsa-dot,
+  .salsa-panel {
+    transition:
+      background-color 0.45s ease,
+      color 0.45s ease,
+      border-color 0.45s ease;
+  }
+}
 :root[data-presentation='immersive'] {
   color-scheme: dark;
   --background: var(--scene-background);

@@ -221,6 +221,11 @@ Codex may simplify this if the repository is small, but keep **asset interaction
 
 ### 4.2 Three sauce bottles: theme selection through squeezing
 
+**Later creator direction:** The [animated salsa review](docs/qa/SALSA_INTERACTION.md)
+supersedes the amplitude and wipe suggestions below: use 7% compression, small
+nozzle droplets and a thin counter ripple, without moving the camera. Existing
+Original/Noir/Synthwave definitions remain authoritative in the implementation.
+
 - Root nodes: `SALSA_RED_PIVOT`, `SALSA_GREEN_PIVOT`, `SALSA_ORANGE_PIVOT`; individually selectable.
 - **Proposed configurable mapping** (discussed in the design): **Red → Original (colorful)**, **Green → Noir (black-and-white)**, **Orange → Vintage (warm/sepia)**. Make it a single typed configuration map so it can be changed without geometry edits.
 - Desktop hover: small tilt, subtle emphasis, short label. Touch: first tap can select directly; do not require hover.
@@ -239,6 +244,11 @@ Codex may simplify this if the repository is small, but keep **asset interaction
 - Project detail pages need substantive structure; if real projects aren't provided, show honest explicit draft placeholders, not invented claims or outcomes. Provide a clear return path to the scene.
 
 ### 4.4 Sketchbook → drawing close-ups
+
+**Later creator direction:** The [notebook camera review](docs/qa/NOTEBOOK_CAMERA.md)
+records the in-scene close-up of both embedded drawings. This increment moves the
+camera and retains the authored textures; the full-resolution viewer below remains
+pending original drawing assets.
 
 - Interaction targets: `HIT_DRAWINGS_SKETCHBOOK_0`, `HIT_DRAWINGS_SKETCHBOOK_1`; parent: `SKETCHBOOK_INTERACTION`.
 - From the 3D scene, click either page or the sketchbook to smoothly zoom/focus and open a responsive viewer showing the actual drawing(s). Could use a short camera approach followed by a semantic HTML dialog/lightbox; do **not** bake the high-res images into the GLB.

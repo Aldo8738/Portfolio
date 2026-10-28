@@ -35,7 +35,6 @@ export default function Experience() {
   const ampAudio = useRef<AmpAudioActions | null>(null);
   const toggleMusic = useCallback(() => ampAudio.current?.toggle(), []);
   const pauseMusic = useCallback(() => ampAudio.current?.pause(), []);
-  const playSalsa = useCallback(() => ampAudio.current?.splat(), []);
   const cameraMotion = useCallback(
     (moving: boolean) => ampAudio.current?.cameraMotion(moving),
     [],
@@ -144,7 +143,6 @@ export default function Experience() {
             <SceneErrorBoundary onFailure={onFailure}>
               <CanvasComponent
                 onCameraMotion={cameraMotion}
-                onSalsaPress={playSalsa}
                 onMusicToggle={toggleMusic}
                 onMusicPause={pauseMusic}
                 photoId={photoView?.photo.id ?? null}
@@ -214,6 +212,12 @@ export default function Experience() {
         {state.status === 'ready' && !photoView && (
           <div className={styles.cameraTools} data-camera-tools>
             <span>Drag to explore · Scroll to zoom</span>
+            <button
+              type="button"
+              onClick={() => cameraActions.current?.focusDrawings()}
+            >
+              Drawings
+            </button>
             <button
               type="button"
               onClick={() => cameraActions.current?.resetView()}

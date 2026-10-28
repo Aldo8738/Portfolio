@@ -1,14 +1,4 @@
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Html } from '@react-three/drei/web/Html.js';
-import styles from './SalsaLabels.module.css';
-import { useSceneTheme } from './useSceneTheme';
+import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { useProgress } from '@react-three/drei/core/Progress.js';
@@ -29,7 +19,8 @@ import {
 } from '../../lib/glb-contract';
 import { getFramingPoints } from '../../lib/camera';
 import { photos } from '../../content/media';
-import { selectTheme, themes } from '../../lib/theme';
+import { themes } from '../../lib/theme';
+import { useSalsaInteraction } from './useSalsaInteraction';
 import { isInteractiveObject } from '../../lib/interactive-object';
 import type { CanvasProps } from './scene-types';
 import { useModelMaterials } from './useModelMaterials';
@@ -67,7 +58,6 @@ function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
 }
 function Model({
   onCameraMotion,
-  onSalsaPress,
   onMusicToggle,
   onMusicPause,
   photoId,
@@ -81,7 +71,6 @@ function Model({
 }: Pick<
   CanvasProps,
   | 'onCameraMotion'
-  | 'onSalsaPress'
   | 'onMusicToggle'
   | 'onMusicPause'
   | 'photoId'
@@ -115,28 +104,6 @@ function Model({
   const readyFrame = useRef(0);
   const parsedAt = useRef(performance.now());
   const dragged = usePointerDrag(gl.domElement);
-  const [salsaState, setSalsaState] = useState<'closed' | 'zooming' | 'open'>(
-    'closed',
-  );
-  const selectedTheme = useSceneTheme();
-  const closeSalsa = useCallback(() => setSalsaState('closed'), []);
-  const bottles = useMemo(
-    () =>
-      themes.map((theme) => {
-        const node = scene.getObjectByName(theme.node);
-        if (!node)
-          throw new Error(`Required salsa pivot missing: ${theme.node}`);
-        const bounds = new Box3().setFromObject(node);
-        return {
-          ...theme,
-          bounds,
-          labelPosition: bounds
-            .getCenter(new Vector3())
-            .setY(bounds.max.y + 0.12),
-        };
-      }),
-    [scene],
-  );
   const bounds = useMemo(() => {
     assertModelContract(scene);
     return new Box3().setFromObject(scene);
@@ -146,6 +113,11 @@ function Model({
     [scene],
   );
   const framingPoints = useMemo(() => getFramingPoints(scene), [scene]);
+  const notebook = useMemo(() => {
+    const node = scene.getObjectByName('SKETCHBOOK_INTERACTION');
+    if (!node) throw new Error('Required sketchbook group missing');
+    return node;
+  }, [scene]);
   useModelMaterials(scene, invalidate);
   const portfolio = usePortfolioTransition(
     scene,
@@ -156,6 +128,11 @@ function Model({
   useEffect(() => {
     if (portfolio.phase === 'portfolio') onMusicPause();
   }, [portfolio.phase, onMusicPause]);
+  const salsa = useSalsaInteraction(
+    scene,
+    active && sceneRevealed && !photoId && portfolio.phase === 'idle',
+    reducedMotion,
+  );
   usePhotoSway(
     scene,
     active &&
@@ -171,7 +148,6 @@ function Model({
     const image = scene.getObjectByName(`HIT_PHOTOS_POLAROID_${index}`);
     if (!(image instanceof Mesh))
       throw new Error(`Photo surface missing: ${photoId}`);
-    closeSalsa();
     let current = true;
     const actions = cameraActions.current;
     if (!actions) {
@@ -184,11 +160,10 @@ function Model({
     return () => {
       current = false;
     };
-  }, [photoId, scene, cameraActions, closeSalsa, onPhotoSettled]);
+  }, [photoId, scene, cameraActions, onPhotoSettled]);
   const closeOverlays = useCallback(() => {
-    closeSalsa();
     onPhotoSettled(false);
-  }, [closeSalsa, onPhotoSettled]);
+  }, [onPhotoSettled]);
   useEffect(() => () => cancelAnimationFrame(readyFrame.current), []);
   useEffect(() => {
     delete gl.domElement.dataset.interactive;
@@ -264,6 +239,7 @@ function Model({
         <SceneBenchmark />
       )}
       <CameraControls
+        notebook={notebook}
         onCameraMotion={onCameraMotion}
         onReset={closeOverlays}
         bounds={bounds}
@@ -273,59 +249,25 @@ function Model({
         cameraActions={cameraActions}
         sceneRevealed={sceneRevealed}
       />
-      {salsaState === 'open' &&
-        bottles.map((bottle) => (
-          <Html
-            key={bottle.id}
-            position={bottle.labelPosition}
-            center
-            zIndexRange={[2, 0]}
-          >
-            <button
-              className={styles.label}
-              data-salsa-label
-              aria-pressed={selectedTheme === bottle.id}
-              onClick={() => selectTheme(bottle.id)}
-            >
-              {bottle.label}
-            </button>
-          </Html>
-        ))}
-      {salsaState === 'open' && (
-        <Html
-          calculatePosition={() => [size.width / 2, size.height - 140]}
-          center
-          zIndexRange={[2, 0]}
-        >
-          <button
-            className={styles.label}
-            onClick={() => {
-              closeSalsa();
-              cameraActions.current?.resetView();
-            }}
-          >
-            Back to stand
-          </button>
-        </Html>
-      )}
       {portfolio.effect}
       <primitive
         object={scene}
         dispose={null}
         onPointerMove={(event: ThreeEvent<PointerEvent>) => {
           event.stopPropagation();
+          salsa.hover(dragged.current ? null : event.object);
           gl.domElement.dataset.interactive = String(
             isInteractiveObject(event.object),
           );
         }}
         onPointerOut={() => {
+          salsa.hover(null);
           delete gl.domElement.dataset.interactive;
         }}
         onClick={(event: ThreeEvent<MouseEvent>) => {
           if (
             event.button !== 0 ||
             dragged.current ||
-            photoId ||
             portfolio.phase !== 'idle'
           )
             return;
@@ -334,7 +276,7 @@ function Model({
             node;
             node = node.parent
           ) {
-            if (node.name === 'AMP_INTERACTION') {
+            if (!photoId && node.name === 'AMP_INTERACTION') {
               event.stopPropagation();
               onMusicToggle();
               return;
@@ -343,37 +285,29 @@ function Model({
             const photo = match ? photos[Number(match[1])] : undefined;
             if (photo) {
               event.stopPropagation();
-              onPhotoRequest(photo.id);
+              if (photo.id !== photoId) onPhotoRequest(photo.id);
               return;
             }
           }
+          if (photoId) return;
           for (
             let node: Object3D | null = event.object;
             node;
             node = node.parent
           ) {
+            if (node === notebook) {
+              event.stopPropagation();
+              cameraActions.current?.focusDrawings();
+              return;
+            }
             const theme = themes.find((theme) => theme.node === node.name);
             if (!theme) continue;
             event.stopPropagation();
-            if (salsaState !== 'open') onSalsaPress();
-            if (salsaState === 'zooming') return;
-            if (salsaState === 'closed') {
-              const focusBounds = new Box3();
-              for (const bottle of bottles) focusBounds.union(bottle.bounds);
-              const actions = cameraActions.current;
-              if (!actions) return;
-              setSalsaState('zooming');
-              actions.focusOn(focusBounds, (completed) =>
-                setSalsaState(completed ? 'open' : 'closed'),
-              );
-              return;
-            }
-            selectTheme(theme.id);
+            salsa.select(theme.id);
             return;
           }
           if (event.object.name === 'HIT_WORK_CRT_SCREEN') {
             event.stopPropagation();
-            closeSalsa();
             void portfolio.enterPortfolio();
           }
         }}

@@ -1,10 +1,11 @@
 import type { RefObject } from 'react';
-import type { Box3, Mesh } from 'three';
+import type { Box3, Object3D } from 'three';
 
 export interface CameraActions {
+  focusDrawings: () => void;
   resetView: () => void;
   focusOn: (
-    target: Box3 | Mesh,
+    target: Box3 | Object3D,
     onSettled?: (completed: boolean) => void,
   ) => void;
 }
@@ -30,7 +31,6 @@ export interface SceneMetrics {
 }
 export interface CanvasProps {
   onCameraMotion: (moving: boolean) => void;
-  onSalsaPress: () => void;
   onMusicToggle: () => void;
   onMusicPause: () => void;
   photoId: string | null;

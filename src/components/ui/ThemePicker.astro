@@ -20,7 +20,7 @@ import { themes } from '../../lib/theme';
 </fieldset>
 
 <script>
-  import { parseTheme, selectTheme } from '../../lib/theme';
+  import { parseTheme, requestTheme } from '../../lib/theme';
   function syncButtons() {
     const selected = parseTheme(document.documentElement.dataset.theme);
     document
@@ -36,7 +36,7 @@ import { themes } from '../../lib/theme';
     .querySelectorAll<HTMLButtonElement>('[data-theme-id]')
     .forEach((button) => {
       button.addEventListener('click', () =>
-        selectTheme(parseTheme(button.dataset.themeId)),
+        requestTheme(parseTheme(button.dataset.themeId)),
       );
     });
   window.addEventListener('taqueria:theme', syncButtons);

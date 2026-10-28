@@ -1,5 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import {
+  Color,
   Material,
   Mesh,
   MeshBasicMaterial,
@@ -141,22 +143,41 @@ export function useModelMaterials(scene: Object3D, invalidate: () => void) {
   }, [scene, invalidate]);
 
   useLayoutEffect(() => {
-    // Theme changes only update uniforms; keep GPU programs and materials alive.
+    // Interpolate the existing uniforms without rebuilding GPU programs.
+    const transition = gsap.timeline({ onUpdate: invalidate });
+    const duration = matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 0
+      : 0.45;
     for (const baseline of themed.current) {
       const { material } = baseline;
-      material.color.copy(baseline.color);
-      material.emissive.copy(baseline.emissive);
-      material.emissiveIntensity = baseline.emissiveIntensity;
-      material.roughness = baseline.roughness;
       const neon = synthwave ? synthwaveOverrides[material.name] : undefined;
-      if (!neon) continue;
-      material.color.set(neon.color);
-      if (neon.roughness !== undefined) material.roughness = neon.roughness;
-      if (neon.emissive) {
-        material.emissive.set(neon.emissive);
-        material.emissiveIntensity = neon.intensity ?? 0;
-      }
+      const color = neon ? new Color(neon.color) : baseline.color;
+      const emissive = neon?.emissive
+        ? new Color(neon.emissive)
+        : baseline.emissive;
+      transition.to(
+        material.color,
+        { r: color.r, g: color.g, b: color.b, duration },
+        0,
+      );
+      transition.to(
+        material.emissive,
+        { r: emissive.r, g: emissive.g, b: emissive.b, duration },
+        0,
+      );
+      transition.to(
+        material,
+        {
+          emissiveIntensity: neon?.intensity ?? baseline.emissiveIntensity,
+          roughness: neon?.roughness ?? baseline.roughness,
+          duration,
+        },
+        0,
+      );
     }
     invalidate();
+    return () => {
+      transition.kill();
+    };
   }, [scene, invalidate, synthwave]);
 }

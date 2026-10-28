@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Box3, Mesh, PerspectiveCamera, Vector3 } from 'three';
+import { Box3, Mesh, PerspectiveCamera, Vector3, type Object3D } from 'three';
 import { gsap } from 'gsap/gsap-core';
 import { fitCamera, heroCamera } from '../../lib/camera';
 import { fitMonitorCamera } from '../../lib/monitor-camera';
@@ -22,7 +22,8 @@ import {
   createCameraEntrance,
   createCameraReset,
 } from '../../lib/camera-entrance';
-import type { CanvasProps } from './scene-types';
+import type { CameraActions, CanvasProps } from './scene-types';
+import { fitNotebookCamera, notebookCamera } from '../../lib/notebook-camera';
 
 interface Props extends Pick<
   CanvasProps,
@@ -32,6 +33,7 @@ interface Props extends Pick<
   | 'sceneRevealed'
   | 'onCameraMotion'
 > {
+  notebook: Object3D;
   bounds: Box3;
   framingPoints: Vector3[];
   onReset: () => void;
@@ -40,6 +42,7 @@ interface Props extends Pick<
 const keyboardStep = Math.PI / 18;
 
 export function CameraControls({
+  notebook,
   bounds,
   framingPoints,
   active,
@@ -54,6 +57,7 @@ export function CameraControls({
   const comparison = new URLSearchParams(location.search).has('compare');
   const initialView = useRef(true);
   const focusedPhoto = useRef<Mesh | null>(null);
+  const focusedNotebook = useRef<Object3D | null>(null);
   const entrance = useRef<{
     sample: (progress: number, position: Vector3, target: Vector3) => void;
     duration: number;
@@ -69,6 +73,8 @@ export function CameraControls({
     if (!transition) return;
     entrance.current = null;
     focusedPhoto.current = null;
+    focusedNotebook.current = null;
+    delete gl.domElement.dataset.drawingsView;
     transition.tween?.kill();
     onCameraMotion(false);
     transition.onSettled?.(false);
@@ -111,8 +117,12 @@ export function CameraControls({
     (smooth = true) => {
       if (!(camera instanceof PerspectiveCamera) || !controls.current) return;
       const photo = focusedPhoto.current;
-      if (!smooth && photo && !entrance.current) {
-        const fit = fitPhotoCamera(photo, size.width / size.height, camera.fov);
+      const book = focusedNotebook.current;
+      const focused = book ?? photo;
+      if (!smooth && focused && !entrance.current) {
+        const fit = photo
+          ? fitPhotoCamera(photo, size.width / size.height, camera.fov)
+          : fitNotebookCamera(focused, size.width / size.height, camera.fov);
         camera.position.copy(fit.position);
         controls.current.target.copy(fit.target);
         controls.current.update();
@@ -123,6 +133,12 @@ export function CameraControls({
       }
       cancelEntrance();
       focusedPhoto.current = null;
+      focusedNotebook.current = null;
+      delete gl.domElement.dataset.drawingsView;
+      controls.current.minPolarAngle =
+        smooth && book && !reducedMotion
+          ? notebookCamera.minPolarAngle
+          : Math.PI / 4;
       const fit = fitCamera(
         bounds,
         size.width / size.height,
@@ -131,7 +147,7 @@ export function CameraControls({
         comparison ? 'comparison' : 'hero',
       );
       const photoReturn =
-        smooth && photo
+        smooth && (photo || book)
           ? createPhotoCameraApproach(
               fit.position,
               fit.target,
@@ -169,8 +185,10 @@ export function CameraControls({
         entrance.current = {
           sample: (progress, position, target) => {
             resetSample(progress, position, target);
-            if (progress >= 1 && controls.current)
+            if (progress >= 1 && controls.current) {
               controls.current.minDistance = distance * 0.15;
+              controls.current.minPolarAngle = Math.PI / 4;
+            }
           },
           duration: heroCamera.resetSeconds,
           kind: 'reset',
@@ -234,74 +252,84 @@ export function CameraControls({
       playTransition,
     ],
   );
-  useImperativeHandle(
-    cameraActions,
-    () => ({
-      resetView: () => {
-        onReset();
-        resetView(true);
-      },
-      focusOn: (focus: Box3 | Mesh, onSettled) => {
-        if (!(camera instanceof PerspectiveCamera) || !controls.current) {
-          onSettled?.(false);
-          return;
-        }
-        const isPhoto =
-          focus instanceof Mesh &&
-          focus.name.startsWith('HIT_PHOTOS_POLAROID_');
-        const previousPhoto = focusedPhoto.current;
-        const slide = isPhoto && previousPhoto !== null;
-        cancelEntrance();
-        focusedPhoto.current = slide ? previousPhoto : null;
-        const rest = fitCamera(
-          bounds,
-          size.width / size.height,
-          camera.fov,
-          framingPoints,
-        );
-        const focusBounds =
-          focus instanceof Mesh ? new Box3().setFromObject(focus) : focus;
-        const target = focusBounds.getCenter(new Vector3());
-        const extent = focusBounds.getSize(new Vector3());
-        const distance = Math.max(
-          1.4,
-          extent.x /
-            (Math.tan((camera.fov * Math.PI) / 360) *
-              (size.width / size.height) *
-              0.65),
-        );
-        const fit =
-          focus instanceof Mesh
-            ? isPhoto
-              ? fitPhotoCamera(focus, size.width / size.height, camera.fov)
-              : fitMonitorCamera(
-                  focus,
-                  camera.position,
-                  size.width / size.height,
-                  camera.fov,
-                )
-            : {
-                target,
-                position: target
-                  .clone()
-                  .add(new Vector3(0, distance * 0.2, distance)),
-              };
-        controls.current.minDistance = Math.min(
-          0.6,
-          fit.position.distanceTo(fit.target) * 0.5,
-        );
-        if (reducedMotion) {
-          focusedPhoto.current =
-            isPhoto && focus instanceof Mesh ? focus : null;
-          camera.position.copy(fit.position);
-          controls.current.target.copy(fit.target);
-          controls.current.update();
-          invalidate();
-          onSettled?.(true);
-          return;
-        }
-        entrance.current = {
-          sample: isPhoto
+  useImperativeHandle(cameraActions, () => {
+    const focusOn: CameraActions['focusOn'] = (focus, onSettled) => {
+      if (!(camera instanceof PerspectiveCamera) || !controls.current) {
+        onSettled?.(false);
+        return;
+      }
+      const isPhoto =
+        focus instanceof Mesh && focus.name.startsWith('HIT_PHOTOS_POLAROID_');
+      const isNotebook = focus === notebook;
+      const previousPhoto = focusedPhoto.current;
+      const slide = isPhoto && previousPhoto !== null;
+      cancelEntrance();
+      focusedPhoto.current = slide ? previousPhoto : null;
+      focusedNotebook.current = null;
+      delete gl.domElement.dataset.drawingsView;
+      if (isNotebook) gl.domElement.dataset.drawingsView = 'moving';
+      controls.current.minPolarAngle = isNotebook
+        ? notebookCamera.minPolarAngle
+        : Math.PI / 4;
+      const rest = fitCamera(
+        bounds,
+        size.width / size.height,
+        camera.fov,
+        framingPoints,
+      );
+      const focusBounds =
+        focus instanceof Box3 ? focus : new Box3().setFromObject(focus);
+      const target = focusBounds.getCenter(new Vector3());
+      const extent = focusBounds.getSize(new Vector3());
+      const distance = Math.max(
+        1.4,
+        extent.x /
+          (Math.tan((camera.fov * Math.PI) / 360) *
+            (size.width / size.height) *
+            0.65),
+      );
+      const fit = isNotebook
+        ? fitNotebookCamera(notebook, size.width / size.height, camera.fov)
+        : focus instanceof Mesh
+          ? isPhoto
+            ? fitPhotoCamera(focus, size.width / size.height, camera.fov)
+            : fitMonitorCamera(
+                focus,
+                camera.position,
+                size.width / size.height,
+                camera.fov,
+              )
+          : {
+              target,
+              position: target
+                .clone()
+                .add(new Vector3(0, distance * 0.2, distance)),
+            };
+      controls.current.minDistance = Math.min(
+        0.6,
+        fit.position.distanceTo(fit.target) * 0.5,
+      );
+      if (reducedMotion) {
+        focusedPhoto.current = isPhoto && focus instanceof Mesh ? focus : null;
+        focusedNotebook.current = isNotebook ? notebook : null;
+        if (isNotebook) gl.domElement.dataset.drawingsView = 'focused';
+        camera.position.copy(fit.position);
+        controls.current.target.copy(fit.target);
+        controls.current.update();
+        invalidate();
+        onSettled?.(true);
+        return;
+      }
+      entrance.current = {
+        sample: isNotebook
+          ? createPhotoCameraApproach(
+              camera.position,
+              controls.current.target,
+              rest,
+              fit,
+              bounds.max.z,
+            )
+          : isPhoto
             ? slide
               ? createPhotoCameraSlide(
                   camera.position,
@@ -316,38 +344,52 @@ export function CameraControls({
                   bounds.max.z,
                 )
             : createCameraReset(camera.position, controls.current.target, fit),
-          duration: isPhoto
+        duration: isNotebook
+          ? notebookCamera.approachSeconds
+          : isPhoto
             ? slide
               ? photoCamera.slideSeconds
               : photoCamera.approachSeconds
             : 0.8,
-          kind: 'reset',
-          progress: 0,
-          elapsed: 0,
-          previous: null,
-          onSettled: (completed) => {
-            if (completed && isPhoto && focus instanceof Mesh)
-              focusedPhoto.current = focus;
-            onSettled?.(completed);
-          },
-        };
-        playTransition();
+        kind: 'reset',
+        progress: 0,
+        elapsed: 0,
+        previous: null,
+        onSettled: (completed) => {
+          if (completed && isNotebook) {
+            focusedNotebook.current = notebook;
+            gl.domElement.dataset.drawingsView = 'focused';
+          }
+          if (completed && isPhoto && focus instanceof Mesh)
+            focusedPhoto.current = focus;
+          onSettled?.(completed);
+        },
+      };
+      playTransition();
+    };
+    return {
+      focusOn,
+      focusDrawings: () => focusOn(notebook),
+      resetView: () => {
+        onReset();
+        resetView(true);
       },
-    }),
-    [
-      resetView,
-      bounds,
-      framingPoints,
-      onReset,
-      camera,
-      cancelEntrance,
-      size.width,
-      size.height,
-      reducedMotion,
-      invalidate,
-      playTransition,
-    ],
-  );
+    };
+  }, [
+    resetView,
+    notebook,
+    gl,
+    bounds,
+    framingPoints,
+    onReset,
+    camera,
+    cancelEntrance,
+    size.width,
+    size.height,
+    reducedMotion,
+    invalidate,
+    playTransition,
+  ]);
   useLayoutEffect(() => resetView(false), [resetView]);
   useEffect(() => {
     if (sceneRevealed) playTransition();

@@ -15,10 +15,17 @@
   inset: 0;
   opacity: 0;
   filter: var(--scene-filter);
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.45s ease;
 }
 .canvas[data-visible='true'] {
   opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas {
+    transition: none;
+  }
 }
 .canvas canvas {
   cursor: grab;
@@ -57,6 +64,11 @@
   text-decoration: underline;
   text-underline-offset: 0.3em;
   padding: 0.5rem;
+}
+@media (max-width: 600px) {
+  .cameraTools span {
+    display: none;
+  }
 }
 .diagnostics {
   position: absolute;

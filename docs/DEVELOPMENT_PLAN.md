@@ -233,7 +233,11 @@ asset contract passes; all planned routes and missing inputs are documented.
    updates the existing clones in place and restores baseline color, emission and
    roughness when leaving Synthwave. Clones survive theme changes; disposal occurs
    only when the scene lifecycle ends. This avoids
-   GPU program and texture churn before returning from the sauce close-up.
+   GPU program and texture churn during repeated sauce selections.
+   The later [animated salsa interaction](qa/SALSA_INTERACTION.md) replaces the
+   sauce camera close-up with a direct 1.06?1.17 second squeeze, nozzle droplets
+   and counter ripple. Existing HTML theme controls use the same request action;
+   content routes and unavailable scenes still select immediately.
 5. Reserve a full-viewport homepage scene area with compact identity and direct `View work`
    link. Add the lightweight loading animation/status and an intentional failure
    state. Include fallback artwork only if available; never request a missing image.
@@ -277,17 +281,18 @@ does not replace the frozen GLB; exact Blender-material fidelity remains unverif
    Bottle clicks/taps now resolve their named ancestor pivot through the shared
    theme map and call the same persistent action as the HTML controls. Red selects
    Original, green Noir, and orange Synthwave. Camera drags are excluded by the
-   existing six-pixel gesture threshold. Squeeze feedback remains pending.
-   The later sauce-picker direction makes the first bottle click focus the camera
-   on all three bottles without changing theme. Small HTML labels above the bottles
-   select themes; subsequent bottle clicks also select directly. Back to stand,
-   Reset view and Home close the labels. Reduced motion applies the close-up instantly.
-   Smooth returns retain the close-up's allowed distance until the final frame,
-   then restore the hero zoom limit, preventing OrbitControls from clamping the
-   camera outward at the start of the animation.
-   Sauce labels and Back to stand now mount only after the focus tween completes.
-   Interrupted focuses discard the pending reveal; reduced motion shows controls
-   immediately after its instant focus. No timer approximates camera completion.
+   existing six-pixel gesture threshold. The creator's animated salsa direction
+   replaces the sauce camera close-up: clicks immediately lean and squeeze the
+   selected bottle, release four small droplets and commit the theme at counter
+   impact. A thin ripple and faint wash motivate 450 ms material/light/UI easing.
+   The full GSAP sequence lasts approximately 1.06?1.17 seconds, then restores exact
+   authored transforms. The newest choice cancels older timelines; hidden scenes,
+   photo mode and motion-preference changes finish pending selection and reset
+   effects. Existing HTML controls share the request action, with immediate fallback
+   on content routes or unavailable WebGL. Reduced motion skips the choreography.
+   Body/nozzle names and hierarchy are asserted alongside the original pivots.
+   See the [salsa review](qa/SALSA_INTERACTION.md) for controls, tuning, captures,
+   resource ownership, tests and physical-device limits.
 2. **CRT:** retain the aligned monitor approach and route to real static `/work`
    content. The creator's latest [tile transition](qa/MONITOR_TRANSITION.md)
    replaces Matrix rain and glyphs with cream/navy diamond ribbons, terracotta and
@@ -310,6 +315,13 @@ does not replace the frozen GLB; exact Blender-material fidelity remains unverif
    previews when originals are absent; request supplied originals only on opening.
    Small extracted preview derivatives may support HTML controls before WebGL loads,
    without modifying the GLB or introducing full-resolution initial downloads.
+   The creator's later notebook request adds an in-scene camera close-up of both
+   drawings instead of introducing a dialog in this increment. Click either page
+   or use the Drawings button; the camera approaches from above/front in 1.2 seconds.
+   Portrait/landscape resizing preserves the close-up, reduced motion is immediate,
+   and Reset view/Home returns to the stand. Embedded previews remain unchanged;
+   original drawings and any future high-resolution viewer remain pending.
+   See the [notebook camera review](qa/NOTEBOOK_CAMERA.md).
 4. **Polaroids:** use in-scene close-ups with correct photo mapping and next/previous
    arrows. Add damped pivot sway with bounded delta/angle and a click/drag threshold;
    keep the rail fixed and preserve touch scrolling.

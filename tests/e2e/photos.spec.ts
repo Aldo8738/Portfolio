@@ -13,6 +13,28 @@ async function ready(page: Page) {
   return stage;
 }
 
+test('visible photos remain clickable while another photo is focused', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const stage = await ready(page);
+  await page.getByText('Photos', { exact: true }).click();
+  await page.getByRole('link', { name: 'Lucha', exact: true }).click();
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  const box = await stage.locator('canvas').boundingBox();
+  if (!box) throw new Error('Scene canvas missing');
+  await page.screenshot({ path: testInfo.outputPath('visible-neighbor.png') });
+  await page.mouse.click(box.x + box.width * 0.85, box.y + box.height * 0.55);
+  await expect(stage).toHaveAttribute('data-photo-id', 'paris');
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.5);
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await page
+    .getByRole('button', { name: 'Back to stand', exact: true })
+    .click();
+  await expect(stage).not.toHaveAttribute('data-photo-state');
+});
+
 for (const width of [640, 390]) {
   test(`photos stay in the scene with arrows and a clean return at ${width}px`, async ({
     page,

@@ -82,40 +82,18 @@ test('stand sauce bottles select themes and keep HTML controls synchronized', as
       box.x + ((target.x + 1) * box.width) / 2,
       box.y + ((1 - target.y) * box.height) / 2,
     );
-    await expect(
-      page.getByRole('button', { name: 'Back to stand', exact: true }),
-    ).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute(
-      'data-theme',
-      'original',
-    );
-    const label = {
-      synthwave: 'Synthwave',
-      noir: 'Noir',
-      original: 'Original',
-    }[theme];
-    await page.screenshot({ path: `test-results/salsa-closeup-${theme}.png` });
-    await page.getByRole('button', { name: label, exact: true }).click();
-    await expect(
-      page.getByRole('button', { name: label, exact: true }),
-    ).toHaveAttribute('aria-pressed', 'true');
-    await expect(
-      page.getByRole('button', { name: label, exact: true }),
-    ).toHaveCSS('border-top-width', '3px');
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
     await expect(page.locator(`[data-theme-id="${theme}"]`)).toHaveAttribute(
       'aria-pressed',
       'true',
     );
+    await expect(stage.locator('canvas')).toHaveAttribute(
+      'data-salsa-phase',
+      'idle',
+    );
     expect(
       await page.evaluate(() => localStorage.getItem('taqueria-theme')),
     ).toBe(theme);
-    await page
-      .getByRole('button', { name: 'Back to stand', exact: true })
-      .click();
-    await expect(
-      page.getByRole('button', { name: 'Back to stand', exact: true }),
-    ).toHaveCount(0);
     await page.evaluate(() => {
       document.documentElement.dataset.theme = 'original';
       window.dispatchEvent(new CustomEvent('taqueria:theme'));
@@ -160,105 +138,118 @@ test('interactive objects show a pointer and empty scene restores grab', async (
   await expect(canvas).toHaveCSS('cursor', 'grab');
 });
 
-test('sauce close-up returns with an animated reset', async ({ page }) => {
-  test.setTimeout(120000);
-  await page.addInitScript(() => {
-    const prototype = WebGL2RenderingContext.prototype;
-    const deleteProgram = prototype.deleteProgram;
-    const deleteTexture = prototype.deleteTexture;
-    prototype.deleteProgram = function (program) {
-      document.documentElement.dataset.deletedPrograms = String(
-        Number(document.documentElement.dataset.deletedPrograms ?? 0) + 1,
-      );
-      return deleteProgram.call(this, program);
-    };
-    prototype.deleteTexture = function (texture) {
-      document.documentElement.dataset.deletedTextures = String(
-        Number(document.documentElement.dataset.deletedTextures ?? 0) + 1,
-      );
-      return deleteTexture.call(this, texture);
-    };
-  });
+test('salsa squeezes directly, spreads its theme and settles without moving the camera', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(90000);
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.clock.install({ time: new Date('2026-10-28T10:00:00Z') });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await getCrtPosition(page);
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const canvas = page.locator('[data-scene-status] canvas');
-  await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
+  await page.clock.pauseAt(new Date('2026-10-28T11:00:00Z'));
   const stage = page.locator('[data-scene-status]');
+  const canvas = stage.locator('canvas');
   const metrics: SceneMetrics = JSON.parse(
     (await stage.getAttribute('data-scene-metrics')) ?? '{}',
   );
   const box = await canvas.boundingBox();
   const target = metrics.targets.SALSA_ORANGE_PIVOT;
-  if (!box || !target) throw new Error('Sauce target missing');
+  if (!box || !target) throw new Error('Salsa target missing');
   await canvas.evaluate((element) => {
-    let zooming = false;
-    let earlyLabels = false;
-    const observer = new MutationObserver(() => {
-      const state = element.getAttribute('data-camera-entrance');
-      if (state === 'resetting') {
-        zooming = true;
-        earlyLabels ||= document.querySelector('[data-salsa-label]') !== null;
-      }
-      if (zooming && state === 'complete') {
-        element.setAttribute('data-labels-during-zoom', String(earlyLabels));
-        observer.disconnect();
-      }
-    });
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributes: true,
-      attributeFilter: ['data-camera-entrance'],
-    });
-  });
-  await page.mouse.click(
-    box.x + ((target.x + 1) * box.width) / 2,
-    box.y + ((1 - target.y) * box.height) / 2,
-  );
-  await expect(
-    page.getByRole('button', { name: 'Back to stand', exact: true }),
-  ).toBeVisible();
-  await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
-  await expect(canvas).toHaveAttribute('data-labels-during-zoom', 'false');
-  await expect(page.locator('[data-salsa-label]')).toHaveCount(3);
-  await page.evaluate(() => {
-    document.documentElement.dataset.deletedPrograms = '0';
-    document.documentElement.dataset.deletedTextures = '0';
-  });
-  for (const theme of ['Synthwave', 'Original', 'Synthwave']) {
-    await page.getByRole('button', { name: theme, exact: true }).click();
-    await expect(
-      page.getByRole('button', { name: theme, exact: true }),
-    ).toHaveAttribute('aria-pressed', 'true');
-  }
-  await canvas.evaluate((element) => {
+    const phases: string[] = [];
     const observer = new MutationObserver((records) => {
-      if (records.some((record) => record.oldValue === 'resetting')) {
-        element.setAttribute('data-observed-reset', 'true');
-        observer.disconnect();
+      for (const record of records) {
+        if (record.oldValue) phases.push(record.oldValue);
       }
+      phases.push(element.getAttribute('data-salsa-phase') ?? '');
+      element.setAttribute('data-salsa-observed', JSON.stringify(phases));
     });
     observer.observe(element, {
       attributes: true,
       attributeOldValue: true,
-      attributeFilter: ['data-camera-entrance'],
+      attributeFilter: ['data-salsa-phase'],
     });
   });
-  await page
-    .getByRole('button', { name: 'Back to stand', exact: true })
-    .click();
-  await expect(canvas).toHaveAttribute('data-observed-reset', 'true');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(canvas).toHaveAttribute('data-salsa-motion', 'full');
+  await page.mouse.click(
+    box.x + ((target.x + 1) * box.width) / 2,
+    box.y + ((1 - target.y) * box.height) / 2,
+  );
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'squeeze');
+  await page.clock.runFor(330);
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'release');
+  await page.screenshot({ path: testInfo.outputPath('salsa-droplets.png') });
+  await page.clock.runFor(250);
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'ripple');
+  await page.screenshot({ path: testInfo.outputPath('salsa-ripple.png') });
+  await page.clock.runFor(650);
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'idle');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'synthwave');
   await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
-  await expect(page.locator('html')).toHaveAttribute(
-    'data-deleted-programs',
-    '0',
+  const phases = JSON.parse(
+    (await canvas.getAttribute('data-salsa-observed')) ?? '[]',
   );
-  await expect(page.locator('html')).toHaveAttribute(
-    'data-deleted-textures',
-    '0',
+  expect(phases).toEqual(
+    expect.arrayContaining(['squeeze', 'release', 'ripple', 'idle']),
   );
+  await page.screenshot({ path: testInfo.outputPath('salsa-settled.png') });
+  await page.getByText('Choose salsa', { exact: true }).click();
+  await page.locator('[data-theme-id="noir"]').focus();
+  await page.keyboard.press('Enter');
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'squeeze');
+  await page
+    .locator('[data-theme-id="original"]')
+    .evaluate((button) => (button as HTMLButtonElement).click());
+  await page.clock.runFor(1200);
+  await expect(canvas).toHaveAttribute('data-salsa-phase', 'idle');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'original');
+  await expect(page.locator('[data-theme-id="original"]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(errors).toEqual([]);
+});
+
+test('touch selects salsa without hover or camera movement', async ({
+  browser,
+}) => {
+  test.setTimeout(60000);
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: 'reduce',
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto('/');
+    await getCrtPosition(page);
+    const stage = page.locator('[data-scene-status]');
+    const metrics: SceneMetrics = JSON.parse(
+      (await stage.getAttribute('data-scene-metrics')) ?? '{}',
+    );
+    const box = await stage.locator('canvas').boundingBox();
+    const target = metrics.targets.SALSA_GREEN_PIVOT;
+    if (!box || !target) throw new Error('Mobile salsa target missing');
+    await page.touchscreen.tap(
+      box.x + ((target.x + 1) * box.width) / 2,
+      box.y + ((1 - target.y) * box.height) / 2,
+    );
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'noir');
+    await expect(stage.locator('canvas')).toHaveAttribute(
+      'data-salsa-phase',
+      'idle',
+    );
+    await expect(stage.locator('canvas')).toHaveAttribute(
+      'data-camera-entrance',
+      'complete',
+    );
+  } finally {
+    await context.close();
+  }
 });
 
 test('normal-motion camera entrance can be interrupted and reset without blocking work navigation', async ({
