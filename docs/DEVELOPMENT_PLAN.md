@@ -358,23 +358,25 @@ does not replace the frozen GLB; exact Blender-material fidelity remains unverif
    the asset contract alongside the original pivots and hit targets. Sketchbook
    viewer integration and creator visual approval remain pending.
    See the [photo camera review](qa/PHOTO_CAMERA.md) for checks, captures and limits.
-5. **Amp:** clicking the amp or pedal toggles the supplied
-   `public/media/music/original/h6.mp3` through the same action as the visible
-   existing Sound on/off button. No extra button or track information is shown.
-   Sound on loops `public/media/sound effects/grilling-meat.mp3`. Amp playback
-   takes priority and pauses grilling; stopping or finishing the amp restores
-   grilling. Sound off pauses both, and turning sound on again starts grilling.
-   Sauce presses and theme choices play `cartoon-splat.mp3`; animated camera
-   approaches, returns and CRT activation play `soft-whoosh.mp3`. Both supplied
-   effects live in `public/media/sound effects/`, prepare only after sound opt-in, and respect
-   the existing sound toggle. Camera completion or interruption stops the whoosh;
-   reduced-motion instant camera changes remain silent. Muting pauses all audio.
-   A native audio element receives its source only after
-   interaction; no audio is fetched on entry. Controls report loading, playback
-   and retryable failure, and remain available without WebGL. Playback pauses when
-   the page hides, history changes, the CRT opens Work, or the experience unmounts.
-   Track metadata lives in `src/content/media.ts`; `h6` is the supplied filename,
-   not an invented song title. Browser checks use the actual recording.
+5. **Amp:** the creator's [guitar video brief](AMP_GUITAR_VIDEO_EXPERIENCE_CODEX_BRIEF.md)
+   replaces the audio-only amp action with the supplied performance video. Amp/pedal
+   clicks and the Guitar button synchronously attempt native video playback while
+   one GSAP timeline composes the camera and reveals a DOM panel from the amp's
+   projected location. Controls lock during the reversible transition; the scene
+   stays mounted and uses demand rendering once open. Close/Escape restores the
+   saved camera and controls, including interrupted approaches. Reduced motion
+   retains the camera pose with a short fade. Main navigation remains accessible.
+   The optimized `public/media/video/guitar.mp4` is 11.8 MB, H.264/AAC, fast-start,
+   720x1280. Its 94 MB source is archived outside public and ignored by Git. The real
+   poster and video source are assigned only on interaction. Native controls and
+   Play/Retry fallback cover seek, volume, buffering, rejection and media errors.
+   Video audio is authoritative; the separate `h6.mp3` player is removed. Explicit
+   mute is respected, ambience/effects pause while video is active, global/native
+   sound state stays synchronized, and close restores prior ambience where allowed.
+   Hidden tabs pause without automatic audible resume; navigation/unmount stops and
+   unloads playback. Existing salsa/camera effects still respect the sound toggle
+   outside video mode. See the [guitar video review](qa/GUITAR_VIDEO.md) for assets,
+   lifecycle, timing, captures, measurements and manual Safari/device limits.
 
 Exit gate for each increment: both HTML and 3D controls work; keyboard/touch and
 reduced motion work; cleanup is verified; unopened originals/audio cause no requests.

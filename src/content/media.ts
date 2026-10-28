@@ -52,6 +52,11 @@ export const guitarTrack: { src: string; title: string } | null = {
 export const backgroundTrack = {
   src: '/media/sound%20effects/grilling-meat.mp3',
 };
+export const guitarVideo = {
+  src: '/media/video/guitar.mp4',
+  poster: '/media/video/guitar-poster.jpg',
+  label: "Aldo's guitar performance",
+} as const;
 export const salsaSound = {
   src: '/media/sound%20effects/cartoon-splat.mp3',
 };

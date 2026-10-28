@@ -30,6 +30,7 @@ export const requiredNodeNames = [
   'PHOTOS_PRINT_paris',
   'PHOTOS_PRINT_canal',
   'HIT_MUSIC_AMP',
+  'AMP_INTERACTION',
   'HIT_MUSIC_PEDAL',
 ] as const;
 

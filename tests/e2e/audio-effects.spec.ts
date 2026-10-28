@@ -101,6 +101,10 @@ test('CRT approach whooshes while sound is on and stops audio on entry to Work',
     )
     .toBeGreaterThanOrEqual(2);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(stage.locator('canvas')).toHaveAttribute(
+    'data-salsa-motion',
+    'full',
+  );
   await page.mouse.click(
     box.x + ((crt.x + 1) * box.width) / 2,
     box.y + ((1 - crt.y) * box.height) / 2,

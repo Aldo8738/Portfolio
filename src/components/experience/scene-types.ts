@@ -1,7 +1,13 @@
 import type { RefObject } from 'react';
 import type { Box3, Object3D } from 'three';
+import type { gsap as gsapApi } from 'gsap';
+
+export type GuitarPhase = 'idle' | 'opening' | 'open' | 'closing';
 
 export interface CameraActions {
+  composeGuitar: (
+    timeline: ReturnType<typeof gsapApi.timeline>,
+  ) => { origin: { x: number; y: number }; restore: () => void } | undefined;
   focusDrawings: () => void;
   resetView: () => void;
   focusOn: (
@@ -30,8 +36,9 @@ export interface SceneMetrics {
   targets: Record<string, { x: number; y: number }>;
 }
 export interface CanvasProps {
+  guitarPhase: GuitarPhase;
   onCameraMotion: (moving: boolean) => void;
-  onMusicToggle: () => void;
+  onGuitarOpen: () => void;
   onMusicPause: () => void;
   photoId: string | null;
   onPhotoRequest: (id: string) => void;

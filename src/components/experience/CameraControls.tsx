@@ -8,7 +8,15 @@ import {
 } from 'react';
 import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Box3, Mesh, PerspectiveCamera, Vector3, type Object3D } from 'three';
+import {
+  Box3,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  Vector3,
+  type Object3D,
+} from 'three';
+import { fitGuitarCamera, guitarMotion } from '../../lib/guitar-camera';
 import { gsap } from 'gsap/gsap-core';
 import { fitCamera, heroCamera } from '../../lib/camera';
 import { fitMonitorCamera } from '../../lib/monitor-camera';
@@ -32,7 +40,9 @@ interface Props extends Pick<
   | 'cameraActions'
   | 'sceneRevealed'
   | 'onCameraMotion'
+  | 'guitarPhase'
 > {
+  amp: Object3D;
   notebook: Object3D;
   bounds: Box3;
   framingPoints: Vector3[];
@@ -42,6 +52,8 @@ interface Props extends Pick<
 const keyboardStep = Math.PI / 18;
 
 export function CameraControls({
+  amp,
+  guitarPhase,
   notebook,
   bounds,
   framingPoints,
@@ -58,6 +70,7 @@ export function CameraControls({
   const initialView = useRef(true);
   const focusedPhoto = useRef<Mesh | null>(null);
   const focusedNotebook = useRef<Object3D | null>(null);
+  const guitarRestore = useRef<(() => void) | null>(null);
   const entrance = useRef<{
     sample: (progress: number, position: Vector3, target: Vector3) => void;
     duration: number;
@@ -115,6 +128,7 @@ export function CameraControls({
   }, [camera, gl, invalidate, reducedMotion, onCameraMotion]);
   const resetView = useCallback(
     (smooth = true) => {
+      if (guitarRestore.current) return;
       if (!(camera instanceof PerspectiveCamera) || !controls.current) return;
       const photo = focusedPhoto.current;
       const book = focusedNotebook.current;
@@ -368,6 +382,107 @@ export function CameraControls({
       playTransition();
     };
     return {
+      composeGuitar: (sequence) => {
+        const orbit = controls.current;
+        if (!orbit || guitarRestore.current) return;
+        cancelEntrance();
+        const position = camera.position.clone();
+        const rotation = camera.quaternion.clone();
+        const target = orbit.target.clone();
+        const saved = {
+          enabled: orbit.enabled,
+          damping: orbit.enableDamping,
+          min: orbit.minDistance,
+          max: orbit.maxDistance,
+          polar: orbit.minPolarAngle,
+          photo: focusedPhoto.current,
+          notebook: focusedNotebook.current,
+        };
+        const anchor = new Box3()
+          .setFromObject(amp)
+          .getCenter(new Vector3())
+          .project(camera);
+        const origin = {
+          x: ((anchor.x + 1) * size.width) / 2,
+          y: ((1 - anchor.y) * size.height) / 2,
+        };
+        const fit = reducedMotion
+          ? { position, target }
+          : fitGuitarCamera(
+              bounds,
+              framingPoints,
+              amp,
+              size.width / size.height,
+              camera instanceof PerspectiveCamera ? camera.fov : 38,
+            );
+        orbit.enabled = false;
+        orbit.enableDamping = false;
+        orbit.minDistance = 0;
+        orbit.maxDistance = Infinity;
+        const pulseMesh = amp.getObjectByName('HIT_MUSIC_AMP');
+        const material =
+          pulseMesh instanceof Mesh &&
+          pulseMesh.material instanceof MeshStandardMaterial
+            ? pulseMesh.material
+            : null;
+        const pulse = material?.clone();
+        if (pulse && pulseMesh instanceof Mesh) {
+          pulse.emissive.set('#ffd09a');
+          pulse.emissiveIntensity = 0;
+          pulseMesh.material = pulse;
+          sequence.to(
+            pulse,
+            { emissiveIntensity: 0.28, duration: 0.1, repeat: 1, yoyo: true },
+            0,
+          );
+        }
+        const sample = createCameraReset(position, target, fit);
+        const movement = { progress: 0 };
+        sequence.to(
+          movement,
+          {
+            progress: 1,
+            duration: reducedMotion
+              ? guitarMotion.reduced
+              : guitarMotion.approach,
+            ease: 'power2.inOut',
+            onUpdate: () => {
+              sample(movement.progress, camera.position, orbit.target);
+              orbit.update();
+              camera.updateMatrixWorld();
+              invalidate();
+            },
+          },
+          0,
+        );
+        const restore = () => {
+          if (guitarRestore.current !== restore) return;
+          guitarRestore.current = null;
+          orbit.minDistance = saved.min;
+          orbit.maxDistance = saved.max;
+          orbit.minPolarAngle = saved.polar;
+          camera.position.copy(position);
+          orbit.target.copy(target);
+          orbit.update();
+          camera.position.copy(position);
+          camera.quaternion.copy(rotation);
+          camera.updateMatrixWorld();
+          orbit.enabled = saved.enabled;
+          orbit.enableDamping = saved.damping;
+          focusedPhoto.current = saved.photo;
+          focusedNotebook.current = saved.notebook;
+          if (
+            pulseMesh instanceof Mesh &&
+            pulseMesh.material === pulse &&
+            material
+          )
+            pulseMesh.material = material;
+          pulse?.dispose();
+          invalidate();
+        };
+        guitarRestore.current = restore;
+        return { origin, restore };
+      },
       focusOn,
       focusDrawings: () => focusOn(notebook),
       resetView: () => {
@@ -378,6 +493,7 @@ export function CameraControls({
   }, [
     resetView,
     notebook,
+    amp,
     gl,
     bounds,
     framingPoints,
@@ -395,6 +511,7 @@ export function CameraControls({
     if (sceneRevealed) playTransition();
   }, [sceneRevealed, playTransition, resetView]);
   useEffect(() => cancelEntrance, [cancelEntrance]);
+  useEffect(() => () => guitarRestore.current?.(), []);
   useEffect(() => {
     if (entrance.current) entrance.current.previous = null;
   }, [active]);
@@ -462,7 +579,7 @@ export function CameraControls({
     <OrbitControls
       ref={controls}
       domElement={gl.domElement}
-      enabled={active}
+      enabled={active && guitarPhase === 'idle'}
       onStart={cancelEntrance}
       enablePan={false}
       enableZoom

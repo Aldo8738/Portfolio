@@ -267,6 +267,12 @@ pending original drawing assets.
 
 ### 4.6 Amplifier → the creator's guitar cover
 
+**Later creator direction:** The [guitar video brief](docs/AMP_GUITAR_VIDEO_EXPERIENCE_CODEX_BRIEF.md)
+and [implementation review](docs/qa/GUITAR_VIDEO.md) supersede the audio-only action
+below. Use the supplied, optimized `public/media/video/guitar.mp4` with a native
+HTML video layer and synchronized camera/panel choreography. The separate guitar
+recording must never play alongside the video.
+
 - Interactive targets: `HIT_MUSIC_AMP`, optionally `HIT_MUSIC_PEDAL`; group `AMP_INTERACTION`.
 - Click/tap/Enter toggles **play/pause** of a **user-provided recording of Aldo playing a guitar cover**. **No autoplay.** The audio file is not embedded in the GLB; source file/path must be supplied.
 - Use HTMLAudioElement or Web Audio API only as necessary; preload **none/metadata**, instantiate/load on first interaction. Use compressed audio (MP3/AAC/Opus depending on browser compatibility); don't use background streaming before interaction.

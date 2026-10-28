@@ -42,6 +42,16 @@
 .stage[data-photo-state='focused'] .canvas canvas {
   cursor: default;
 }
+.stage:not([data-guitar-phase='idle']) .canvas canvas {
+  cursor: default;
+}
+.guitarFallback {
+  position: absolute;
+  z-index: 4;
+  bottom: 6rem;
+  left: 1rem;
+  min-height: 44px;
+}
 .cameraTools {
   position: absolute;
   z-index: 3;

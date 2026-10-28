@@ -1,0 +1,71 @@
+.panel {
+  position: absolute;
+  left: clamp(1rem, 7vw, 10rem);
+  top: max(6.25rem, 13svh);
+  width: min(36vw, 36svh, 26rem);
+  z-index: 4;
+  max-height: calc(100svh - 8rem);
+  overflow-y: auto;
+  transform-origin: center;
+  border: 1px solid #e9b27e66;
+  border-radius: 0.8rem;
+  background: #10121b;
+  color: #fff0dc;
+  box-shadow:
+    0 0 2rem #e497592b,
+    0.4rem 0 3rem #a032691f,
+    0 1rem 2rem #0007;
+}
+.topline {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #10121b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.7rem;
+  min-height: 44px;
+  gap: 0.5rem;
+}
+.topline span {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.panel button {
+  min-height: 44px;
+  padding: 0.4rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  background: #17151a;
+}
+.feedback {
+  padding: 0 0.6rem;
+  font-size: 0.75rem;
+}
+.feedback p {
+  margin: 0;
+}
+.feedback p:not(:empty) {
+  padding: 0.6rem 0;
+}
+.feedback button {
+  text-decoration: underline;
+}
+@media (max-width: 700px), (max-aspect-ratio: 6/5) {
+  .panel {
+    width: min(78vw, 32svh);
+    left: calc((100% - min(78vw, 32svh)) / 2);
+    top: max(6.25rem, 14svh);
+  }
+}

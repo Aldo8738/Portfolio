@@ -57,8 +57,9 @@ function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
   return null;
 }
 function Model({
+  guitarPhase,
   onCameraMotion,
-  onMusicToggle,
+  onGuitarOpen,
   onMusicPause,
   photoId,
   onPhotoRequest,
@@ -70,8 +71,9 @@ function Model({
   onReady,
 }: Pick<
   CanvasProps,
+  | 'guitarPhase'
   | 'onCameraMotion'
-  | 'onMusicToggle'
+  | 'onGuitarOpen'
   | 'onMusicPause'
   | 'photoId'
   | 'onPhotoRequest'
@@ -112,6 +114,11 @@ function Model({
     () => scene.getObjectByName('TROMPO_ROTATING'),
     [scene],
   );
+  const amp = useMemo(() => {
+    const node = scene.getObjectByName('AMP_INTERACTION');
+    if (!node) throw new Error('Required amplifier group missing');
+    return node;
+  }, [scene]);
   const framingPoints = useMemo(() => getFramingPoints(scene), [scene]);
   const notebook = useMemo(() => {
     const node = scene.getObjectByName('SKETCHBOOK_INTERACTION');
@@ -130,7 +137,11 @@ function Model({
   }, [portfolio.phase, onMusicPause]);
   const salsa = useSalsaInteraction(
     scene,
-    active && sceneRevealed && !photoId && portfolio.phase === 'idle',
+    active &&
+      sceneRevealed &&
+      !photoId &&
+      guitarPhase === 'idle' &&
+      portfolio.phase === 'idle',
     reducedMotion,
   );
   usePhotoSway(
@@ -139,6 +150,7 @@ function Model({
       sceneRevealed &&
       !reducedMotion &&
       !photoId &&
+      guitarPhase === 'idle' &&
       portfolio.phase === 'idle',
     reducedMotion,
   );
@@ -239,6 +251,8 @@ function Model({
         <SceneBenchmark />
       )}
       <CameraControls
+        amp={amp}
+        guitarPhase={guitarPhase}
         notebook={notebook}
         onCameraMotion={onCameraMotion}
         onReset={closeOverlays}
@@ -268,7 +282,8 @@ function Model({
           if (
             event.button !== 0 ||
             dragged.current ||
-            portfolio.phase !== 'idle'
+            portfolio.phase !== 'idle' ||
+            guitarPhase !== 'idle'
           )
             return;
           for (
@@ -278,7 +293,7 @@ function Model({
           ) {
             if (!photoId && node.name === 'AMP_INTERACTION') {
               event.stopPropagation();
-              onMusicToggle();
+              onGuitarOpen();
               return;
             }
             const match = /^POLAROID_(\d)_SWING_PIVOT$/.exec(node.name);

@@ -6,11 +6,20 @@ import {
   type ComponentType,
 } from 'react';
 import { photos, type MediaItem } from '../../content/media';
+import {
+  GuitarVideoExperience,
+  type GuitarVideoActions,
+} from './GuitarVideoExperience';
 import { PhotoControls } from './PhotoControls';
 import { AmpAudio, type AmpAudioActions } from './AmpAudio';
 import { SceneErrorBoundary } from './SceneErrorBoundary';
 import { useSceneActivity } from './useSceneActivity';
-import type { CameraActions, CanvasProps, SceneMetrics } from './scene-types';
+import type {
+  CameraActions,
+  CanvasProps,
+  SceneMetrics,
+  GuitarPhase,
+} from './scene-types';
 import styles from './Experience.module.css';
 
 type SceneState =
@@ -27,13 +36,16 @@ export default function Experience() {
     photo: MediaItem;
     phase: 'zooming' | 'focused';
   } | null>(null);
+  const [guitarPhase, setGuitarPhase] = useState<GuitarPhase>('idle');
+  const guitar = useRef<GuitarVideoActions | null>(null);
+  const guitarTrigger = useRef<HTMLButtonElement>(null);
   const photoOpener = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState('Preparing the stand…');
   const [debug, setDebug] = useState(false);
   const [loaderDismissed, setLoaderDismissed] = useState(false);
   const cameraActions = useRef<CameraActions | null>(null);
   const ampAudio = useRef<AmpAudioActions | null>(null);
-  const toggleMusic = useCallback(() => ampAudio.current?.toggle(), []);
+  const openGuitar = useCallback(() => guitar.current?.open(), []);
   const pauseMusic = useCallback(() => ampAudio.current?.pause(), []);
   const cameraMotion = useCallback(
     (moving: boolean) => ampAudio.current?.cameraMotion(moving),
@@ -41,6 +53,7 @@ export default function Experience() {
   );
   const { visible, reducedMotion } = useSceneActivity(container);
   const onFailure = useCallback((message: string) => {
+    guitar.current?.close(true, false);
     setState({ status: 'failed', message });
     setPhotoView(null);
   }, []);
@@ -129,6 +142,7 @@ export default function Experience() {
       <div
         className={styles.stage}
         data-scene-status={state.status}
+        data-guitar-phase={guitarPhase}
         data-photo-id={photoView?.photo.id}
         data-photo-state={photoView?.phase}
         data-scene-metrics={
@@ -143,12 +157,17 @@ export default function Experience() {
             <SceneErrorBoundary onFailure={onFailure}>
               <CanvasComponent
                 onCameraMotion={cameraMotion}
-                onMusicToggle={toggleMusic}
+                guitarPhase={guitarPhase}
+                onGuitarOpen={openGuitar}
                 onMusicPause={pauseMusic}
                 photoId={photoView?.photo.id ?? null}
                 onPhotoRequest={onPhotoRequest}
                 onPhotoSettled={onPhotoSettled}
-                active={visible && photoView?.phase !== 'focused'}
+                active={
+                  visible &&
+                  photoView?.phase !== 'focused' &&
+                  guitarPhase !== 'open'
+                }
                 reducedMotion={reducedMotion}
                 cameraActions={cameraActions}
                 sceneRevealed={state.status === 'ready' && loaderDismissed}
@@ -160,10 +179,19 @@ export default function Experience() {
           </div>
         )}
         <AmpAudio ref={ampAudio} />
+        <GuitarVideoExperience
+          ref={guitar}
+          cameraActions={cameraActions}
+          audio={ampAudio}
+          phase={guitarPhase}
+          onPhaseChange={setGuitarPhase}
+          reducedMotion={reducedMotion}
+          trigger={guitarTrigger}
+        />
         <details
           className={styles.photoPicker}
           data-photo-picker
-          hidden={Boolean(photoView)}
+          hidden={Boolean(photoView) || guitarPhase !== 'idle'}
         >
           <summary>Photos</summary>
           <nav aria-label="Photos">
@@ -209,8 +237,16 @@ export default function Experience() {
             onSelect={onPhotoRequest}
           />
         )}
-        {state.status === 'ready' && !photoView && (
+        {state.status === 'ready' && !photoView && guitarPhase === 'idle' && (
           <div className={styles.cameraTools} data-camera-tools>
+            <button
+              ref={guitarTrigger}
+              type="button"
+              aria-label="Play Aldo's guitar video"
+              onClick={openGuitar}
+            >
+              Guitar ↗
+            </button>
             <span>Drag to explore · Scroll to zoom</span>
             <button
               type="button"
@@ -233,6 +269,16 @@ export default function Experience() {
             and minus to zoom. Press Home to reset. Click the CRT or use the
             View work link.
           </p>
+        )}
+        {state.status === 'failed' && guitarPhase === 'idle' && (
+          <button
+            ref={guitarTrigger}
+            className={styles.guitarFallback}
+            type="button"
+            onClick={openGuitar}
+          >
+            Play Aldo's guitar video
+          </button>
         )}
         <noscript>
           <p>

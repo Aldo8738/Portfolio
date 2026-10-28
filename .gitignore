@@ -17,6 +17,9 @@ test-results-dev/
 .env.*
 !.env.example
 
+# Local source footage; the optimized playback copy is public
+assets/reference/media/guitar-original.mp4
+
 # Local logs and operating-system files
 npm-debug.log*
 .DS_Store
