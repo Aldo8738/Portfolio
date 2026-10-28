@@ -48,9 +48,15 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
 
 ## Content and assets
 
-- `/`, `/work`, `/about`, `/contact` and `/404` are real HTML pages.
+- `/`, `/work`, `/cv`, `/about`, `/contact` and `/404` are real HTML pages.
+- `src/content/cv.ts` supplies the CV chronology and skill catalog. The existing
+  navigation links to `/cv`; no download is shown until an approved public résumé
+  file is configured. See [CV implementation and review](docs/qa/CV.md).
 - `src/pages/work/[slug].astro` generates a page for each supplied project in
-  `src/content/portfolio.ts`. Empty content produces no fake project pages.
+  `src/content/portfolio.ts`. Four creator-described projects now have real static
+  detail pages. The [Selected Work brief](docs/SELECTED_WORK_CODEX_BRIEF.md) defines
+  the exhibition; [implementation and QA notes](docs/qa/SELECTED_WORK.md) explain its
+  content, visual registry, routing, and how to add a project.
 - `src/content/site.ts` and `src/content/media.ts` hold optional personal details,
   descriptions and full-resolution media paths. Replace explicit missing values.
 - The production model URL is

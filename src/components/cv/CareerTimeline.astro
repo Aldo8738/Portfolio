@@ -1,0 +1,15 @@
+---
+import type { CareerEntry } from '../../content/cv';
+import CareerEntryView from './CareerEntry.astro';
+interface Props {
+  entries: readonly CareerEntry[];
+  label: string;
+}
+const { entries, label } = Astro.props;
+---
+
+<ol class="career-timeline" aria-label={label}>
+  {entries.map((entry) => (
+    <CareerEntryView entry={entry} />
+  ))}
+</ol>

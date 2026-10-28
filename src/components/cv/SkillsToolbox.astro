@@ -1,0 +1,27 @@
+---
+import { cv, skillGroups, skills } from '../../content/cv';
+---
+
+<section class="cv-toolbox cv-divider" aria-labelledby="toolbox-title">
+  <header class="cv-section-heading">
+    <h2 id="toolbox-title">Technical toolbox</h2>
+    <p>{cv.toolboxIntro}</p>
+  </header>
+  <div class="skill-groups">
+    {skillGroups.map((group) => (
+      <section aria-labelledby={`skills-${group.id}`}>
+        <h3 id={`skills-${group.id}`}>{group.label}</h3>
+        <ul>
+          {skills
+            .filter((skill) => skill.category === group.id)
+            .sort((a, b) => a.order - b.order)
+            .map((skill) => (
+              <li data-skill-id={skill.id}>
+                <span>{skill.label}</span>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,79 @@
+---
+import { cv, experience, education } from '../../content/cv';
+import CareerTimeline from './CareerTimeline.astro';
+import SkillsToolbox from './SkillsToolbox.astro';
+import './cv.css';
+---
+
+<article class="cv-page shell" data-cv-page>
+  <div class="cv-opening">
+    <header class="cv-intro">
+      <p class="eyebrow">{cv.eyebrow}</p>
+      <h1>
+        {cv.headline.replace(/\.$/, '')}
+        <span class="cv-period">.</span>
+      </h1>
+      <p class="cv-subheading">{cv.intro}</p>
+      {cv.download && (
+        <a class="text-link cv-download" href={cv.download.url} download>
+          Download CV ({cv.download.format}) <span aria-hidden="true">↗</span>
+        </a>
+      )}
+    </header>
+    <section class="cv-experience" aria-labelledby="experience-title">
+      <h2 class="sr-only" id="experience-title">
+        Professional experience
+      </h2>
+      <CareerTimeline
+        entries={experience}
+        label="Professional experience, newest first"
+      />
+    </section>
+  </div>
+  <section class="cv-education cv-divider" aria-labelledby="education-title">
+    <header class="cv-section-heading">
+      <h2 id="education-title">Education</h2>
+      <p>{cv.educationIntro}</p>
+    </header>
+    <CareerTimeline entries={education} label="Education" />
+  </section>
+  <SkillsToolbox />
+  <section class="cv-languages cv-divider" aria-labelledby="languages-title">
+    <h2 id="languages-title">Languages</h2>
+    <dl>
+      {cv.languages.map((language) => (
+        <div>
+          <dt>{language.label}</dt>
+          <dd>{language.level}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+  {cv.certifications.length > 0 && (
+    <details class="cv-certifications cv-divider">
+      <summary>Selected certifications</summary>
+      <ul>
+        {cv.certifications.map((certificate) => (
+          <li>
+            <strong>{certificate.title}</strong>
+            <span>
+              {certificate.issuer} · {certificate.year}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </details>
+  )}
+</article>
+
+<script>
+  import { mountCvPage } from './cv-page';
+  const root = document.querySelector<HTMLElement>('[data-cv-page]');
+  if (root) {
+    let dispose = mountCvPage(root);
+    window.addEventListener('pagehide', () => dispose());
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountCvPage(root);
+    });
+  }
+</script>

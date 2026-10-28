@@ -5,6 +5,16 @@
 **Design baseline:** **Frozen Blender v3.12.9** — do not redesign the geometry  
 **Recommended production asset:** `public/models/taqueria_aldo_v3_12_9_selectively_merged.glb`
 
+**Selected Work update:** The creator's later [Selected Work brief](docs/SELECTED_WORK_CODEX_BRIEF.md)
+provides the four approved project descriptions and the Work exhibition direction.
+It supersedes the empty-project assumptions for `/work` and `/work/[slug]` only.
+See [implementation and QA notes](docs/qa/SELECTED_WORK.md); preserve the existing stand and navigation.
+
+**CV update:** The creator's [CV implementation brief](docs/CV_CODEX_IMPLEMENTATION_BRIEF.md)
+supplies the approved chronology and skills for `/cv`. It uses the existing shared
+navigation and static site shell, with the résumé download omitted until a verified
+public asset is supplied. See the [CV implementation review](docs/qa/CV.md).
+
 > **Instruction to Codex:** Treat this as an implementation brief. Inspect the existing repository first, then execute the plan in sensible, testable phases. Do not stop at a decorative mockup. Deliver a working, responsive, accessible **HTML portfolio** behind the interactive 3D entrance. Where personal content or media is missing, implement clearly marked placeholders and a typed content configuration; never fabricate projects, photographs, social profiles, guitar audio, or personal biography. Preserve the approved 3D design.
 
 ---
@@ -35,11 +45,14 @@
 | `public/models/taqueria_aldo_v3_12_9_selectively_merged.glb` | **Preferred** website asset: selectively joined static meshes, prepared interaction groups/pivots. |
 | `public/models/taqueria_aldo_v3_12_9_optimized_backup.glb` | Safe, unmerged fallback for visual/regression comparison; do **not** serve both to every visitor. |
 | `public/media/drawings/*.webp` | Full-resolution artwork **to be supplied**; load only when viewer opens. |
-| `public/media/photos/*.webp` | Full-resolution photos **to be supplied**; load only when viewer opens. |
-| `public/media/audio/guitar-cover.*` | Guitar recording **to be supplied**; load/play only after a user gesture. |
+| `public/images/pictures/*.{jpg,png}` | Supplied original photos; load only when viewer opens. |
+| `public/media/music/original/h6.mp3` | Supplied amp recording; load/play only after a user gesture. |
+| `public/media/sound effects/grilling-meat.mp3` | Supplied looping background audio; sound toggle enables it, amp playback temporarily replaces it. |
+| `public/media/sound effects/cartoon-splat.mp3` | Supplied sauce-press sound; respects Sound off and loads on interaction. |
+| `public/media/sound effects/soft-whoosh.mp3` | Supplied animated-camera sound; respects Sound off and stops on completion/interruption. |
 | `public/images/taqueria-poster.webp` | Approved lightweight static first-paint image **to be prepared** from final v3.12.9 viewpoint; never block first paint on 3D. |
 
-> The packaged handoff bundle includes both GLBs. External media above is *not yet provided*. The GLB already contains **low-resolution** preview images for the sketchbook and Polaroids, and a CRT texture. **Do not duplicate full-size media inside the GLB.**
+> The packaged handoff bundle includes both GLBs. Original photos are supplied in `public/images/pictures/`, and the amp recording is supplied as `public/media/music/original/h6.mp3`; original drawings remain pending. The GLB already contains **low-resolution** preview images for the sketchbook and Polaroids, and a CRT texture. **Do not duplicate full-size media inside the GLB.**
 
 ### 2.2 Verified GLB measurements
 
@@ -100,6 +113,7 @@ const requiredNodes = [
   'HIT_DRAWINGS_SKETCHBOOK_0', 'HIT_DRAWINGS_SKETCHBOOK_1',
   'POLAROID_0_SWING_PIVOT', 'POLAROID_1_SWING_PIVOT', 'POLAROID_2_SWING_PIVOT',
   'HIT_PHOTOS_POLAROID_0', 'HIT_PHOTOS_POLAROID_1', 'HIT_PHOTOS_POLAROID_2',
+  'PHOTOS_PRINT_lucha', 'PHOTOS_PRINT_paris', 'PHOTOS_PRINT_canal',
   'HIT_MUSIC_AMP', 'HIT_MUSIC_PEDAL',
 ] as const;
 ```
@@ -237,9 +251,9 @@ Codex may simplify this if the repository is small, but keep **asset interaction
 - Pivots: `POLAROID_0_SWING_PIVOT`, `POLAROID_1_SWING_PIVOT`, `POLAROID_2_SWING_PIVOT`; hit meshes `HIT_PHOTOS_POLAROID_0/1/2`.
 - When pointer moves near/over a photo, introduce a **small damped angular impulse**, then allow a spring-like settle around its existing hanging pivot. The original photo, clip and string should move together, while **the black horizontal photo rail stays fixed**. Aim for ~5–9° routine sway; cap the maximum angle to avoid clipping.
 - Use mathematical spring/damping in `useFrame`; no full rigid-body simulation needed. Interaction should remain stable at 30 or 60 FPS.
-- Distinguish **click vs drag** with movement threshold (e.g. 6 px) so a slight nudge does not accidentally open a lightbox. A click enlarges the selected photo using a responsive HTML lightbox with original/high-res image on demand.
-- Image identifiers: `lucha`, `paris`, `canal`. Embedded low-res prints remain as previews. Touch taps open images; touch drag may gently swing if simple and doesn't prevent page scrolling.
-- Respect reduced motion and provide next/previous buttons, keyboard access, captions and Esc/close.
+- Distinguish **click vs drag** with a movement threshold (e.g. 6 px). The creator's latest direction uses an in-scene camera close-up with left/right arrows and Back to stand, replacing the photo lightbox.
+- Image identifiers: `lucha`, `paris`, `canal`. Keep the existing embedded photo textures. Do not overlay or substitute the original JPEG/PNG files in the WebGL close-up. Add a restrained non-shadow-casting Three.js fill light while viewing photos so the prints are easier to see.
+- Respect reduced motion. Provide previous/next arrows, keyboard access, accessible photo descriptions and Escape/Back to stand. Adjacent pictures use a short camera slide; entry and return stay outside the stand. HTML photo links remain ordinary image links if the scene is unavailable.
 
 ### 4.6 Amplifier → the creator's guitar cover
 
@@ -406,9 +420,9 @@ Codex should tackle these phases sequentially, committing/checkpointing working 
 Do not block implementing the infrastructure on these, but **ask for the real assets before claiming completion**:
 
 1. **Real portfolio projects:** titles, slugs, descriptions, outcomes, imagery, technologies, live URLs and GitHub links as applicable.
-2. **Guitar cover recording:** audio file, accurate track title, intended credits/permissions.
+2. **Guitar cover recording:** `public/media/music/original/h6.mp3` is supplied; accurate track title and intended credits/permissions remain to be provided.
 3. **High-resolution drawings:** final left/right image sources for the close-up viewer.
-4. **High-resolution photographs:** final versions for `lucha`, `paris`, `canal` (GLB includes only previews).
+4. **High-resolution photographs:** supplied originals for `lucha`, `paris`, `canal` now live in `public/images/pictures/`; the GLB retains its embedded previews.
 5. **Bio and contact/social links** (do not invent).
 6. **Final HTML typography, microcopy, hosting/domain, analytics/privacy preferences**, if not already present in repository.
 7. **Approved v3.12.9 render/poster:** needed to match the true final camera/awning for initial page preview.

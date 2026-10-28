@@ -8,6 +8,20 @@ Astro + React + R3F is approved. The static HTML foundation, verification toolin
 and first live model are implemented. See the [scene baseline](qa/BASELINE.md) for
 actual browser observations and remaining verification limits.
 
+The later [Selected Work brief](SELECTED_WORK_CODEX_BRIEF.md) supplies four project
+descriptions and replaces the Work empty state with a static editorial exhibition.
+It does not authorize changes to the taquería, About, Contact or CV. See the
+[Selected Work implementation notes](qa/SELECTED_WORK.md) for the content model,
+illustration limits, route integration and verification. Earlier empty-content
+checkpoints below are historical; that increment emitted nine static pages.
+
+The subsequent [CV brief](CV_CODEX_IMPLEMENTATION_BRIEF.md) adds the static `/cv`
+career timeline and its typed skill catalog. Employment and overlapping education
+remain distinct. The shared header's existing CV link is enabled; normal document
+navigation and restrained timeline entrances are used instead of a new routing
+layer. Download is omitted pending an approved public résumé asset. See the
+[CV implementation review](qa/CV.md). The current build emits ten static pages.
+
 The creator's [visual direction](design/DIRECTION.md), based on
 [mock.png](design/mock.png), replaces the initial boxed scene: the stand opens
 full screen beneath overlay navigation. Portfolio routes use a light editorial
@@ -27,10 +41,18 @@ These user clarifications supersede the handoff's poster-first loading requireme
   replacing the original CSS bars. Inline its Canvas 2D renderer before React;
   remove it after the first usable scene frame or failure. It adds no dependency
   or separate renderer request. The creator's latest direction makes this a
-  full-screen black loading dialog covering the entire homepage. Put it first in
-  the body with a smaller centered taco and an indeterminate loading bar. Release
-  it on readiness/failure after a two-second minimum from the first taco draw;
+  full-screen black loading dialog covering the entire homepage. Put it first
+  in the body with a smaller centered taco, a locally rendered ASCII progress bar
+  and a visible loading caption. Release
+  it on readiness/failure after a 400 ms minimum from the first taco draw;
   keyboard skip and Escape can dismiss it immediately. A poster remains optional.
+  The bar follows the GLB loader's measured byte progress, capped at 99% until
+  textures and the first usable scene frame are ready. It stays at zero while
+  preparing JavaScript or when a download total is unavailable; it never advances
+  on a timer. The caption distinguishes download progress from scene preparation.
+  The loader uses Google Fonts Fira Code for its caption, progress bar and canvas
+  glyphs. It draws immediately with a monospace fallback and redraws when the font
+  loads, including with reduced motion. Font failure never blocks scene handoff.
 - Build introduction and real navigation as initial HTML beneath the loader. With reduced motion,
   show a still taco and status. Failed loading must resolve to useful HTML, not an endless loader.
 - Aim for a usable 3D scene within approximately **2–3 seconds** from navigation start;
@@ -100,6 +122,17 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   `useFrame` clock. After the loader closes, rotate from the rear, rise gently and
   descend to Reset view over 2.8 seconds. Keep camera input interruptible and skip
   the reveal for reduced motion. See the [entrance review](qa/entrance/REVIEW.md).
+  The latest hero direction ends at a centered, directly front-facing miniature:
+  `heroCamera` in `src/lib/camera.ts` sets desktop width to 33%, narrow-screen width
+  to 80% (smoothly interpolated with aspect), height allowance to 60%, and elevation
+  to `0.18`. Full model framing uses mesh corners without changing geometry.
+  The entrance retains the previous rear framing and pulls out to the new hero
+  over 2.8 seconds. Reset uses the same fitted destination, easing along the
+  shortest orbit over 0.9 seconds. Both use the existing interruptible GSAP tween
+  advanced by `useFrame`, pause with scene activity and skip motion when requested.
+  Close views remain reachable by zoom. Resize refits immediately to avoid clipping.
+  Screenshot matching, landmark/sign separation and physical-device composition
+  remain subject to creator inspection; reference screenshots were not attached.
   Defer bloom and other postprocessing until measurements justify them.
 - Prepare the stand's first frame behind the ASCII loader, then keep WebGL on
   demand until actual loader dismissal. Start continuous rendering, the trompo
@@ -113,6 +146,38 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   fill and a wet ground surface with rough warm/cool reflection pools, following
   `docs/design/fog-and-background.png`. Preserve the frozen stand and avoid a
   second scene render on every frame for reflections.
+  The creator later requested native Three.js distance fog: `SceneRendering`
+  attaches blue-hour `FogExp2` with color `#14243b` and density `0.035`, reduced
+  roughly 46% from `0.065` after the creator requested a clearer foreground.
+  The creator reverted the moonlight experiment: hemisphere fill is restored to
+  `0.28`, warm `#ffe3bf` key to `1.35`, and cool rim to `0.9`.
+  Cooking-mode pendants stay `3/2.6`,
+  and fire intensity `5` (standard) or `6.5` (compact), reaching four units.
+  The existing light and shadow count stays unchanged. Native fog uses a fixed
+  blue-hour tint; it does not simulate volumetric light scattering.
+  A later lamp-brightness adjustment doubles the standard-profile pendant lights
+  and raises the bulbs' runtime emissive intensity from `0.65` to `2` on all
+  profiles. The compact profile keeps its existing fire-only point-light budget.
+  The thin cobalt/brass counter-tile overlays (`COUNTER_TILES_MERGED_MAT_13`
+  and `_11`) neither cast nor receive shadows: their reversed normals otherwise
+  let shadow normal bias offset samples into the cream backing. Their authored
+  colors and direct lighting remain intact; no frozen GLB geometry is edited.
+  This scoped shadow fix awaits creator visual inspection.
+  Runtime stand material clones disable fog so the model, CRT and warm lamps
+  stay crisp. The panorama's city band is dimmed and its contrast softened toward
+  a dark blue haze; its sky and the frozen SVG source remain unchanged.
+  A faint continuous amber contribution near the base is drawn in the existing
+  wet-ground shader. No extra render pass or animation loop is added. Validation
+  and visual inspection for this change are left to the creator at their request.
+  The final clarification requests continuous haze rather than visible mist
+  patches. Atmospheric billboards are removed, leaving only cooking smoke from
+  the trompo and stove. Native distance fog covers the custom wet-ground shader
+  across the floor area while the stand is exempt. It adds no geometry or render pass. Creator
+  inspection and validation remain pending at their request.
+  Following the fog relocation, pendant point-light intensities and bulb emission
+  are reduced by 20%. Cooking-mode pendants now use `2.4/2.08`, standard pendants
+  without cooking use `4.8/6.4/4`, and the compact fallback uses `10.4`.
+  Bulb emissive intensity is `1.6`; visual approval remains with the creator.
 - The creator also approved the Berlin night background from the same reference.
   The later request makes it follow camera rotation: use a surrounding panorama
   with the TV Tower, distant rooftops and a crescent near the horizon, sparse
@@ -123,6 +188,9 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   Model absent media explicitly instead of constructing URLs to nonexistent files.
 - Use one shared action/state layer for HTML controls and 3D targets. Work navigation,
   theme selection and media viewers must remain usable independently of the Canvas.
+  Hovering monitor, photo, amplifier, salsa or sketchbook meshes uses a pointer
+  cursor through their named interaction ancestors. Decorative meshes retain grab;
+  dragging retains grabbing. Hover feedback does not enable pending interactions.
 - Load only the frozen selectively merged GLB in production. Preserve geometry,
   materials and transforms except the limited runtime adjustments allowed by the brief.
 - Use focused unit/asset-contract tests and Playwright for browser behavior.
@@ -152,7 +220,20 @@ asset contract passes; all planned routes and missing inputs are documented.
    detail template using test fixtures; do not publish invented case studies.
    Unknown slugs return a proper 404.
 4. Implement accessible HTML controls and persistent theme tokens:
-   red → Original, green → Noir, orange → Vintage. Prevent a theme flash on reload.
+   red → Original, green → Noir, orange → Synthwave. Prevent a theme flash on reload.
+   Synthwave replaces Vintage following the creator's mock: deep indigo surfaces,
+   magenta horizon haze, cyan rim light and pink/cyan wet-ground pools, retaining
+   warm lamps and fire. Runtime shaders reuse the existing panorama and ground;
+   no model changes, new lights or render passes are added. Stored `vintage`
+   selections resolve to `synthwave`, including before first paint.
+   The creator's follow-up adds Synthwave-only runtime material colors: plum enamel,
+   magenta awning and pink emissive trim/sign accents with a purple CRT bezel.
+   Existing maps and geometry remain intact; food, photos, drawings, salsa colors,
+   CRT content and warm bulbs retain their authored appearance. Theme switching
+   updates the existing clones in place and restores baseline color, emission and
+   roughness when leaving Synthwave. Clones survive theme changes; disposal occurs
+   only when the scene lifecycle ends. This avoids
+   GPU program and texture churn before returning from the sauce close-up.
 5. Reserve a full-viewport homepage scene area with compact identity and direct `View work`
    link. Add the lightweight loading animation/status and an intentional failure
    state. Include fallback artwork only if available; never request a missing image.
@@ -193,24 +274,95 @@ does not replace the frozen GLB; exact Blender-material fidelity remains unverif
 
 1. **Themes:** wire bottle squeeze/restore to the shared theme action. Guard rapid
    taps, clean up timelines and verify persistence and contrast on every route.
-2. **CRT:** improve `Work ↗` legibility, add a short camera approach and route to
-   `/work`. Include an independent navigation deadline so animation cannot stall it;
-   reduced motion navigates immediately. Verify Back navigation.
+   Bottle clicks/taps now resolve their named ancestor pivot through the shared
+   theme map and call the same persistent action as the HTML controls. Red selects
+   Original, green Noir, and orange Synthwave. Camera drags are excluded by the
+   existing six-pixel gesture threshold. Squeeze feedback remains pending.
+   The later sauce-picker direction makes the first bottle click focus the camera
+   on all three bottles without changing theme. Small HTML labels above the bottles
+   select themes; subsequent bottle clicks also select directly. Back to stand,
+   Reset view and Home close the labels. Reduced motion applies the close-up instantly.
+   Smooth returns retain the close-up's allowed distance until the final frame,
+   then restore the hero zoom limit, preventing OrbitControls from clamping the
+   camera outward at the start of the animation.
+   Sauce labels and Back to stand now mount only after the focus tween completes.
+   Interrupted focuses discard the pending reveal; reduced motion shows controls
+   immediately after its instant focus. No timer approximates camera completion.
+2. **CRT:** retain the aligned monitor approach and route to real static `/work`
+   content. The creator's latest [tile transition](qa/MONITOR_TRANSITION.md)
+   replaces Matrix rain and glyphs with cream/navy diamond ribbons, terracotta and
+   magenta fragments, a rotating mosaic tunnel and a square pixel mask over HTML.
+   `portfolioTiming` and `tileVisuals` in `portfolio-transition.ts` control the
+   0.5-second activation/approach, 0.9-second flight, 0.4-second decomposition and
+   0.7-second reconstruction. One procedural shader is shared by the existing CRT
+   surface and an expanding quad anchored to its projected corners, in one renderer.
+   Large diamonds remain intact through flight and subdivide progressively during
+   decomposition. A sparser screen grid appears only at its end, then clears across
+   measured intro, navigation and content bounds within 65% of reconstruction.
+   Selective warm rims and ceramic bevel shading add depth without new passes.
+   The static destination is prepared before animation; GSAP coordinates the pixel
+   mask, typography and navigation. Reduced motion uses a short stationary dissolve.
+   Repeated clicks coalesce. Back restores materials, camera, visibility and clear
+   state. Debug replay is available through `/?debug=1`. Physical-device performance
+   and creator approval of visual continuity remain manual acceptance gates.
 3. **Shared media viewer and sketchbook:** implement a semantic dialog with Escape,
    focus containment/restoration, scroll locking and drawing selection. Use embedded
    previews when originals are absent; request supplied originals only on opening.
    Small extracted preview derivatives may support HTML controls before WebGL loads,
    without modifying the GLB or introducing full-resolution initial downloads.
-4. **Polaroids:** reuse the viewer with correct photo mapping and next/previous
-   controls. Add damped pivot sway with bounded delta/angle and a click/drag threshold;
+4. **Polaroids:** use in-scene close-ups with correct photo mapping and next/previous
+   arrows. Add damped pivot sway with bounded delta/angle and a click/drag threshold;
    keep the rail fixed and preserve touch scrolling.
-5. **Amp:** add an explicit unavailable state now; implement gesture-gated audio
-   loading and play/pause for a future configured recording. Handle failed playback,
-   cleanup and visible state. Test the controller with a test-only audio fixture.
+   Pointer-driven sway is now implemented separately in `usePhotoSway.ts` with
+   spring integration in `src/lib/photo-sway.ts`. Pointer movement within 110 CSS
+   pixels of a photo applies a bounded impulse; each authored pivot rotates around
+   local Z, carrying its string, clip and print together. Sway caps at 8 degrees,
+   uses bounded substeps and settles at the original rotation. The existing scene
+   clock updates only three moving pivots, with no new draw calls or dependencies.
+   Input is passive; hidden/offscreen/unrevealed scenes pause, reduced motion
+   restores the rest pose, and cleanup restores transforms and removes listeners.
+   Photo viewing now uses the existing interruptible focus tween, framing the
+   selected surface using its world bounds and camera FOV.
+   Photo approaches now return toward the front resting view, align outside the
+   stand at the selected print's height, then move straight inward over 1.6 seconds.
+   Photo framing uses the authored +Z front rather than the print edge's vertex normal.
+   Reduced motion still applies the final pose immediately.
+   The creator's later clarification removes the photo modal and original-image
+   substitution. The embedded photo textures remain untouched. `PhotoControls.tsx`
+   supplies previous/next arrows and Back to stand directly over the Canvas, with
+   keyboard arrows, Escape, focus return and no focus trap or scroll lock. Adjacent
+   photos slide across the front in 0.65 seconds instead of retreating to the hero;
+   Back to stand reverses the safe front approach. Responsive reframing preserves
+   the selected print. Stable close-ups pause scene motion and use demand rendering.
+   `PhotoLighting.tsx` adds a warm, soft, non-shadow-casting spot with intensity 2.5,
+   following the selected print. It stays at zero intensity outside photo mode to
+   preserve the hero lighting and avoid rebuilding light shader variants on visits.
+   No full-resolution photo request is made by 3D browsing. HTML links use the
+   supplied originals when WebGL is unavailable. Named print meshes are included in
+   the asset contract alongside the original pivots and hit targets. Sketchbook
+   viewer integration and creator visual approval remain pending.
+   See the [photo camera review](qa/PHOTO_CAMERA.md) for checks, captures and limits.
+5. **Amp:** clicking the amp or pedal toggles the supplied
+   `public/media/music/original/h6.mp3` through the same action as the visible
+   existing Sound on/off button. No extra button or track information is shown.
+   Sound on loops `public/media/sound effects/grilling-meat.mp3`. Amp playback
+   takes priority and pauses grilling; stopping or finishing the amp restores
+   grilling. Sound off pauses both, and turning sound on again starts grilling.
+   Sauce presses and theme choices play `cartoon-splat.mp3`; animated camera
+   approaches, returns and CRT activation play `soft-whoosh.mp3`. Both supplied
+   effects live in `public/media/sound effects/`, prepare only after sound opt-in, and respect
+   the existing sound toggle. Camera completion or interruption stops the whoosh;
+   reduced-motion instant camera changes remain silent. Muting pauses all audio.
+   A native audio element receives its source only after
+   interaction; no audio is fetched on entry. Controls report loading, playback
+   and retryable failure, and remain available without WebGL. Playback pauses when
+   the page hides, history changes, the CRT opens Work, or the experience unmounts.
+   Track metadata lives in `src/content/media.ts`; `h6` is the supplied filename,
+   not an invented song title. Browser checks use the actual recording.
 
 Exit gate for each increment: both HTML and 3D controls work; keyboard/touch and
 reduced motion work; cleanup is verified; unopened originals/audio cause no requests.
-Actual recording playback and original-image fidelity remain pending supplied assets.
+Original drawing fidelity remains pending supplied assets.
 
 ### Phase 4 — Measured performance and device polish
 
@@ -298,7 +450,7 @@ Do not label unavailable device/content checks as passed.
   a poster for fallback artwork is optional.
 - Real project information and imagery; preferred biography and contact/social links.
 - Original left/right drawings and `lucha`, `paris`, `canal` photographs, with descriptions.
-- Guitar recording, accurate title and intended credits/permissions.
+- Accurate title and intended credits/permissions for the supplied `h6.mp3` recording.
 - Typography/microcopy preferences and eventual hosting/domain/privacy choices.
 
 These inputs do not block scaffolding, HTML templates or interaction infrastructure.
