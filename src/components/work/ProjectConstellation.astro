@@ -1,0 +1,87 @@
+---
+import { orderedProjects } from '../../content/portfolio';
+import { getProjectPosition, projectLinks } from '../../content/project-links';
+import ProjectGlyph from './ProjectGlyph.astro';
+const positions = new Map(
+  orderedProjects.map((project, index) => [
+    project.slug,
+    getProjectPosition(project.slug, index, orderedProjects.length),
+  ]),
+);
+const edges = projectLinks.map((link) => {
+  const from = positions.get(link.source),
+    to = positions.get(link.target);
+  if (!from || !to)
+    throw new Error(
+      `Project relationship references a missing project: ${link.source} / ${link.target}`,
+    );
+  const x1 = from.x * 10,
+    y1 = from.y * 4,
+    x2 = to.x * 10,
+    y2 = to.y * 4;
+  return {
+    ...link,
+    path: `M${x1} ${y1}C${(x1 + x2) / 2} ${y1 - 38} ${(x1 + x2) / 2} ${y2 + 38} ${x2} ${y2}`,
+  };
+});
+---
+
+<nav
+  class="project-constellation"
+  aria-label="Project overview"
+  data-work-constellation
+>
+  <svg
+    viewBox="0 0 1000 400"
+    preserveAspectRatio="none"
+    class="constellation-paths"
+    aria-hidden="true"
+  >
+    {edges.map((edge) => (
+      <path
+        d={edge.path}
+        data-work-edge
+        data-source={edge.source}
+        data-target={edge.target}
+      />
+    ))}
+  </svg>
+  <ol>
+    {orderedProjects.map((project) => {
+      const position = positions.get(project.slug);
+      return (
+        <li style={`--node-x:${position?.x}%;--node-y:${position?.y}%`}>
+          <a
+            href={`#project-${project.slug}`}
+            data-project-select={project.slug}
+            class="constellation-node"
+          >
+            <span class="node-point" aria-hidden="true" />
+            <span class="node-copy">
+              <span class="eyebrow">
+                {String(project.order).padStart(2, '0')} / {project.eyebrow}
+              </span>
+              <span class="node-title" data-node-title>
+                {project.title}
+              </span>
+            </span>
+            <ProjectGlyph kind={project.visualization.kind} />
+            <span class="node-arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        </li>
+      );
+    })}
+  </ol>
+  <ul class="sr-only" aria-label="Project relationships">
+    {projectLinks.map((link) => (
+      <li>
+        {orderedProjects.find((project) => project.slug === link.source)?.title}{' '}
+        and{' '}
+        {orderedProjects.find((project) => project.slug === link.target)?.title}
+        : {link.theme}.
+      </li>
+    ))}
+  </ul>
+</nav>

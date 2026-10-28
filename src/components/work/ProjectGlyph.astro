@@ -1,0 +1,37 @@
+---
+import type { VisualizationKind } from '../../content/portfolio';
+interface Props {
+  kind: VisualizationKind;
+}
+const { kind } = Astro.props;
+---
+
+<svg class="project-glyph" viewBox="0 0 80 60" aria-hidden="true" fill="none">
+  {kind === 'knowledge-hierarchy' && (
+    <>
+      <path d="M40 9V24H15V48M40 24V48M40 24H65V48" />
+      <rect x="30" y="3" width="20" height="12" />
+      <rect x="5" y="42" width="20" height="12" />
+      <rect x="30" y="42" width="20" height="12" />
+      <rect x="55" y="42" width="20" height="12" />
+    </>
+  )}
+  {kind === 'research-flow' && (
+    <>
+      <path d="M7 12L32 30L7 48M48 30L73 12M48 30H73M48 30L73 48" />
+      <rect x="29" y="19" width="22" height="22" />
+      <circle cx="7" cy="12" r="3" />
+      <circle cx="7" cy="48" r="3" />
+    </>
+  )}
+  {kind === 'hydroponic-system' && (
+    <>
+      <path d="M8 38L39 52L72 36L41 23ZM8 38V45L39 59L72 43V36M40 34V12M40 23C22 23 19 9 22 5C37 5 41 16 40 23ZM40 16C55 16 61 4 58 1C45 1 38 10 40 16Z" />
+    </>
+  )}
+  {kind === 'cpu-architecture' && (
+    <>
+      <path d="M40 4L72 20L40 36L8 20ZM8 31L40 47L72 31M8 42L40 58L72 42M40 13L54 20L40 27L26 20Z" />
+    </>
+  )}
+</svg>

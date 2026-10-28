@@ -1,0 +1,39 @@
+---
+import { orderedProjects } from '../../content/portfolio';
+import ProjectFocus from './ProjectFocus.astro';
+import './work.css';
+---
+
+<div class="work-experience shell" data-work-experience>
+  <section
+    class="work-overview"
+    id="work-overview"
+    aria-labelledby="work-title"
+    tabindex="-1"
+  >
+    <header class="page-intro work-header">
+      <p class="eyebrow">01 / Connected worlds</p>
+      <h1 id="work-title">
+        Selected work<span class="work-period">.</span>
+      </h1>
+      <p>Different problems. Same curiosity.</p>
+    </header>
+  </section>
+  <div class="project-exhibition">
+    {orderedProjects.map((project) => (
+      <ProjectFocus project={project} />
+    ))}
+  </div>
+</div>
+
+<script>
+  import { mountWorkExperience } from './work-experience';
+  const root = document.querySelector<HTMLElement>('[data-work-experience]');
+  if (root) {
+    let dispose = mountWorkExperience(root);
+    window.addEventListener('pagehide', () => dispose());
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountWorkExperience(root);
+    });
+  }
+</script>

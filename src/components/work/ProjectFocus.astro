@@ -1,0 +1,51 @@
+---
+import { projectPath, type Project } from '../../content/portfolio';
+import ProjectVisual from './ProjectVisual.astro';
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+---
+
+<section
+  class="project-focus"
+  id={`project-${project.slug}`}
+  data-project-section={project.slug}
+  aria-labelledby={`title-${project.slug}`}
+  tabindex="-1"
+>
+  <div class="project-section-top">
+    <p class="eyebrow">
+      {String(project.order).padStart(2, '0')} / {project.eyebrow}
+    </p>
+  </div>
+  <div class="project-focus-layout">
+    <div class="project-focus-copy">
+      <h2 id={`title-${project.slug}`} tabindex="-1" data-project-title>
+        {project.title}
+      </h2>
+      <p class="project-hook" data-copy-reveal>
+        {project.hook}
+      </p>
+      <p class="project-summary" data-copy-reveal>
+        {project.summary}
+      </p>
+      <p class="project-highlight" data-copy-reveal>
+        {project.highlight}
+      </p>
+      <a
+        class="project-detail-link"
+        href={projectPath(project)}
+        data-copy-reveal
+      >
+        View project <span aria-hidden="true">↗</span>
+      </a>
+      <ul class="project-tags" aria-label="Technologies">
+        {project.technologies.map((technology) => (
+          <li>{technology}</li>
+        ))}
+      </ul>
+    </div>
+    <ProjectVisual project={project} />
+  </div>
+</section>

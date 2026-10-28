@@ -1,0 +1,56 @@
+<svg
+  viewBox="0 0 720 500"
+  fill="none"
+  aria-hidden="true"
+  class="project-diagram hydroponic-diagram"
+>
+  <g class="diagram-lines" data-trace>
+    <path d="M147 237V99H287M438 99H560V250M580 296V399H249V340" />
+    <circle cx="147" cy="237" r="4" class="diagram-blue-fill" />
+    <circle cx="560" cy="250" r="4" class="diagram-accent-fill" />
+  </g>
+  <g class="diagram-card" data-reveal>
+    <rect x="287" y="71" width="151" height="56" />
+    <text x="310" y="105" class="diagram-label">
+      Decision
+    </text>
+    <text x="77" y="81" class="diagram-note">
+      MEASUREMENT
+    </text>
+    <text x="519" y="81" class="diagram-note">
+      ACTUATION
+    </text>
+  </g>
+  <g data-reveal>
+    <path class="tray-side" d="M123 298L354 414L611 283V324L354 455L123 339Z" />
+    <path class="tray-top" d="M123 298L379 166L611 283L354 414Z" />
+    <path class="water-plane" d="M157 296L379 185L576 283L354 394Z" />
+    <g class="diagram-lines water-lines">
+      <path d="M196 301L391 204M233 321L429 223M274 340L468 243M313 360L507 262" />
+    </g>
+    {[
+      { x: 248, y: 277 },
+      { x: 354, y: 331 },
+      { x: 367, y: 217 },
+      { x: 472, y: 271 },
+    ].map(({ x, y }) => (
+      <g class="plant" transform={`translate(${x} ${y})`}>
+        <ellipse cx="0" cy="0" rx="25" ry="13" class="plant-collar" />
+        <path d="M0 0V-62" class="plant-stem" />
+        <path
+          d="M0-23C-37-20-49-49-42-67C-12-66 4-50 0-23Z"
+          class="plant-leaf"
+        />
+        <path d="M0-42C27-43 42-66 35-83C12-81-5-63 0-42Z" class="plant-leaf" />
+        <path d="M0-23L-30-55M0-42L27-71" class="plant-vein" />
+      </g>
+    ))}
+    <path
+      d="M560 251V286L541 296"
+      class="diagram-lines diagram-accent-stroke"
+    />
+  </g>
+  <text x="126" y="481" class="diagram-note">
+    SENSE / DECIDE / RESPOND
+  </text>
+</svg>

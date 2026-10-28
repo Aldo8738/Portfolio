@@ -1,0 +1,536 @@
+.work-experience,
+.work-case-study {
+  --diagram-blue: color-mix(in srgb, #6c8b9c 85%, var(--text));
+  --diagram-green: color-mix(in srgb, #738371 80%, var(--text));
+  --diagram-line: color-mix(in srgb, var(--text) 23%, var(--background));
+  --diagram-paper: color-mix(in srgb, var(--surface) 75%, var(--background));
+}
+.work-experience {
+  padding-top: clamp(2.5rem, 5vw, 5rem);
+}
+.work-overview {
+  scroll-margin-top: 2rem;
+}
+.work-header {
+  margin-bottom: 0;
+  max-width: none;
+}
+.work-header h1 {
+  font-size: clamp(3.2rem, 6.4vw, 6.5rem);
+  margin-bottom: 1rem;
+}
+.work-header > p:last-child {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+}
+.work-period {
+  color: var(--accent);
+}
+.project-constellation {
+  position: relative;
+  height: clamp(340px, 42vh, 440px);
+  margin: 1.5rem 0 2rem;
+}
+.constellation-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.constellation-paths path {
+  fill: none;
+  stroke: var(--diagram-line);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  transition: stroke 180ms ease;
+}
+.constellation-paths path[data-related='true'] {
+  stroke: var(--diagram-blue);
+  stroke-width: 1.2;
+}
+.project-constellation > ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.project-constellation > ol > li {
+  position: absolute;
+  top: var(--node-y);
+  left: var(--node-x);
+  width: 29%;
+}
+.constellation-node {
+  display: flex;
+  position: relative;
+  gap: 1rem;
+  padding: 12px 0 12px 14px;
+  min-height: 80px;
+  width: fit-content;
+  max-width: 100%;
+  text-decoration: none;
+}
+.node-copy {
+  display: grid;
+  gap: 0.55rem;
+}
+.node-copy .eyebrow {
+  font-size: 0.63rem;
+  letter-spacing: 0.13em;
+}
+.node-title {
+  font-size: clamp(1.4rem, 2.15vw, 2.1rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+.node-point {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--diagram-blue);
+  transform: translate(-50%, -50%);
+  outline: 6px solid var(--background);
+}
+.node-arrow {
+  align-self: end;
+  padding-bottom: 0.2rem;
+  font-size: 1rem;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 180ms;
+}
+.constellation-node:is(:hover, :focus-visible, [aria-current='location'])
+  .node-point {
+  background: var(--accent);
+}
+.constellation-node:is(:hover, :focus-visible, [aria-current='location'])
+  .node-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.constellation-node:is(:hover, :focus-visible, [aria-current='location'])
+  .node-arrow {
+  opacity: 1;
+}
+.constellation-node[data-softened='true'] {
+  color: color-mix(in srgb, var(--text) 75%, var(--background));
+}
+.project-glyph {
+  display: none;
+  stroke: var(--diagram-blue);
+  stroke-width: 1;
+  width: 64px;
+  height: 48px;
+  flex: none;
+}
+.overview-footnote {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 2rem;
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  color: var(--muted);
+}
+.project-exhibition {
+  margin-top: clamp(2rem, 6vw, 6rem);
+}
+.project-focus {
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 1rem;
+  padding-top: 1.5rem;
+}
+.project-section-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.project-section-top > p {
+  margin: 0;
+}
+.project-focus-layout {
+  display: grid;
+  grid-template-columns: 0.85fr 1.45fr;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  min-height: 560px;
+  padding-block: 3rem;
+}
+.project-focus-copy {
+  max-width: 430px;
+}
+.project-focus h2 {
+  font-size: clamp(2.9rem, 4.5vw, 5rem);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+.project-focus:has([data-accent='neutral']) h2 {
+  font-size: clamp(2.7rem, 3.8vw, 4.1rem);
+}
+.project-hook {
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.5;
+  max-width: 29ch;
+}
+.project-summary {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+.project-highlight {
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+  margin-block: 1.75rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.project-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  min-height: 48px;
+  border-bottom: 1px solid var(--text);
+  font-size: 0.87rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.project-detail-link:hover {
+  color: var(--accent);
+  border-color: currentColor;
+}
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  gap: 0.4rem 0.9rem;
+  color: var(--muted);
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  margin-top: 1.75rem;
+}
+.project-sequence {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+.project-sequence a {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+.project-sequence a:hover {
+  text-decoration: underline;
+}
+.project-sequence a[rel='next'] {
+  margin-left: auto;
+  text-align: right;
+}
+.project-visual {
+  margin: 0;
+  min-width: 0;
+  align-self: center;
+}
+.visual-topline {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+  font:
+    0.6rem ui-monospace,
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.project-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.project-visual figcaption {
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+  font:
+    0.6rem ui-monospace,
+    monospace;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.diagram-lines {
+  stroke: var(--diagram-line);
+  stroke-width: 1;
+  fill: none;
+}
+.diagram-card {
+  fill: var(--diagram-paper);
+  stroke: var(--diagram-line);
+  stroke-width: 1;
+}
+.diagram-card path {
+  fill: none;
+}
+.diagram-label {
+  fill: var(--text);
+  stroke: none;
+  font:
+    14px 'Segoe UI',
+    Arial,
+    sans-serif;
+  letter-spacing: -0.3px;
+}
+.diagram-note {
+  fill: var(--muted);
+  stroke: none;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 0.3px;
+}
+.diagram-accent-fill {
+  fill: var(--accent);
+  stroke: none;
+}
+.diagram-blue-fill {
+  fill: var(--diagram-blue);
+  stroke: none;
+}
+.diagram-accent-stroke {
+  stroke: var(--accent);
+}
+.diagram-accent-text {
+  fill: var(--accent);
+}
+.entity-detail > rect {
+  stroke: var(--diagram-blue);
+}
+.agent-core > rect {
+  fill: color-mix(in srgb, var(--diagram-blue) 7%, var(--background));
+  stroke: var(--diagram-blue);
+}
+.tray-top,
+.tray-side {
+  fill: var(--diagram-paper);
+  stroke: var(--diagram-blue);
+  stroke-width: 1;
+}
+.tray-side {
+  fill: color-mix(in srgb, var(--diagram-blue) 8%, var(--background));
+}
+.water-plane {
+  fill: color-mix(in srgb, var(--diagram-blue) 13%, var(--background));
+  stroke: var(--diagram-blue);
+  stroke-width: 0.7;
+}
+.water-lines {
+  opacity: 0.45;
+}
+.plant-collar {
+  fill: var(--background);
+  stroke: var(--diagram-blue);
+  stroke-width: 0.8;
+}
+.plant-stem {
+  stroke: var(--diagram-green);
+  stroke-width: 1.4;
+}
+.plant-leaf {
+  fill: color-mix(in srgb, var(--diagram-green) 18%, var(--background));
+  stroke: var(--diagram-green);
+  stroke-width: 1;
+}
+.plant-vein {
+  stroke: var(--diagram-green);
+  stroke-width: 0.7;
+}
+.cpu-plate {
+  fill: var(--diagram-paper);
+  stroke: var(--diagram-line);
+  stroke-width: 1;
+}
+.cpu-top {
+  fill: color-mix(in srgb, var(--diagram-blue) 6%, var(--background));
+  stroke: var(--diagram-blue);
+  stroke-width: 1;
+}
+.cpu-die {
+  fill: color-mix(in srgb, var(--diagram-blue) 12%, var(--background));
+  stroke: var(--diagram-blue);
+  stroke-width: 1;
+}
+.work-case-study {
+  padding-block: 3rem 5rem;
+}
+.case-study-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  margin-block: 3rem;
+}
+.case-study-hero h1 {
+  font-size: clamp(3rem, 5.5vw, 6rem);
+}
+.case-study-intro {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+.case-study-body {
+  max-width: 740px;
+  margin: 4rem auto 0;
+}
+.case-study-body section {
+  margin-block: 3rem;
+}
+.case-study-body p {
+  color: var(--muted);
+}
+.case-study-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  border-block: 1px solid var(--line);
+  padding-block: 1.5rem;
+  margin-block: 2rem;
+}
+.case-study-facts dt {
+  font:
+    0.65rem ui-monospace,
+    monospace;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.case-study-facts dd {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.case-study-body img {
+  width: 100%;
+  height: auto;
+}
+@media (max-width: 950px) {
+  .project-constellation {
+    height: auto;
+    margin-block: 2rem;
+  }
+  .constellation-paths {
+    display: none;
+  }
+  .project-constellation > ol {
+    display: grid;
+  }
+  .project-constellation > ol > li {
+    position: static;
+    width: 100%;
+    border-top: 1px solid var(--line);
+  }
+  .constellation-node {
+    width: 100%;
+    min-height: 104px;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 1.5rem;
+  }
+  .node-point {
+    display: none;
+  }
+  .node-copy {
+    flex: 1;
+  }
+  .node-title {
+    font-size: clamp(1.5rem, 3.2vw, 2rem);
+  }
+  .project-glyph {
+    display: block;
+  }
+  .node-arrow {
+    opacity: 1;
+    align-self: center;
+  }
+  .project-focus-layout {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 2rem;
+    min-height: 520px;
+  }
+  .case-study-hero {
+    gap: 2rem;
+  }
+}
+@media (max-width: 650px) {
+  .work-header h1 {
+    font-size: clamp(3.1rem, 11vw, 4.5rem);
+  }
+  .overview-footnote {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .node-title {
+    font-size: 1.6rem;
+  }
+  .node-copy .eyebrow {
+    font-size: 0.58rem;
+  }
+  .project-glyph {
+    width: 48px;
+    height: 40px;
+  }
+  .constellation-node {
+    gap: 0.8rem;
+  }
+  .project-focus-layout,
+  .case-study-hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-block: 2rem;
+  }
+  .project-focus-copy {
+    max-width: none;
+  }
+  .project-focus h2,
+  .project-focus:has([data-accent='neutral']) h2 {
+    font-size: 3rem;
+    max-width: 12ch;
+  }
+  .project-focus .project-visual {
+    margin-block: 1rem;
+  }
+  .project-visual figcaption {
+    font-size: 0.55rem;
+  }
+  .project-section-top {
+    gap: 0.5rem;
+  }
+  .project-section-top .eyebrow {
+    font-size: 0.62rem;
+  }
+  .project-sequence {
+    gap: 1rem;
+  }
+  .project-sequence a {
+    max-width: 48%;
+    line-height: 1.6;
+  }
+  .case-study-facts {
+    grid-template-columns: 1fr;
+  }
+  .case-study-hero {
+    margin-block: 1rem;
+  }
+}

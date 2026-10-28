@@ -1,0 +1,32 @@
+---
+import type { Project } from '../../content/portfolio';
+import KnowledgeHierarchyVisual from './visuals/KnowledgeHierarchyVisual.astro';
+import ResearchFlowVisual from './visuals/ResearchFlowVisual.astro';
+import HydroponicSystemVisual from './visuals/HydroponicSystemVisual.astro';
+import CpuArchitectureVisual from './visuals/CpuArchitectureVisual.astro';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const visualizations = {
+  'knowledge-hierarchy': KnowledgeHierarchyVisual,
+  'research-flow': ResearchFlowVisual,
+  'hydroponic-system': HydroponicSystemVisual,
+  'cpu-architecture': CpuArchitectureVisual,
+};
+const Visual = visualizations[project.visualization.kind];
+---
+
+<figure
+  class="project-visual"
+  data-work-visual={project.visualization.kind}
+  data-accent={project.visualization.accent}
+>
+  <div class="visual-topline" aria-hidden="true">
+    <span>Figure {String(project.order).padStart(2, '0')}</span>
+    <span>Concept study</span>
+  </div>
+  <Visual />
+  <figcaption>Interpretive illustration · not a product screenshot</figcaption>
+</figure>

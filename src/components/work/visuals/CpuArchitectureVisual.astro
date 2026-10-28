@@ -1,0 +1,46 @@
+<svg
+  viewBox="0 0 720 500"
+  fill="none"
+  aria-hidden="true"
+  class="project-diagram cpu-diagram"
+>
+  <g class="diagram-lines" data-trace>
+    <path d="M113 144H56V60H159M566 158H661V251H609M113 335H48V433H177M567 352H654V434H542" />
+    <circle cx="159" cy="60" r="3" />
+    <circle cx="609" cy="251" r="3" class="diagram-accent-fill" />
+    <circle cx="177" cy="433" r="3" />
+    <circle cx="542" cy="434" r="3" />
+    <path stroke-dasharray="3 7" d="M360 48V449M159 147V347M562 147V347" />
+  </g>
+  <g class="cpu-layer" data-reveal>
+    <path class="cpu-plate" d="M360 250L574 356L360 462L146 356Z" />
+    <path d="M199 356L360 436L521 356" class="diagram-lines" />
+    <text x="535" y="405" class="diagram-label">
+      C / Assembly
+    </text>
+  </g>
+  <g class="cpu-layer" data-reveal>
+    <path class="cpu-plate" d="M360 153L574 259L360 365L146 259Z" />
+    <path d="M217 258L360 189L501 259L360 328Z" class="diagram-lines" />
+    <text x="535" y="303" class="diagram-label">
+      Instruction set
+    </text>
+  </g>
+  <g class="cpu-layer" data-reveal>
+    <path class="cpu-top" d="M360 49L574 155L360 261L146 155Z" />
+    <path class="cpu-die" d="M360 95L484 155L360 217L236 155Z" />
+    <path d="M296 155L360 123L425 155L360 188Z" class="diagram-lines" />
+    <text x="335" y="162" class="diagram-label" transform="rotate(-27 335 162)">
+      VHDL
+    </text>
+    {Array.from({ length: 8 }, (_, index) => (
+      <path
+        d={`M${177 + index * 23} ${171 + index * 11.4}l-19 10M${389 + index * 23} ${247 - index * 11.4}l19 10`}
+        class="diagram-lines"
+      />
+    ))}
+  </g>
+  <text x="49" y="485" class="diagram-note">
+    HARDWARE / INSTRUCTIONS / OPERATING SYSTEM
+  </text>
+</svg>
