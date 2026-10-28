@@ -128,4 +128,7 @@ the model or bake personal content into 3D textures.
 See the [development plan](docs/DEVELOPMENT_PLAN.md), approved
 [stack review](docs/STACK_REVIEW.md) and [coding conventions](docs/CODING_CONVENTIONS.md).
 Startup aims for approximately 2–3 seconds to a usable scene. Device/network/cache
-conditions must accompany any measured result. No public deployment has been set up.
+conditions must accompany any measured result. Public deployment verification is
+pending. Cloudflare Workers Builds reads `packageManager` in `package.json` to
+select npm 11.19.1 before dependency installation; `.node-version` selects Node 24.
+The `engines` field validates compatibility but does not select the npm version.
