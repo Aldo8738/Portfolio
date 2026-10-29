@@ -1,0 +1,108 @@
+---
+import { aboutContent } from '../../content/about';
+---
+
+<article class="about-page shell" aria-labelledby="about-title" data-about-page>
+  <header class="about-heading">
+    <p class="eyebrow" data-about-intro>
+      {aboutContent.eyebrow}
+    </p>
+    <h1 id="about-title" data-about-intro>
+      {aboutContent.title.replace(/\.$/, '')}
+      <span class="about-period">.</span>
+    </h1>
+  </header>
+  <div class="about-prose">
+    <div class="about-introduction">
+      {aboutContent.introduction.map((paragraph) => (
+        <p data-about-intro>{paragraph}</p>
+      ))}
+    </div>
+    <div class="about-ending" data-about-ending>
+      {aboutContent.setup.map((paragraph) => (
+        <p data-about-setup>{paragraph}</p>
+      ))}
+      <p class="about-payoff" data-about-payoff>
+        {aboutContent.payoff}
+      </p>
+    </div>
+  </div>
+  <nav class="about-onward" aria-label="Continue exploring">
+    <a class="text-link" href="/contact">
+      Contact <span aria-hidden="true">↗</span>
+    </a>
+  </nav>
+</article>
+
+<script>
+  import { mountAboutPage } from './about-page';
+  const root = document.querySelector<HTMLElement>('[data-about-page]');
+  if (root) {
+    const dispose = mountAboutPage(root);
+    window.addEventListener('pagehide', dispose, { once: true });
+  }
+</script>
+
+<style>
+  .about-page {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: 0 clamp(2rem, 7vw, 7rem);
+    padding-block: clamp(3.5rem, 7vw, 7rem) 2rem;
+  }
+  .eyebrow {
+    margin-bottom: 2rem;
+  }
+  h1 {
+    max-width: 8ch;
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    line-height: 1;
+    margin-bottom: 0;
+  }
+  .about-period {
+    color: var(--accent);
+  }
+  .about-prose {
+    max-width: 54ch;
+    padding-top: 3rem;
+    font-size: clamp(1rem, 1.35vw, 1.2rem);
+  }
+  .about-prose p {
+    margin-bottom: 1.5em;
+  }
+  .about-prose p:last-child {
+    margin-bottom: 0;
+  }
+  .about-ending {
+    margin-top: clamp(3rem, 6vw, 5.5rem);
+  }
+  .about-prose .about-payoff {
+    margin-top: 2rem;
+    max-width: 24ch;
+    font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+  .about-onward {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--line);
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding-top: 1rem;
+  }
+  @media (max-width: 800px) {
+    .about-page {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    h1 {
+      max-width: 12ch;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+    }
+    .about-prose {
+      padding-top: 2.5rem;
+    }
+  }
+</style>

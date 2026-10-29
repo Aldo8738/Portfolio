@@ -33,6 +33,11 @@ The creator's later [cinematic stand task](design/TACO-STAND.md) applies to the 
 scene only. Preserve the HTML/UI and frozen model; review before/after captures
 before accepting visual changes. See the [cinematic review](qa/cinematic/REVIEW.md).
 
+The [About brief](ABOUT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) replaces the biography
+placeholder with approved static copy, a responsive editorial grid and optional
+GSAP entrance/ending motion. Native document navigation remains in use; no special
+CV transition or scene dependency is added. See the [About review](qa/ABOUT.md).
+
 ## Accepted loading and performance decisions
 
 The [Contact brief](CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) is implemented as a

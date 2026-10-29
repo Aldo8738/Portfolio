@@ -24,6 +24,11 @@ live in `src/content/contact.ts`; public email requires explicit approval.
 
 ---
 
+**About update:** The [About implementation brief](docs/ABOUT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md)
+supplies the approved biography for `/about`. It replaces the placeholder with
+static editorial text and optional, scoped GSAP reveals. See the
+[About implementation review](docs/qa/ABOUT.md); editable copy lives in `src/content/about.ts`.
+
 ## 1. Project vision and success criteria
 
 **The concept:** Visitors arrive at *Taquería Aldo*, a cinematic nighttime 3D taco stand that doubles as the navigation system for Aldo's personal portfolio. The experience should feel handcrafted, playful, warm, Mexican-inspired, and unmistakably personal—not like a generic 3D product demo. The stand is the welcome experience; **the work itself is a real, fast, readable HTML website**.

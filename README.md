@@ -127,6 +127,11 @@ The `after` label asserts matching baseline framing. See the
 Do not add full-resolution media or guitar audio to startup preloads. Do not replace
 the model or bake personal content into 3D textures.
 
+About copy lives in `src/content/about.ts`. The static `/about` page uses the shared
+shell, with optional GSAP reveals and an immediate reduced-motion fallback. See
+the [About brief](docs/ABOUT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) and
+[implementation review](docs/qa/ABOUT.md).
+
 ## Development decisions
 
 See the [development plan](docs/DEVELOPMENT_PLAN.md), approved

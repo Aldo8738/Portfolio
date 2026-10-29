@@ -49,7 +49,7 @@ test('Contact handles motion changes, themes and browser history without loading
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/about');
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: 'Contact', exact: true })
     .click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveCSS(
