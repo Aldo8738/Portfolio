@@ -1,0 +1,131 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { ContactMethod } from '../../content/contact';
+interface Props {
+  methods: readonly (ContactMethod & { href: string })[];
+}
+const { methods } = Astro.props;
+// Inline local artwork at build time so the illustration adds no image requests.
+function iconSource(src: string) {
+  if (!src.startsWith('/images/contact/') || src.includes('..'))
+    throw new Error(`Invalid Contact icon path: ${src}`);
+  const type = src.endsWith('.svg') ? 'svg+xml' : 'png';
+  const bytes = readFileSync(resolve('public', src.slice(1)));
+  return `data:image/${type};base64,${bytes.toString('base64')}`;
+}
+---
+
+<ul class="contact-symbols" aria-label="Ways to connect">
+  {methods.map((method) => (
+    <li>
+      <a
+        class="contact-symbol"
+        data-contact-symbol={method.id}
+        data-contact-method={method.id}
+        href={method.href}
+        target={method.external ? '_blank' : undefined}
+        rel={method.external ? 'noopener noreferrer' : undefined}
+      >
+        <span class="contact-symbol-art" aria-hidden="true">
+          <img
+            class="contact-mark contact-mark--light"
+            src={iconSource(method.icon.src)}
+            width={method.icon.width}
+            height={method.icon.height}
+            alt=""
+          />
+          <img
+            class="contact-mark contact-mark--dark"
+            src={iconSource(method.icon.darkSrc)}
+            width={method.icon.width}
+            height={method.icon.height}
+            alt=""
+          />
+        </span>
+        <span class="contact-label">{method.label}</span>
+        {method.external && <span class="sr-only"> (opens in a new tab)</span>}
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .contact-symbols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    width: 100%;
+    max-width: 760px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .contact-symbol {
+    display: block;
+    position: relative;
+    min-height: 44px;
+    text-align: center;
+    text-decoration: none;
+    padding-bottom: 1.25rem;
+    cursor: pointer;
+  }
+  .contact-symbol-art {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    width: 100%;
+    max-width: 240px;
+    margin-inline: auto;
+  }
+  .contact-mark {
+    display: block;
+    width: 48%;
+    max-width: 104px;
+    height: auto;
+  }
+  [data-contact-method='email'] .contact-mark {
+    width: 56%;
+    max-width: 120px;
+  }
+  .contact-mark--dark {
+    display: none;
+  }
+  :global(html[data-theme='synthwave']) .contact-mark--light {
+    display: none;
+  }
+  :global(html[data-theme='synthwave']) .contact-mark--dark {
+    display: block;
+  }
+  .contact-label {
+    display: block;
+    font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .contact-symbol::after {
+    content: '';
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0;
+  }
+  .contact-symbol:hover::after,
+  .contact-symbol:focus-visible::after {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-symbol::after {
+      transition: opacity 220ms ease;
+    }
+  }
+  @media (max-width: 700px) {
+    .contact-symbols {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 5rem), 1fr));
+    }
+  }
+</style>

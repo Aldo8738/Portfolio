@@ -1,9 +1,12 @@
 export interface ContactMethod {
   id: 'linkedin' | 'email' | 'instagram';
   label: string;
+  order: number;
+  description: string;
+  external: boolean;
+  icon: { src: string; darkSrc: string; width: number; height: number };
   href: string | null;
   enabled: boolean;
-  primary?: boolean;
 }
 
 export interface ContactPageContent {
@@ -11,7 +14,6 @@ export interface ContactPageContent {
   headline: string;
   description: string;
   closing: string;
-  unavailable: string;
   backLabel: string;
   journey: string;
   metadata: string;
@@ -22,26 +24,58 @@ export const contactContent: ContactPageContent = {
   eyebrow: '04 / CONTACT',
   headline: 'Have something in mind?',
   description:
-    "I'm always happy to talk about interesting ideas, software, design, or a project worth building.",
+    "An interesting idea, a collaboration, or just a conversation? I'd love to hear from you.",
   closing: 'Thanks for stopping by.',
-  unavailable: 'Public contact details will appear here once confirmed.',
   backLabel: 'Back to stand',
   journey: 'Mexico → Berlin',
   metadata:
     'Get in touch with Aldo Juárez about software, design, and ideas worth building.',
   methods: [
-    // TODO: supply Aldo's verified public LinkedIn URL before enabling. Launch blocker.
     {
       id: 'linkedin',
-      label: 'Connect on LinkedIn',
-      href: null,
-      enabled: false,
-      primary: true,
+      label: 'LinkedIn',
+      icon: {
+        src: '/images/contact/linkedin-in-black.png',
+        darkSrc: '/images/contact/linkedin-in-white.png',
+        width: 840,
+        height: 779,
+      },
+      order: 1,
+      description: 'For professional connections',
+      external: true,
+      href: 'https://www.linkedin.com/in/aldo-juárez-05557319a',
+      enabled: true,
     },
-    // TODO: configure mailto: only after Aldo explicitly approves public email publication.
-    { id: 'email', label: 'Send an email', href: null, enabled: false },
-    // TODO: supply and approve a public Instagram URL before enabling.
-    { id: 'instagram', label: 'Instagram', href: null, enabled: false },
+    {
+      id: 'email',
+      label: 'Email',
+      icon: {
+        src: '/images/contact/mail-outline.svg',
+        darkSrc: '/images/contact/mail-outline-white.svg',
+        width: 64,
+        height: 64,
+      },
+      order: 2,
+      description: 'For ideas worth sharing',
+      external: false,
+      href: 'mailto:aldo.emilio.8738@gmail.com',
+      enabled: true,
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      icon: {
+        src: '/images/contact/instagram-glyph-black.svg',
+        darkSrc: '/images/contact/instagram-glyph-white.svg',
+        width: 1000,
+        height: 1000,
+      },
+      order: 3,
+      description: 'For the less professional side',
+      external: true,
+      href: 'https://www.instagram.com/aldoemiliojh/',
+      enabled: true,
+    },
   ],
 };
 
@@ -51,6 +85,7 @@ export function isEnabledContactMethod(
 ): method is ContactMethod & { href: string } {
   if (!method.enabled || !method.href || method.href !== method.href.trim())
     return false;
+  if (method.external !== (method.id !== 'email')) return false;
   if (method.id === 'email')
     return /^mailto:[^\s@?]+@[^\s@?]+\.[^\s@?]+$/.test(method.href);
   try {
@@ -71,8 +106,8 @@ export function isEnabledContactMethod(
   }
 }
 
-export function getContactActions(methods: readonly ContactMethod[]) {
-  const enabled = methods.filter(isEnabledContactMethod);
-  const primary = enabled.find((method) => method.primary) ?? enabled[0];
-  return { primary, secondary: enabled.filter((method) => method !== primary) };
+export function getContactMethods(methods: readonly ContactMethod[]) {
+  return methods
+    .filter(isEnabledContactMethod)
+    .sort((a, b) => a.order - b.order);
 }

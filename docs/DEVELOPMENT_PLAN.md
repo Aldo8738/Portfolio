@@ -42,8 +42,13 @@ CV transition or scene dependency is added. See the [About review](qa/ABOUT.md).
 
 The [Contact brief](CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) is implemented as a
 static editorial `/contact` page with optional GSAP motion and a typed contact
-configuration. See the [Contact review](qa/CONTACT.md). Public email stays disabled;
-a verified LinkedIn URL remains a content launch blocker.
+configuration. The later [Contact refinement](CONTACT_PAGE_REFINEMENT_CODEX_BRIEF.md)
+adds three editorial link rows. The subsequent [icon refinement](CONTACT_ICONS_REFINEMENT_CODEX_BRIEF.md)
+replaces its abstract SVG with official social marks and a custom envelope. The
+creator's latest correction removes the rows and scattered decoration, using one
+aligned icon-and-label link group beside the headline and description. All three
+destinations, including explicit public-email approval, were supplied by the creator
+on 29 October 2026. See the [Contact review](qa/CONTACT.md).
 
 These user clarifications supersede the handoff's poster-first loading requirement:
 

@@ -48,9 +48,12 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
 
 ## Content and assets
 
-- `src/content/contact.ts` holds Contact copy and approved contact methods. All
-  methods remain disabled until real verified URLs are supplied; publishing email
-  requires explicit approval. See the [Contact review](docs/qa/CONTACT.md).
+- `src/content/contact.ts` holds Contact copy and the creator-approved LinkedIn,
+  email and Instagram destinations. The [Contact refinement brief](docs/CONTACT_PAGE_REFINEMENT_CODEX_BRIEF.md)
+  provides the initial editorial direction; the [icon refinement](docs/CONTACT_ICONS_REFINEMENT_CODEX_BRIEF.md)
+  supplies official social marks and a custom envelope. The latest Contact direction
+  uses one aligned group of large icon links alongside the headline, with no repeated rows.
+  See the [Contact review](docs/qa/CONTACT.md) for asset sources and checks.
 
 - `/`, `/work`, `/cv`, `/about`, `/contact` and `/404` are real HTML pages.
 - `src/content/cv.ts` supplies the CV chronology and skill catalog. The existing

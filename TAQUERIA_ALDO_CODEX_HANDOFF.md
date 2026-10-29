@@ -19,8 +19,10 @@ public asset is supplied. See the [CV implementation review](docs/qa/CV.md).
 
 **Contact update:** The [Contact implementation brief](docs/CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md)
 defines the quiet editorial `/contact` page. Its [implementation review](docs/qa/CONTACT.md)
-records responsive checks and the pending verified LinkedIn URL. Contact methods
-live in `src/content/contact.ts`; public email requires explicit approval.
+records the subsequent [Contact refinement](docs/CONTACT_PAGE_REFINEMENT_CODEX_BRIEF.md),
+responsive checks and creator-approved LinkedIn, email and Instagram destinations.
+Contact methods live in `src/content/contact.ts`; the creator supplied all three
+and explicitly approved the public email on 29 October 2026.
 
 ---
 

@@ -1,54 +1,30 @@
 ---
-import { contactContent, getContactActions } from '../../content/contact';
-const { primary, secondary } = getContactActions(contactContent.methods);
-const methods = primary ? [primary, ...secondary] : [];
+import { contactContent, getContactMethods } from '../../content/contact';
+import ContactSymbols from './ContactSymbols.astro';
+const methods = getContactMethods(contactContent.methods);
 ---
 
-<article class="contact-page shell" data-contact-page>
-  <header>
-    <p class="eyebrow" data-contact-reveal>
-      {contactContent.eyebrow}
-    </p>
-    <h1 data-contact-reveal>
-      {contactContent.headline.replace(/\?$/, '')}
-      <span class="contact-accent">?</span>
-    </h1>
-  </header>
-  <div class="contact-invitation">
-    <p class="contact-description" data-contact-reveal>
-      {contactContent.description}
-    </p>
-    {methods.length > 0 ? (
-      <ul class="contact-methods" data-contact-reveal>
-        {methods.map((method) => (
-          <li>
-            <a
-              class:list={[
-                'contact-link',
-                { 'contact-link--primary': method === primary },
-              ]}
-              href={method.href}
-              target={method.id !== 'email' ? '_blank' : undefined}
-              rel={method.id !== 'email' ? 'noopener noreferrer' : undefined}
-            >
-              {method.label}
-              <span class="contact-arrow" aria-hidden="true">
-                ↗
-              </span>
-              {method.id !== 'email' && (
-                <span class="sr-only"> (opens in a new tab)</span>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p class="contact-unavailable" data-contact-reveal>
-        {contactContent.unavailable}
+<article
+  class="contact-page shell"
+  data-contact-page
+  aria-labelledby="contact-title"
+>
+  <div class="contact-hero">
+    <header>
+      <p class="eyebrow" data-contact-heading>
+        {contactContent.eyebrow}
       </p>
-    )}
+      <h1 id="contact-title" data-contact-heading>
+        {contactContent.headline.replace(/\?$/, '')}
+        <span class="contact-accent">?</span>
+      </h1>
+      <p class="contact-description" data-contact-description>
+        {contactContent.description}
+      </p>
+    </header>
+    <ContactSymbols methods={methods} />
   </div>
-  <p class="contact-closing" data-contact-reveal>
+  <p class="contact-closing" data-contact-closing>
     {contactContent.closing}
   </p>
 </article>
@@ -67,88 +43,44 @@ const methods = primary ? [primary, ...secondary] : [];
 
 <style>
   .contact-page {
-    min-height: calc(100svh - 240px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: clamp(3rem, 7vw, 7rem) 2.5rem;
+    padding-block: clamp(3.5rem, 6vw, 6rem) 3rem;
+  }
+  .contact-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
   }
   h1 {
-    max-width: 15ch;
+    max-width: 10ch;
     text-wrap: balance;
-    font-size: clamp(3.5rem, 8.5vw, 8.5rem);
+    font-size: clamp(3.5rem, 7.5vw, 8rem);
     line-height: 0.98;
-    margin-block: 1.75rem 2.5rem;
+    margin-block: 2rem 0;
     overflow-wrap: anywhere;
   }
   .contact-accent {
     color: var(--accent);
   }
-  .contact-invitation {
-    margin-left: 34%;
-    max-width: 38rem;
-  }
   .contact-description {
     color: var(--muted);
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
-    max-width: 42ch;
-  }
-  .contact-methods {
-    list-style: none;
-    padding: 0;
+    font-size: clamp(1rem, 1.35vw, 1.2rem);
+    max-width: 36ch;
     margin: 2rem 0 0;
-  }
-  .contact-methods li + li {
-    margin-top: 0.75rem;
-  }
-  .contact-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 44px;
-  }
-  .contact-link--primary {
-    font-size: clamp(1.3rem, 2.5vw, 2rem);
-    font-weight: 700;
-    text-decoration-color: var(--accent);
-    text-decoration-thickness: 2px;
-  }
-  .contact-arrow {
-    display: inline-block;
-  }
-  .contact-link:hover,
-  .contact-link:focus-visible {
-    text-decoration-thickness: 3px;
-  }
-  .contact-link:hover .contact-arrow,
-  .contact-link:focus-visible .contact-arrow {
-    transform: translate(4px, -4px);
-  }
-  .contact-unavailable {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-top: 2rem;
   }
   .contact-closing {
     color: var(--muted);
     font-size: 0.8rem;
-    margin: clamp(3rem, 6vw, 6rem) 0 0;
+    margin: 2rem 0 0;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .contact-arrow {
-      transition: transform 160ms ease;
-    }
-  }
-  @media (max-width: 700px) {
-    .contact-page {
-      min-height: auto;
-      padding-block: 3.5rem 2rem;
+  @media (max-width: 1000px) {
+    .contact-hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
     }
     h1 {
-      font-size: clamp(3.25rem, 12vw, 5.5rem);
-    }
-    .contact-invitation {
-      margin-left: 0;
+      font-size: clamp(3.25rem, 11vw, 5.5rem);
+      max-width: 12ch;
     }
   }
 </style>

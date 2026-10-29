@@ -32,11 +32,11 @@ The supplied screenshot of the current Contact page is the starting point. Its s
 
 The current screenshot's giant headline occupies the left while the right feels visually empty. Introduce **one bespoke abstract symbol**, with the art-direction quality of the Work project's visual systems. **Do not add a second logo or replace the ALDO wordmark.** This is a section-specific visual, not a brand mark.
 
-**Concept: “Open channels.”** Create a sparse, carefully drawn vector motif made from **three fine routed strokes** that converge into one small, restrained point/open shape. The three paths conceptually represent LinkedIn, email, and Instagram. Think Swiss information design / precision typography, *not* a literal network of labeled nodes, a neon neural network, an envelope, or a giant @ glyph. It should be intriguing as abstract graphic design even when its meaning isn't explained.
+**Concept: “Open channels.”** Create a sparse, carefully drawn vector motif made from **three fine routed strokes** that converge into one small, restrained point/open shape. The three paths conceptually represent LinkedIn, email, and Instagram. Think Swiss information design / precision typography, _not_ a literal network of labeled nodes, a neon neural network, an envelope, or a giant @ glyph. It should be intriguing as abstract graphic design even when its meaning isn't explained.
 
 - Composition: 1 large but airy artwork at right of the headline, roughly 260–410px wide at typical desktop widths. Use generous negative space around it and no card container.
 - Rendering: a simple inline SVG with elegant geometry, consistent stroke weight, and a few meaningful endpoints; colors from existing tokens: charcoal, quiet gray, one pink highlight. Never introduce a new gradient-heavy palette. No shadows/glows.
-- Interaction: when LinkedIn, Email, or Instagram CTA receives hover or keyboard focus, *its corresponding path* gently draws/brightens; the other paths stay visible but subdued. On focus loss, return to idle. The actual CTAs remain conventional links; artwork is not a navigation trap.
+- Interaction: when LinkedIn, Email, or Instagram CTA receives hover or keyboard focus, _its corresponding path_ gently draws/brightens; the other paths stay visible but subdued. On focus loss, return to idle. The actual CTAs remain conventional links; artwork is not a navigation trap.
 - Entrance: draw the three paths sequentially after the headline has revealed, once, quickly. The completed static artwork must be equally compelling and visible without JS.
 - Motion: use lightweight SVG path dash offset or subtle opacity only; no motion on every pointer move. Honor reduced motion; cleanup animations on unmount.
 - Responsive: on mobile, place a compact cropped emblem near the headline or omit it if it competes with readable content. Never reduce CTA prominence.
@@ -74,11 +74,11 @@ Support:
 
 CTA rows (each opens an actual destination):
 
-| # | Label | Microcopy | Action |
-|---|---|---|---|
-| 01 | LinkedIn | For professional connections | External profile URL |
-| 02 | Email | For ideas worth sharing | `mailto:` to the approved public address |
-| 03 | Instagram | For the less professional side | External profile URL |
+| #   | Label     | Microcopy                      | Action                                   |
+| --- | --------- | ------------------------------ | ---------------------------------------- |
+| 01  | LinkedIn  | For professional connections   | External profile URL                     |
+| 02  | Email     | For ideas worth sharing        | `mailto:` to the approved public address |
+| 03  | Instagram | For the less professional side | External profile URL                     |
 
 Closing microcopy, low priority, above footer (or aligned at the end of the content):
 
@@ -142,12 +142,14 @@ Keep each method's text, destination, external/internal behavior, and order defi
 Contact is the calmest section. No animation should delay interaction or make a simple email link harder to use.
 
 **Entrance (once, or on navigation from another page):**
+
 1. Eyebrow and headline reveal gently (opacity + small vertical movement, short stagger).
 2. The three-stroke emblem draws into place, subtly and once; body copy settles in.
 3. Three contact rows reveal with a brief stagger.
 4. Total duration should feel crisp and be interruptible; no forced multi-second cinematic sequence.
 
 **Hover / keyboard focus on a row:**
+
 - Thin separator/accent line gains pink emphasis.
 - Text or arrow translates at most a few pixels; no strong scaling or glows.
 - Arrow goes slightly up-right and returns cleanly.
