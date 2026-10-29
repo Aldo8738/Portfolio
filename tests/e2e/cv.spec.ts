@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { cv, experience } from '../../src/content/cv';
+import { cv, education, experience } from '../../src/content/cv';
 
 test('CV content, native disclosures and thesis navigation work without JavaScript', async ({
   browser,
@@ -39,6 +39,15 @@ test('CV content, native disclosures and thesis navigation work without JavaScri
       await expect(entry.getByText('Present', { exact: true })).toBeVisible();
   }
   const sap = page.locator('[data-career-entry="sap"]');
+  for (const entry of [...experience, ...education]) {
+    const titleLink = page.locator(`#career-${entry.id} a`);
+    await expect(titleLink).toHaveText(entry.displayName);
+    await expect(titleLink).toHaveAttribute('href', entry.websiteUrl);
+    await expect(titleLink).toHaveCSS('cursor', 'pointer');
+    await titleLink.focus();
+    await expect(titleLink).toBeFocused();
+    await expect(titleLink).toHaveCSS('outline-style', 'solid');
+  }
   await sap.locator('summary').click();
   await expect(sap.locator('details')).toHaveAttribute('open');
   await expect(sap.getByText(cv.experience[0]?.details[0] ?? '')).toBeVisible();

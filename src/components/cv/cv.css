@@ -105,6 +105,18 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
+.career-title-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+.career-title-link:hover,
+.career-title-link:focus-visible {
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
 .career-role {
   font-size: 1rem;
   line-height: 1.5;

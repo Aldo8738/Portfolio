@@ -20,6 +20,7 @@ interface CareerBase {
   order: number;
   organization: string;
   displayName: string;
+  websiteUrl: string;
   role: string;
   start: string;
   location: string;
@@ -120,6 +121,7 @@ export const cv: CvContent = {
       order: 1,
       organization: 'SAP',
       displayName: 'SAP',
+      websiteUrl: 'https://www.sap.com/products/artificial-intelligence.html',
       role: 'Software Engineer',
       location: 'Berlin',
       start: '2025-03',
@@ -149,6 +151,7 @@ export const cv: CvContent = {
       order: 2,
       organization: 'koppla',
       displayName: 'koppla',
+      websiteUrl: 'https://www.koppla.de/',
       role: 'Frontend Engineer · Working Student',
       location: 'Berlin',
       start: '2023-06',
@@ -174,6 +177,7 @@ export const cv: CvContent = {
       order: 3,
       organization: 'Axel Springer National Media and Tech',
       displayName: 'Axel Springer',
+      websiteUrl: 'https://www.axelspringer.com/en/brands',
       role: 'Frontend Developer · Working Student',
       location: 'Berlin',
       start: '2022-03',
@@ -202,6 +206,8 @@ export const cv: CvContent = {
       order: 1,
       organization: 'Technische Universität Berlin',
       displayName: 'TU Berlin',
+      websiteUrl:
+        'https://www.tu.berlin/en/eecs/academics-teaching/organizing-your-studies/during-your-studies/bsc-computer-engineering',
       role: 'B.Sc. Computer Engineering',
       location: 'Berlin',
       start: '2020-10',

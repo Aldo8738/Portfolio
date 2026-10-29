@@ -22,6 +22,12 @@ build-time validation keep current flags/dates consistent, reject reversed dates
 duplicate IDs/orders, and dangling skill/project references. The education link
 resolves through the canonical Work lookup and route helper.
 
+The creator supplied organization destinations on 29 October 2026. SAP, koppla,
+Axel Springer and TU Berlin titles now link to their exact supplied URLs through
+`websiteUrl` in the career records. These native links work without JavaScript,
+use a pointer cursor, and have underlines with accent hover/focus emphasis plus
+the shared keyboard focus outline. Links use normal same-tab navigation.
+
 `SkillsToolbox.astro` groups 29 source-backed skills by stable ID. Native role
 details disclosures provide keyboard and touch focus for highlighting related
 skills. Hover, focus and touch use the IDs, not visible-label matching. Inactive

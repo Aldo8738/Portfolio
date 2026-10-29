@@ -35,7 +35,11 @@ const related = entry.relatedProjectId
   <span class="career-marker" aria-hidden="true" />
   <div class="career-copy" data-cv-reveal>
     <div class="career-heading">
-      <h3 id={`career-${entry.id}`}>{entry.displayName}</h3>
+      <h3 id={`career-${entry.id}`}>
+        <a class="career-title-link" href={entry.websiteUrl}>
+          {entry.displayName}
+        </a>
+      </h3>
       {entry.current && <span class="current-label">Current role</span>}
     </div>
     <p class="career-role">{entry.role}</p>
