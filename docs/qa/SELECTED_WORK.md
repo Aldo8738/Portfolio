@@ -57,6 +57,41 @@ to the stand disposes it. Work hash history is handled inside the exhibition
 instead of reloading the scene. The imported page's skip link targets `work-main`
 so the retained, hidden homepage's `main` ID cannot capture it.
 
+## Individual project motion update — 29 October 2026
+
+The four `/work/[slug]` pages now use the exhibition's GSAP choreography through
+`src/components/work/project-motion.ts`. The shared function retains the existing
+56 px title lift, slight rotation/scale settling, 700 ms staggered copy, 1.1 s
+diagram entrance, SVG trace drawing and Knowledge Bridge relationship correction.
+The exhibition controller calls the same function, preserving its previous behavior.
+
+`case-study.ts` observes each hero column separately so the mobile diagram reveals
+when it actually enters view. Facts, narrative sections, optional media/links and
+project navigation reveal their children with the same easing and copy rhythm.
+These bounded sequences replay on viewport entry from either direction. Leaving
+the viewport completes interrupted sequences, keeping fast scrolling readable.
+No page is pinned, no scroll position is controlled and navigation never waits.
+
+The static HTML remains the primary page. No content starts hidden in CSS, and
+reduced motion bypasses all authored sequences. Preference changes revert inline
+styles immediately. Contexts, observers and event listeners are cleaned up on
+pagehide and remounted after browser-cache restoration. Hidden tabs pause running
+timelines. No new dependency, imagery, project facts or scene resources were added.
+
+The new `tests/e2e/case-study.spec.ts` covers direct entry to all four routes,
+animated titles and traces, scroll replay, mobile diagram entry, live reduced
+motion, history/reload, blocked scripts and responsive detail screenshots.
+
+Validation for this update: formatting, lint, typecheck and the production build
+passed; Astro reported zero errors, warnings or hints. All 64 unit tests passed.
+The 17 existing Work, navigation and CRT-transition browser checks passed. All
+seven new detail checks passed after correcting a test viewport assumption and
+rerunning a transient Chromium screenshot capture failure. Detail screenshots at
+320, 390, 768 and 1440 px cover all four projects; desktop and mobile captures
+were visually reviewed. The motion flow reports no page errors or scene/media
+requests. The existing large-chunk build warning remains. Physical-device,
+screen-reader and non-Chromium checks were not run.
+
 ## Adding a project
 
 1. Add one `Project` object to `src/content/portfolio.ts` with a stable slug, order,

@@ -24,23 +24,29 @@ const next = orderedProjects[index + 1];
 ---
 
 <SiteLayout title={project.title} description={project.summary}>
-  <article class="work-case-study shell">
+  <article class="work-case-study shell" data-case-study>
     <a class="text-link" href={`/work#project-${project.slug}`}>
       <span aria-hidden="true">←</span> Back to Selected work
     </a>
     <header class="case-study-hero">
-      <div>
-        <p class="eyebrow">
+      <div data-case-reveal="hero">
+        <p class="eyebrow" data-copy-reveal>
           {String(project.order).padStart(2, '0')} / {project.eyebrow}
         </p>
-        <h1>{project.title}</h1>
-        <p class="case-study-intro">{project.caseStudy.intro}</p>
-        <p class="project-highlight">{project.highlight}</p>
+        <h1 data-project-title>{project.title}</h1>
+        <p class="case-study-intro" data-copy-reveal>
+          {project.caseStudy.intro}
+        </p>
+        <p class="project-highlight" data-copy-reveal>
+          {project.highlight}
+        </p>
       </div>
-      <ProjectVisual project={project} />
+      <div data-case-reveal="hero">
+        <ProjectVisual project={project} />
+      </div>
     </header>
     <div class="case-study-body">
-      <dl class="case-study-facts">
+      <dl class="case-study-facts" data-case-reveal>
         {project.caseStudy.role && (
           <div>
             <dt>Contribution</dt>
@@ -53,13 +59,13 @@ const next = orderedProjects[index + 1];
         </div>
       </dl>
       {project.caseStudy.sections.map((section) => (
-        <section>
+        <section data-case-reveal>
           <h2>{section.title}</h2>
           <p>{section.body}</p>
         </section>
       ))}
       {project.images?.map((image) => (
-        <figure>
+        <figure data-case-reveal>
           <img
             src={image.src}
             alt={image.alt}
@@ -70,7 +76,7 @@ const next = orderedProjects[index + 1];
         </figure>
       ))}
       {project.links && project.links.length > 0 && (
-        <section>
+        <section data-case-reveal>
           <h2>Explore the project</h2>
           <ul>
             {project.links.map((link) => (
@@ -81,7 +87,11 @@ const next = orderedProjects[index + 1];
           </ul>
         </section>
       )}
-      <nav class="project-sequence" aria-label="Project navigation">
+      <nav
+        class="project-sequence"
+        aria-label="Project navigation"
+        data-case-reveal
+      >
         {previous && (
           <a href={projectPath(previous)} rel="prev">
             <span aria-hidden="true">←</span> {previous.title}
@@ -99,3 +109,15 @@ const next = orderedProjects[index + 1];
     </div>
   </article>
 </SiteLayout>
+
+<script>
+  import { mountCaseStudy } from '../../components/work/case-study';
+  const root = document.querySelector<HTMLElement>('[data-case-study]');
+  if (root) {
+    let dispose = mountCaseStudy(root);
+    window.addEventListener('pagehide', () => dispose());
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountCaseStudy(root);
+    });
+  }
+</script>
