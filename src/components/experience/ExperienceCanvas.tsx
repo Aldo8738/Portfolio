@@ -251,6 +251,7 @@ function Model({
         <SceneBenchmark />
       )}
       <CameraControls
+        photoId={photoId}
         amp={amp}
         guitarPhase={guitarPhase}
         notebook={notebook}

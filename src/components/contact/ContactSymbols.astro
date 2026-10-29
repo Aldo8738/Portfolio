@@ -1,18 +1,28 @@
 ---
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import linkedinBlack from '../../../public/images/contact/linkedin-in-black.png?inline';
+import linkedinWhite from '../../../public/images/contact/linkedin-in-white.png?inline';
+import instagramBlack from '../../../public/images/contact/instagram-glyph-black.svg?inline';
+import instagramWhite from '../../../public/images/contact/instagram-glyph-white.svg?inline';
+import mailBlack from '../../../public/images/contact/mail-outline.svg?inline';
+import mailWhite from '../../../public/images/contact/mail-outline-white.svg?inline';
 import type { ContactMethod } from '../../content/contact';
 interface Props {
   methods: readonly (ContactMethod & { href: string })[];
 }
 const { methods } = Astro.props;
-// Inline local artwork at build time so the illustration adds no image requests.
+const iconSources: Readonly<Record<string, string>> = {
+  '/images/contact/linkedin-in-black.png': linkedinBlack,
+  '/images/contact/linkedin-in-white.png': linkedinWhite,
+  '/images/contact/instagram-glyph-black.svg': instagramBlack,
+  '/images/contact/instagram-glyph-white.svg': instagramWhite,
+  '/images/contact/mail-outline.svg': mailBlack,
+  '/images/contact/mail-outline-white.svg': mailWhite,
+};
+// Vite embeds the assets before prerendering; no source filesystem is needed at render time.
 function iconSource(src: string) {
-  if (!src.startsWith('/images/contact/') || src.includes('..'))
-    throw new Error(`Invalid Contact icon path: ${src}`);
-  const type = src.endsWith('.svg') ? 'svg+xml' : 'png';
-  const bytes = readFileSync(resolve('public', src.slice(1)));
-  return `data:image/${type};base64,${bytes.toString('base64')}`;
+  const source = iconSources[src];
+  if (!source) throw new Error(`Invalid Contact icon path: ${src}`);
+  return source;
 }
 ---
 

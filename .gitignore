@@ -3,6 +3,7 @@ node_modules/
 .cache/
 .tools/
 .astro/
+.wrangler/
 .next/
 dist/
 out/

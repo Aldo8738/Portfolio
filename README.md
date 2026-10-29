@@ -144,3 +144,9 @@ conditions must accompany any measured result. Public deployment verification is
 pending. Cloudflare Workers Builds reads `packageManager` in `package.json` to
 select npm 11.19.1 before dependency installation; `.node-version` selects Node 24.
 The `engines` field validates compatibility but does not select the npm version.
+
+Cloudflare Workers Builds uses `npm run build` and `npx wrangler deploy` with the
+tracked `wrangler.jsonc` static-assets configuration. Wrangler is pinned locally;
+do not add an Astro server adapter for this static portfolio. Run `npm run deploy:check`
+after building for a non-publishing deployment check. See the
+[Cloudflare failure analysis and verification](docs/qa/CLOUDFLARE.md).

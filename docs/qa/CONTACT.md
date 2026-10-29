@@ -44,9 +44,10 @@ the methods. The small closing line leads directly to the existing footer and
 salsa selector, without another content section.
 
 The same typed contact records supply labels, destinations and official icon
-variants. Exact asset bytes are embedded at static build time, adding no image
-network requests or runtime server requirement. Black and white theme variants
-keep their native proportions and remain unfiltered.
+variants. Vite inline imports embed artwork before prerendering, without source
+filesystem reads, image network requests or runtime server requirements. Black
+and white theme variants keep their native proportions and remain unfiltered.
+See the [Cloudflare deployment fix](CLOUDFLARE.md).
 
 Both social marks were downloaded directly from official brand packs on 29 October
 2026 and extracted without altering their bytes:

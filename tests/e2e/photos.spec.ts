@@ -13,6 +13,58 @@ async function ready(page: Page) {
   return stage;
 }
 
+test('canvas presses and rapid retargeting keep photo mode during a slide', async ({
+  page,
+}) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const stage = await ready(page);
+  await page.getByText('Photos', { exact: true }).click();
+  await page.getByRole('link', { name: 'Lucha', exact: true }).click();
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  const controls = page.getByRole('navigation', { name: 'Photo navigation' });
+  const next = controls.getByRole('button', { name: 'Next photo' });
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await next.evaluate((button: HTMLButtonElement) => button.click());
+  await page.clock.runFor(32);
+  await expect(stage).toHaveAttribute('data-photo-id', 'paris');
+  const box = await stage.locator('canvas').boundingBox();
+  if (!box) throw new Error('Scene canvas missing');
+  await page.mouse.move(box.x + box.width * 0.85, box.y + box.height * 0.55);
+  await page.mouse.down();
+  await expect(stage).toHaveAttribute('data-photo-id', 'paris');
+  await page.mouse.up();
+  await page.clock.runFor(32);
+  await page.clock.fastForward(800);
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await next.evaluate((button: HTMLButtonElement) => button.click());
+  await page.clock.runFor(32);
+  await next.evaluate((button: HTMLButtonElement) => button.click());
+  await page.clock.runFor(32);
+  await page.clock.fastForward(800);
+  await expect(stage).toHaveAttribute('data-photo-id', 'lucha');
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await controls
+    .getByRole('button', { name: 'Back to stand' })
+    .evaluate((button: HTMLButtonElement) => button.click());
+  await page.clock.runFor(32);
+  await page.clock.fastForward(2000);
+  await page
+    .getByRole('link', { name: 'Lucha', exact: true })
+    .evaluate((link: HTMLAnchorElement) => link.click());
+  await page.clock.runFor(32);
+  await next.evaluate((button: HTMLButtonElement) => button.click());
+  await page.clock.runFor(32);
+  await page.clock.fastForward(800);
+  await expect(stage).toHaveAttribute('data-photo-id', 'paris');
+  await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+  await page.clock.resume();
+  await controls.getByRole('button', { name: 'Back to stand' }).click();
+  await expect(stage).not.toHaveAttribute('data-photo-id');
+});
+
 test('visible photos remain clickable while another photo is focused', async ({
   page,
 }, testInfo) => {

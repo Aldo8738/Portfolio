@@ -10,6 +10,7 @@ export default defineConfig(
     ignores: [
       'dist/**',
       '.astro/**',
+      '.wrangler/**',
       '.tools/**',
       '.cache/**',
       'node_modules/**',

@@ -40,6 +40,12 @@ CV transition or scene dependency is added. See the [About review](qa/ABOUT.md).
 
 ## Accepted loading and performance decisions
 
+Cloudflare Workers deployment is explicitly static through `wrangler.jsonc` and
+the pinned Wrangler CLI. Contact icons are bundled before prerendering rather than
+read from the source filesystem at render time. See the
+[Cloudflare deployment review](qa/CLOUDFLARE.md) for the reported adapter
+auto-configuration failure and validation.
+
 The [Contact brief](CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) is implemented as a
 static editorial `/contact` page with optional GSAP motion and a typed contact
 configuration. The later [Contact refinement](CONTACT_PAGE_REFINEMENT_CODEX_BRIEF.md)

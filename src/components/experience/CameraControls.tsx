@@ -41,6 +41,7 @@ interface Props extends Pick<
   | 'sceneRevealed'
   | 'onCameraMotion'
   | 'guitarPhase'
+  | 'photoId'
 > {
   amp: Object3D;
   notebook: Object3D;
@@ -54,6 +55,7 @@ const keyboardStep = Math.PI / 18;
 export function CameraControls({
   amp,
   guitarPhase,
+  photoId,
   notebook,
   bounds,
   framingPoints,
@@ -278,7 +280,8 @@ export function CameraControls({
       const previousPhoto = focusedPhoto.current;
       const slide = isPhoto && previousPhoto !== null;
       cancelEntrance();
-      focusedPhoto.current = slide ? previousPhoto : null;
+      // Photo mode starts with the request, including interrupted approaches and slides.
+      focusedPhoto.current = isPhoto ? focus : null;
       focusedNotebook.current = null;
       delete gl.domElement.dataset.drawingsView;
       if (isNotebook) gl.domElement.dataset.drawingsView = 'moving';
@@ -374,8 +377,6 @@ export function CameraControls({
             focusedNotebook.current = notebook;
             gl.domElement.dataset.drawingsView = 'focused';
           }
-          if (completed && isPhoto && focus instanceof Mesh)
-            focusedPhoto.current = focus;
           onSettled?.(completed);
         },
       };
@@ -579,7 +580,7 @@ export function CameraControls({
     <OrbitControls
       ref={controls}
       domElement={gl.domElement}
-      enabled={active && guitarPhase === 'idle'}
+      enabled={active && !photoId && guitarPhase === 'idle'}
       onStart={cancelEntrance}
       enablePan={false}
       enableZoom

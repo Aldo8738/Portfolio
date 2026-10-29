@@ -11,6 +11,8 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro check && astro build",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:check": "wrangler deploy --dry-run",
     "preview": "astro preview --host 127.0.0.1",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -48,6 +50,7 @@
     "prettier-plugin-astro": "1.1.1",
     "typescript": "~6.0.0",
     "typescript-eslint": "8.72.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "wrangler": "4.155.0"
   }
 }
