@@ -48,6 +48,10 @@ are not device performance claims. See the [scene baseline](docs/qa/BASELINE.md)
 
 ## Content and assets
 
+- `src/content/contact.ts` holds Contact copy and approved contact methods. All
+  methods remain disabled until real verified URLs are supplied; publishing email
+  requires explicit approval. See the [Contact review](docs/qa/CONTACT.md).
+
 - `/`, `/work`, `/cv`, `/about`, `/contact` and `/404` are real HTML pages.
 - `src/content/cv.ts` supplies the CV chronology and skill catalog. The existing
   navigation links to `/cv`; no download is shown until an approved public résumé

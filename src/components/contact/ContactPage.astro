@@ -1,0 +1,154 @@
+---
+import { contactContent, getContactActions } from '../../content/contact';
+const { primary, secondary } = getContactActions(contactContent.methods);
+const methods = primary ? [primary, ...secondary] : [];
+---
+
+<article class="contact-page shell" data-contact-page>
+  <header>
+    <p class="eyebrow" data-contact-reveal>
+      {contactContent.eyebrow}
+    </p>
+    <h1 data-contact-reveal>
+      {contactContent.headline.replace(/\?$/, '')}
+      <span class="contact-accent">?</span>
+    </h1>
+  </header>
+  <div class="contact-invitation">
+    <p class="contact-description" data-contact-reveal>
+      {contactContent.description}
+    </p>
+    {methods.length > 0 ? (
+      <ul class="contact-methods" data-contact-reveal>
+        {methods.map((method) => (
+          <li>
+            <a
+              class:list={[
+                'contact-link',
+                { 'contact-link--primary': method === primary },
+              ]}
+              href={method.href}
+              target={method.id !== 'email' ? '_blank' : undefined}
+              rel={method.id !== 'email' ? 'noopener noreferrer' : undefined}
+            >
+              {method.label}
+              <span class="contact-arrow" aria-hidden="true">
+                ↗
+              </span>
+              {method.id !== 'email' && (
+                <span class="sr-only"> (opens in a new tab)</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="contact-unavailable" data-contact-reveal>
+        {contactContent.unavailable}
+      </p>
+    )}
+  </div>
+  <p class="contact-closing" data-contact-reveal>
+    {contactContent.closing}
+  </p>
+</article>
+
+<script>
+  import { mountContactPage } from './contact-page';
+  const root = document.querySelector<HTMLElement>('[data-contact-page]');
+  if (root) {
+    let dispose = mountContactPage(root);
+    window.addEventListener('pagehide', () => dispose());
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountContactPage(root);
+    });
+  }
+</script>
+
+<style>
+  .contact-page {
+    min-height: calc(100svh - 240px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(3rem, 7vw, 7rem) 2.5rem;
+  }
+  h1 {
+    max-width: 15ch;
+    text-wrap: balance;
+    font-size: clamp(3.5rem, 8.5vw, 8.5rem);
+    line-height: 0.98;
+    margin-block: 1.75rem 2.5rem;
+    overflow-wrap: anywhere;
+  }
+  .contact-accent {
+    color: var(--accent);
+  }
+  .contact-invitation {
+    margin-left: 34%;
+    max-width: 38rem;
+  }
+  .contact-description {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    max-width: 42ch;
+  }
+  .contact-methods {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+  }
+  .contact-methods li + li {
+    margin-top: 0.75rem;
+  }
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+  }
+  .contact-link--primary {
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    font-weight: 700;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+  }
+  .contact-arrow {
+    display: inline-block;
+  }
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    text-decoration-thickness: 3px;
+  }
+  .contact-link:hover .contact-arrow,
+  .contact-link:focus-visible .contact-arrow {
+    transform: translate(4px, -4px);
+  }
+  .contact-unavailable {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+  .contact-closing {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin: clamp(3rem, 6vw, 6rem) 0 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-arrow {
+      transition: transform 160ms ease;
+    }
+  }
+  @media (max-width: 700px) {
+    .contact-page {
+      min-height: auto;
+      padding-block: 3.5rem 2rem;
+    }
+    h1 {
+      font-size: clamp(3.25rem, 12vw, 5.5rem);
+    }
+    .contact-invitation {
+      margin-left: 0;
+    }
+  }
+</style>

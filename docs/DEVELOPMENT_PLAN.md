@@ -35,6 +35,11 @@ before accepting visual changes. See the [cinematic review](qa/cinematic/REVIEW.
 
 ## Accepted loading and performance decisions
 
+The [Contact brief](CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md) is implemented as a
+static editorial `/contact` page with optional GSAP motion and a typed contact
+configuration. See the [Contact review](qa/CONTACT.md). Public email stays disabled;
+a verified LinkedIn URL remains a content launch blocker.
+
 These user clarifications supersede the handoff's poster-first loading requirement:
 
 - Use the creator's supplied rotating ASCII taco as the loading presentation,

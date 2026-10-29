@@ -17,6 +17,11 @@ public asset is supplied. See the [CV implementation review](docs/qa/CV.md).
 
 > **Instruction to Codex:** Treat this as an implementation brief. Inspect the existing repository first, then execute the plan in sensible, testable phases. Do not stop at a decorative mockup. Deliver a working, responsive, accessible **HTML portfolio** behind the interactive 3D entrance. Where personal content or media is missing, implement clearly marked placeholders and a typed content configuration; never fabricate projects, photographs, social profiles, guitar audio, or personal biography. Preserve the approved 3D design.
 
+**Contact update:** The [Contact implementation brief](docs/CONTACT_PAGE_CODEX_IMPLEMENTATION_BRIEF.md)
+defines the quiet editorial `/contact` page. Its [implementation review](docs/qa/CONTACT.md)
+records responsive checks and the pending verified LinkedIn URL. Contact methods
+live in `src/content/contact.ts`; public email requires explicit approval.
+
 ---
 
 ## 1. Project vision and success criteria

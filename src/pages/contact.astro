@@ -1,38 +1,40 @@
----
+﻿---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import ContactPage from '../components/contact/ContactPage.astro';
+import ThemePicker from '../components/ui/ThemePicker.astro';
+import { contactContent } from '../content/contact';
 import { siteContent } from '../content/site';
 ---
 
-<SiteLayout title="Contact">
-  <div class="content-page shell">
-    <header class="page-intro">
-      <p class="eyebrow">Stay a little longer</p>
-      <h1>Say hello.</h1>
-    </header>
-    <section class="empty-state">
-      <h2>Find Aldo here.</h2>
-      {siteContent.email ? (
-        <p>
-          <a href={`mailto:${siteContent.email}`}>{siteContent.email}</a>
-        </p>
-      ) : (
-        <p>
-          Contact details have not been supplied yet. An approved email address
-          and social links will appear here.
-        </p>
-      )}
-      {siteContent.socialLinks.length > 0 && (
-        <ul>
-          {siteContent.socialLinks.map((link) => (
-            <li>
-              <a href={link.url}>{link.label}</a>
-            </li>
-          ))}
-        </ul>
-      )}
-      <a class="text-link" href="/">
-        Return to the stand
-      </a>
-    </section>
-  </div>
+<SiteLayout title="Contact" description={contactContent.metadata}>
+  <ContactPage />
+  <footer slot="footer" class="contact-footer shell">
+    <p>
+      © {new Date().getFullYear()} {siteContent.name} · {contactContent.journey}
+    </p>
+    <ThemePicker />
+    <a class="text-link" href="/">
+      {contactContent.backLabel} <span aria-hidden="true">↗</span>
+    </a>
+  </footer>
 </SiteLayout>
+
+<style>
+  .contact-footer {
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
+    padding-block: 1.75rem;
+    color: var(--muted);
+  }
+  .contact-footer p {
+    margin: 0;
+    font-size: 0.75rem;
+  }
+  .contact-footer .text-link {
+    font-size: 0.75rem;
+  }
+</style>

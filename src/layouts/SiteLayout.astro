@@ -113,18 +113,20 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
       <slot />
     </main>
     {!immersive && (
-      <footer class="site-footer shell">
-        <div>
-          <a class="brand" href="/">
-            ALDO<span class="brand-dot">.</span>
+      <slot name="footer">
+        <footer class="site-footer shell">
+          <div>
+            <a class="brand" href="/">
+              ALDO<span class="brand-dot">.</span>
+            </a>
+            <p>A creative portfolio, served after dark.</p>
+          </div>
+          <ThemePicker />
+          <a class="text-link" href="/work">
+            View work <span aria-hidden="true">↗</span>
           </a>
-          <p>A creative portfolio, served after dark.</p>
-        </div>
-        <ThemePicker />
-        <a class="text-link" href="/work">
-          View work <span aria-hidden="true">↗</span>
-        </a>
-      </footer>
+        </footer>
+      </slot>
     )}
   </body>
 </html>
