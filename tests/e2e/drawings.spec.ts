@@ -34,13 +34,23 @@ for (const width of [1280, 390]) {
     if (width < 600) await page.touchscreen.tap(point.x, point.y);
     else await page.mouse.click(point.x, point.y);
     await expect(canvas).toHaveAttribute('data-drawings-view', 'focused');
+    const back = page.getByRole('button', {
+      name: 'Back to stand',
+      exact: true,
+    });
+    await expect(back).toBeVisible();
+    await expect(back).toBeFocused();
     await page.screenshot({
       path: testInfo.outputPath(`drawings-${width}.png`),
     });
     await page.setViewportSize({ width, height: 720 });
     await expect(canvas).toHaveAttribute('data-drawings-view', 'focused');
-    await page.getByRole('button', { name: 'Reset view', exact: true }).click();
+    await back.click();
     await expect(canvas).not.toHaveAttribute('data-drawings-view');
+    await expect(back).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Drawings', exact: true }),
+    ).toBeFocused();
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await expect(canvas).toHaveAttribute('data-salsa-motion', 'full');
     await page.getByRole('button', { name: 'Drawings', exact: true }).focus();
@@ -48,7 +58,7 @@ for (const width of [1280, 390]) {
     await expect(canvas).toHaveAttribute('data-drawings-view', 'focused', {
       timeout: 15000,
     });
-    await page.getByRole('button', { name: 'Reset view', exact: true }).click();
+    await back.click();
     await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
     expect(
       requests.some((url) => /\/media\/(drawings|music|sound)/.test(url)),

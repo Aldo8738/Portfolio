@@ -11,6 +11,9 @@ import {
   type GuitarVideoActions,
 } from './GuitarVideoExperience';
 import { PhotoControls } from './PhotoControls';
+import { BackToStandButton } from './BackToStandButton';
+import photoControlsStyles from './PhotoControls.module.css';
+import type { PhotoControlsLayout } from '../../lib/photo-controls-layout';
 import { AmpAudio, type AmpAudioActions } from './AmpAudio';
 import { SceneErrorBoundary } from './SceneErrorBoundary';
 import { useSceneActivity } from './useSceneActivity';
@@ -37,6 +40,11 @@ export default function Experience() {
     phase: 'zooming' | 'focused';
   } | null>(null);
   const [guitarPhase, setGuitarPhase] = useState<GuitarPhase>('idle');
+  const [drawingsView, setDrawingsView] = useState(false);
+  const drawingsTrigger = useRef<HTMLButtonElement>(null);
+  const [photoLayout, setPhotoLayout] = useState<PhotoControlsLayout | null>(
+    null,
+  );
   const guitar = useRef<GuitarVideoActions | null>(null);
   const guitarTrigger = useRef<HTMLButtonElement>(null);
   const photoOpener = useRef<HTMLElement | null>(null);
@@ -56,6 +64,7 @@ export default function Experience() {
     guitar.current?.close(true, false);
     setState({ status: 'failed', message });
     setPhotoView(null);
+    setDrawingsView(false);
   }, []);
   const onReady = useCallback(
     (metrics: SceneMetrics) =>
@@ -163,6 +172,8 @@ export default function Experience() {
                 photoId={photoView?.photo.id ?? null}
                 onPhotoRequest={onPhotoRequest}
                 onPhotoSettled={onPhotoSettled}
+                onPhotoLayout={setPhotoLayout}
+                onDrawingsView={setDrawingsView}
                 active={
                   visible &&
                   photoView?.phase !== 'focused' &&
@@ -231,37 +242,61 @@ export default function Experience() {
         )}
         {photoView && (
           <PhotoControls
+            layout={photoLayout}
             photo={photoView.photo}
             moving={photoView.phase === 'zooming'}
             onClose={closePhoto}
             onSelect={onPhotoRequest}
           />
         )}
-        {state.status === 'ready' && !photoView && guitarPhase === 'idle' && (
-          <div className={styles.cameraTools} data-camera-tools>
-            <button
-              ref={guitarTrigger}
-              type="button"
-              aria-label="Play Aldo's guitar video"
-              onClick={openGuitar}
+        {state.status === 'ready' &&
+          drawingsView &&
+          !photoView &&
+          guitarPhase === 'idle' && (
+            <nav
+              className={photoControlsStyles.controls}
+              aria-label="Drawing navigation"
             >
-              Guitar ↗
-            </button>
-            <span>Drag to explore · Scroll to zoom</span>
-            <button
-              type="button"
-              onClick={() => cameraActions.current?.focusDrawings()}
-            >
-              Drawings
-            </button>
-            <button
-              type="button"
-              onClick={() => cameraActions.current?.resetView()}
-            >
-              Reset view
-            </button>
-          </div>
-        )}
+              <BackToStandButton
+                autoFocus
+                onClick={() => {
+                  cameraActions.current?.resetView();
+                  requestAnimationFrame(() =>
+                    drawingsTrigger.current?.focus({ preventScroll: true }),
+                  );
+                }}
+              />
+            </nav>
+          )}
+        {state.status === 'ready' &&
+          !drawingsView &&
+          !photoView &&
+          guitarPhase === 'idle' && (
+            <div className={styles.cameraTools} data-camera-tools>
+              <button
+                ref={guitarTrigger}
+                type="button"
+                aria-label="Play Aldo's guitar video"
+                onClick={openGuitar}
+              >
+                Guitar ↗
+              </button>
+              <span>Drag to explore · Scroll to zoom</span>
+              <button
+                ref={drawingsTrigger}
+                type="button"
+                onClick={() => cameraActions.current?.focusDrawings()}
+              >
+                Drawings
+              </button>
+              <button
+                type="button"
+                onClick={() => cameraActions.current?.resetView()}
+              >
+                Reset view
+              </button>
+            </div>
+          )}
         {state.status === 'ready' && (
           <p className="sr-only" role="status">
             The interactive stand is ready. Drag with the left mouse button to

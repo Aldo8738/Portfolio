@@ -38,7 +38,7 @@ it('slides between framed photos without retreating through the stand', () => {
   expect(position.toArray()).toEqual(fit.position.toArray());
 });
 
-it.each([390 / 844, 640 / 844, 16 / 9])(
+it.each([390 / 844, 640 / 844, 16 / 9, 844 / 390])(
   'frames a solid print from the front instead of its edge normal at aspect %s',
   (aspect) => {
     const photo = new Mesh(
@@ -47,9 +47,10 @@ it.each([390 / 844, 640 / 844, 16 / 9])(
     );
     photo.position.set(2.23, 3.31, -0.98);
     photo.rotation.y = -0.14;
-    const fit = fitPhotoCamera(photo, aspect, 38);
+    const height = aspect > 2 ? 390 : 844;
+    const fit = fitPhotoCamera(photo, aspect, 38, height);
     expect(fit.position.x).toBeCloseTo(photo.position.x);
-    expect(fit.position.y).toBeCloseTo(photo.position.y);
+    expect(fit.position.y).toBeLessThan(photo.position.y);
     expect(fit.position.z).toBeGreaterThan(photo.position.z);
     const camera = new PerspectiveCamera(38, aspect, 0.1, 100);
     camera.position.copy(fit.position);
@@ -63,6 +64,13 @@ it.each([390 / 844, 640 / 844, 16 / 9])(
         .project(camera);
       expect(Math.abs(corner.x)).toBeLessThan(1);
       expect(Math.abs(corner.y)).toBeLessThan(1);
+      const screenY = ((1 - corner.y) * height) / 2;
+      expect(screenY).toBeGreaterThanOrEqual(
+        Math.min(aspect > 2 ? 64 : 80, height * 0.2) - 1e-6,
+      );
+      expect(screenY).toBeLessThanOrEqual(
+        height - (aspect > 2 ? 160 : 200) + 1e-6,
+      );
     }
     photo.geometry.dispose();
     photo.material.dispose();

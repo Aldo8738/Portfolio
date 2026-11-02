@@ -2,6 +2,80 @@ import { expect, test, type Page } from '@playwright/test';
 import type { SceneMetrics } from '../../src/components/experience/scene-types';
 import { photos } from '../../src/content/media';
 
+for (const theme of ['original', 'noir', 'synthwave']) {
+  test(`gallery controls stay legible and clear of navigation in ${theme}`, async ({
+    page,
+  }, testInfo) => {
+    test.setTimeout(120000);
+    await page.addInitScript((value) => {
+      localStorage.setItem('taqueria-theme', value);
+    }, theme);
+    const stage = await ready(page);
+    await page.getByText('Photos', { exact: true }).click();
+    const opener = page.getByRole('link', { name: 'Paris', exact: true });
+    await opener.click();
+    const controls = page.getByRole('navigation', { name: 'Photo navigation' });
+    const previous = controls.getByRole('button', { name: 'Previous photo' });
+    const next = controls.getByRole('button', { name: 'Next photo' });
+    const back = controls.getByRole('button', { name: 'Back to stand' });
+    const counter = controls.locator('[data-photo-counter]');
+    const counterText = () =>
+      counter.innerText().then((text) => text.replace(/\s/g, ''));
+    for (const viewport of [
+      { width: 2560, height: 1920 },
+      { width: 1440, height: 1080 },
+      { width: 390, height: 844 },
+      { width: 844, height: 390 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await expect(stage).toHaveAttribute('data-photo-state', 'focused');
+      await expect(controls).toHaveAttribute(
+        'data-layout',
+        viewport.width === 2560 ? 'sides' : 'row',
+      );
+      await expect
+        .poll(counterText)
+        .toBe(`02/${String(photos.length).padStart(2, '0')}`);
+      await page.keyboard.press('Tab');
+      await previous.focus();
+      expect(
+        await previous.evaluate((button) => button.matches(':focus-visible')),
+      ).toBe(true);
+      for (const control of [previous, next, back]) {
+        const box = await control.boundingBox();
+        expect(box).not.toBeNull();
+        if (!box) throw new Error('Gallery control missing');
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+        expect(box.y).toBeGreaterThanOrEqual(0);
+        const work = await page.locator('.scene-work-link').boundingBox();
+        if (!work) throw new Error('View work link missing');
+        expect(box.y + box.height).toBeLessThanOrEqual(work.y);
+      }
+      await page.screenshot({
+        path: testInfo.outputPath(`${theme}-${viewport.width}.png`),
+      });
+      await page.keyboard.press('ArrowRight');
+      await expect(stage).toHaveAttribute('data-photo-id', 'canal');
+      await expect
+        .poll(counterText)
+        .toBe(`03/${String(photos.length).padStart(2, '0')}`);
+      await next.click();
+      await expect(stage).toHaveAttribute('data-photo-id', 'lucha');
+      await expect
+        .poll(counterText)
+        .toBe(`01/${String(photos.length).padStart(2, '0')}`);
+      await previous.click();
+      await previous.click();
+      await expect(stage).toHaveAttribute('data-photo-id', 'paris');
+    }
+    await page.keyboard.press('Escape');
+    await expect(controls).toHaveCount(0);
+    await expect(opener).toBeFocused();
+  });
+}
+
 async function ready(page: Page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');

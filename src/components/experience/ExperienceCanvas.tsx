@@ -7,6 +7,7 @@ import {
   Box3,
   Mesh,
   PCFShadowMap,
+  PerspectiveCamera,
   SRGBColorSpace,
   Vector3,
   type Object3D,
@@ -18,6 +19,8 @@ import {
   requiredNodeNames,
 } from '../../lib/glb-contract';
 import { getFramingPoints } from '../../lib/camera';
+import { fitPhotoCamera } from '../../lib/photo-camera';
+import { getPhotoControlsLayout } from '../../lib/photo-controls-layout';
 import { photos } from '../../content/media';
 import { themes } from '../../lib/theme';
 import { useSalsaInteraction } from './useSalsaInteraction';
@@ -64,6 +67,8 @@ function Model({
   photoId,
   onPhotoRequest,
   onPhotoSettled,
+  onPhotoLayout,
+  onDrawingsView,
   active,
   reducedMotion,
   cameraActions,
@@ -78,6 +83,8 @@ function Model({
   | 'photoId'
   | 'onPhotoRequest'
   | 'onPhotoSettled'
+  | 'onPhotoLayout'
+  | 'onDrawingsView'
   | 'active'
   | 'reducedMotion'
   | 'cameraActions'
@@ -154,6 +161,35 @@ function Model({
       portfolio.phase === 'idle',
     reducedMotion,
   );
+  useEffect(() => {
+    if (!photoId || !(camera instanceof PerspectiveCamera)) return;
+    const index = photos.findIndex((photo) => photo.id === photoId);
+    const image = scene.getObjectByName(`HIT_PHOTOS_POLAROID_${index}`);
+    if (!(image instanceof Mesh))
+      throw new Error(`Photo surface missing: ${photoId}`);
+    const neighbors = photos
+      .map((photo, photoIndex) => {
+        const node = scene.getObjectByName(`HIT_PHOTOS_POLAROID_${photoIndex}`);
+        if (!node) throw new Error(`Photo print missing: ${photo.id}`);
+        return node;
+      })
+      .filter((node) => node !== image);
+    onPhotoLayout(
+      getPhotoControlsLayout(
+        image,
+        neighbors,
+        fitPhotoCamera(
+          image,
+          size.width / size.height,
+          camera.fov,
+          size.height,
+        ),
+        size.width,
+        size.height,
+        camera.fov,
+      ),
+    );
+  }, [photoId, scene, camera, size.width, size.height, onPhotoLayout]);
   useEffect(() => {
     if (!photoId) return;
     const index = photos.findIndex((photo) => photo.id === photoId);
@@ -251,6 +287,7 @@ function Model({
         <SceneBenchmark />
       )}
       <CameraControls
+        onDrawingsView={onDrawingsView}
         photoId={photoId}
         amp={amp}
         guitarPhase={guitarPhase}

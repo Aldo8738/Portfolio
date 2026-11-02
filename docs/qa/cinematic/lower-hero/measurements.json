@@ -1,0 +1,192 @@
+{
+  "desktop": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "metrics": {
+      "readyMs": 2724,
+      "modelParsedMs": 961,
+      "calls": 341,
+      "triangles": 136210,
+      "textures": 17,
+      "dpr": 1,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "quality": "standard",
+      "rendering": {
+        "toneMapping": 4,
+        "exposure": 1,
+        "outputColorSpace": "srgb",
+        "shadows": true,
+        "shadowMapType": 1
+      },
+      "modelDownloadMs": 109,
+      "targets": {
+        "SALSA_RED_PIVOT": {
+          "x": 0.15668681282523714,
+          "y": 0.013402467227045647
+        },
+        "SALSA_GREEN_PIVOT": {
+          "x": 0.18195888524091747,
+          "y": 0.013402467227045647
+        },
+        "SALSA_ORANGE_PIVOT": {
+          "x": 0.2072309425932724,
+          "y": 0.013402467227045647
+        },
+        "SALSA_bottle_0": {
+          "x": 0.1566457478181766,
+          "y": 0.003884637691922993
+        },
+        "SALSA_bottle_nozzle_0": {
+          "x": 0.15685680405670924,
+          "y": 0.05095340019828853
+        },
+        "SALSA_bottle_1": {
+          "x": 0.1819111968440932,
+          "y": 0.003884637691922993
+        },
+        "SALSA_bottle_nozzle_1": {
+          "x": 0.18215629441927567,
+          "y": 0.05095340019828853
+        },
+        "SALSA_bottle_2": {
+          "x": 0.2071766308106322,
+          "y": 0.003884637691922993
+        },
+        "SALSA_bottle_nozzle_2": {
+          "x": 0.2074557697021743,
+          "y": 0.05095340019828853
+        },
+        "HIT_WORK_CRT_SCREEN": {
+          "x": 0.31724428457816567,
+          "y": 0.0990883455346952
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_0": {
+          "x": -0.12397870121145378,
+          "y": -0.026840204490507887
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_1": {
+          "x": -0.06135028195474743,
+          "y": -0.026840204490507887
+        },
+        "HIT_PHOTOS_POLAROID_0": {
+          "x": 0.25231090786357074,
+          "y": 0.34997993809813094
+        },
+        "HIT_PHOTOS_POLAROID_1": {
+          "x": 0.31427967879999186,
+          "y": 0.31963953626926733
+        },
+        "HIT_PHOTOS_POLAROID_2": {
+          "x": 0.3682795901519169,
+          "y": 0.2933850750166199
+        },
+        "HIT_MUSIC_AMP": {
+          "x": -0.27052050079131795,
+          "y": -0.2637377588940088
+        },
+        "HIT_MUSIC_PEDAL": {
+          "x": -0.24115753308217436,
+          "y": -0.3650973333625074
+        }
+      }
+    },
+    "errors": []
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "metrics": {
+      "readyMs": 7517,
+      "modelParsedMs": 5476,
+      "calls": 341,
+      "triangles": 136206,
+      "textures": 17,
+      "dpr": 1,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "quality": "mobile",
+      "rendering": {
+        "toneMapping": 4,
+        "exposure": 1,
+        "outputColorSpace": "srgb",
+        "shadows": true,
+        "shadowMapType": 0
+      },
+      "modelDownloadMs": 432,
+      "targets": {
+        "SALSA_RED_PIVOT": {
+          "x": 0.3425679846244451,
+          "y": 0.007616295175630525
+        },
+        "SALSA_GREEN_PIVOT": {
+          "x": 0.3978208981186956,
+          "y": 0.007616295175630525
+        },
+        "SALSA_ORANGE_PIVOT": {
+          "x": 0.4530737786796511,
+          "y": 0.007616295175630525
+        },
+        "SALSA_bottle_0": {
+          "x": 0.34251695828858214,
+          "y": 0.002207794642719074
+        },
+        "SALSA_bottle_nozzle_0": {
+          "x": 0.34277908863834816,
+          "y": 0.028942018403502138
+        },
+        "SALSA_bottle_1": {
+          "x": 0.39776164172676226,
+          "y": 0.002207794642719074
+        },
+        "SALSA_bottle_nozzle_1": {
+          "x": 0.3980660511749552,
+          "y": 0.028942018403502138
+        },
+        "SALSA_bottle_2": {
+          "x": 0.4530062922365529,
+          "y": 0.002207794642719074
+        },
+        "SALSA_bottle_nozzle_2": {
+          "x": 0.4533529807579724,
+          "y": 0.028942018403502138
+        },
+        "HIT_WORK_CRT_SCREEN": {
+          "x": 0.6862662810536502,
+          "y": 0.0557142281719145
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_0": {
+          "x": -0.2697187349515672,
+          "y": -0.015177300716883653
+        },
+        "HIT_DRAWINGS_SKETCHBOOK_1": {
+          "x": -0.1334690577983544,
+          "y": -0.015177300716883653
+        },
+        "HIT_PHOTOS_POLAROID_0": {
+          "x": 0.5777203517384129,
+          "y": 0.208290507388163
+        },
+        "HIT_PHOTOS_POLAROID_1": {
+          "x": 0.7198524878744048,
+          "y": 0.19029719572477852
+        },
+        "HIT_PHOTOS_POLAROID_2": {
+          "x": 0.8437831817398261,
+          "y": 0.17471730318099282
+        },
+        "HIT_MUSIC_AMP": {
+          "x": -0.5765517010165757,
+          "y": -0.14610163420067837
+        },
+        "HIT_MUSIC_PEDAL": {
+          "x": -0.5060908759211625,
+          "y": -0.19915032669265448
+        }
+      }
+    },
+    "errors": []
+  }
+}

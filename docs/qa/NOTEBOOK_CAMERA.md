@@ -2,7 +2,25 @@
 
 Clicking either notebook page, artwork or spine now frames both open drawings.
 The existing camera tools include a Drawings button for keyboard and touch access.
-Reset view or Home returns to the stand. Reduced motion applies the pose immediately.
+The drawings view now shares the gallery's paper-style **Back to stand** button,
+replacing the camera-tools row while the book is open. Its existing camera reset
+returns to the stand and restores focus to the Drawings control. The button receives
+focus when the book opens. Home remains available on the canvas. Reduced motion
+applies the pose immediately.
+
+`BackToStandButton.tsx` shares the existing photo-control CSS and markup with
+`PhotoControls.tsx`; no camera fitting, themes, gallery composition or model assets
+change. `CameraControls.tsx` reports notebook entry, reset and interruption through
+a typed callback so the HTML control follows both raycast and keyboard entry.
+
+The shared-button checkpoint on 2 November 2026 passes formatting, lint,
+typechecking, the production build, the frozen-asset contract and all 67 unit tests.
+Three Chromium/SwiftShader browser checks pass: desktop and touch-mobile notebook
+entry, resize, paper-button return and focus restoration, plus the existing photo
+gallery's rapid selection/return check. Both reduced and normal motion are covered.
+Reviewed captures: [desktop paper return](notebook/paper-return-desktop.png) and
+[mobile paper return](notebook/paper-return-mobile.png). Physical-device testing was
+not performed; the existing build chunk-size warning remains.
 
 `src/lib/notebook-camera.ts` computes a responsive view from the named notebook's
 bounds, at 55 degrees above the counter. It fits both pages with padding in portrait
@@ -22,7 +40,7 @@ Changed implementation: `ExperienceCanvas.tsx` routes notebook hits to the share
 camera action; `Experience.tsx` exposes that action as a button; `scene-types.ts`
 types it; `Experience.module.css` keeps camera tools within narrow screens.
 
-Validation on Windows Chromium with SwiftShader:
+Original camera checkpoint (historical), on Windows Chromium with SwiftShader:
 
 - Formatting, lint, typechecking, asset validation, build and all 57 unit tests pass.
   The build retains the existing warning about chunks larger than 500 kB.

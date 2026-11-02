@@ -1,5 +1,43 @@
 # Rear-to-front camera entrance
 
+2 November 2026 photo-clearance follow-up: orbit the shared hero direction toward
+the photo side by about 13.5 degrees (`azimuth: 0.24`), keeping the low elevation
+and closer responsive framing below. This reveals the Lucha print beyond the
+sign's right edge without moving the frozen model or any photo pivot.
+Inspected production captures: [desktop](../cinematic/photo-clearance/desktop.png)
+and [mobile](../cinematic/photo-clearance/mobile.png). All three prints are visible.
+The [measurements](../cinematic/photo-clearance/measurements.json) use Chromium,
+SwiftShader, reduced motion and DPR 1. Physical-device review remains pending.
+An attempted development capture stopped on a React `setState`-during-render
+warning involving `LoadingProgress` and `BerlinEnvironment`; the production
+captures report no browser errors. That development warning is outside this
+camera adjustment.
+
+Photo-clearance validation: all 65 then-current unit tests and the six affected
+browser flows pass. One browser-context setup timeout passed on a focused retry;
+there was no application assertion failure. Formatting, typecheck, lint, build and
+the frozen asset contract pass. Gallery controls were subsequently refined in the
+[photo review](../PHOTO_CAMERA.md); the low, closer hero and photo-side orbit remain.
+
+2 November 2026 update: the shared front endpoint is lower and closer, with 45%
+desktop width, 94% narrow-screen width and a 70% height allowance. Elevation is
+`0.08` (about 4.6 degrees). This supersedes the miniature endpoint below;
+the rear starting pose and entrance timing remain unchanged.
+
+Current production captures: [desktop 1280 × 720](../cinematic/lower-hero/desktop.png)
+and [mobile 390 × 844](../cinematic/lower-hero/mobile.png). Both were inspected:
+the full stand, sign and interaction targets remain visible, with clear space
+above for the background and below for the HTML controls. Captures use Chromium,
+SwiftShader, reduced motion and DPR 1; they do not validate physical-device FPS.
+The [capture measurements](../cinematic/lower-hero/measurements.json) report no
+browser errors and all named interaction targets inside the viewport.
+
+Refinement validation: formatting, typecheck, lint, all 65 unit tests, production
+build and frozen GLB contract pass. Six affected Chromium tests pass, covering
+background orientation/reset, entrance interruption, mobile CRT touch navigation,
+desktop CRT navigation, drag/zoom/reset and mobile framing. The build retains its
+large-chunk warning. Physical-device composition remains pending creator review.
+
 23 October 2026 update: the endpoint is now a centered, front-facing miniature
 hero at 33% desktop width, with responsive framing and a shared smooth Reset.
 The original rear framing is retained as the starting pose. See the current

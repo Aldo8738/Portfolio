@@ -40,6 +40,14 @@ CV transition or scene dependency is added. See the [About review](qa/ABOUT.md).
 
 ## Accepted loading and performance decisions
 
+The [gallery navigation polish brief](GALLERY_NAVIGATION_POLISH_CODEX_BRIEF.md)
+refines only the in-scene photo controls: outlined PREV/NEXT capsules, a restrained
+CSS paper exit label and a position counter derived from `photos`. Projected print
+bounds determine whether capsules fit between photographs; narrow or crowded views
+use a footer row. Photo framing reserves space for that row and the existing global
+navigation while retaining the front approach, slide timing and return behavior.
+See the [photo review](qa/PHOTO_CAMERA.md) for verification and captures.
+
 Cloudflare Workers deployment is explicitly static through `wrangler.jsonc` and
 the pinned Wrangler CLI. Contact icons are bundled before prerendering rather than
 read from the source filesystem at render time. See the
@@ -143,11 +151,14 @@ the official React integration, strict TypeScript, npm and the committed lockfil
   `useFrame` clock. After the loader closes, rotate from the rear, rise gently and
   descend to Reset view over 2.8 seconds. Keep camera input interruptible and skip
   the reveal for reduced motion. See the [entrance review](qa/entrance/REVIEW.md).
-  The latest hero direction ends at a centered, directly front-facing miniature:
-  `heroCamera` in `src/lib/camera.ts` sets desktop width to 33%, narrow-screen width
-  to 80% (smoothly interpolated with aspect), height allowance to 60%, and elevation
-  to `0.18`. Full model framing uses mesh corners without changing geometry.
-  The entrance retains the previous rear framing and pulls out to the new hero
+  The 2 November 2026 hero refinement brings the stand closer and lowers the
+  camera to expose more background above the stand. A subsequent photo-clearance
+  adjustment orbits about 13.5 degrees toward the photo side so the sign does not
+  cover the Lucha print (`azimuth: 0.24` in the camera direction vector).
+  `heroCamera` in `src/lib/camera.ts` sets desktop width to 45%, narrow-screen width
+  to 94% (smoothly interpolated with aspect), height allowance to 70%, and elevation
+  to `0.08`. Full model framing uses mesh corners without changing geometry.
+  The entrance retains the previous rear framing and approaches the new hero
   over 2.8 seconds. Reset uses the same fitted destination, easing along the
   shortest orbit over 0.9 seconds. Both use the existing interruptible GSAP tween
   advanced by `useFrame`, pause with scene activity and skip motion when requested.

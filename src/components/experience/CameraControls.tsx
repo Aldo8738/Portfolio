@@ -42,6 +42,7 @@ interface Props extends Pick<
   | 'onCameraMotion'
   | 'guitarPhase'
   | 'photoId'
+  | 'onDrawingsView'
 > {
   amp: Object3D;
   notebook: Object3D;
@@ -65,6 +66,7 @@ export function CameraControls({
   sceneRevealed,
   onReset,
   onCameraMotion,
+  onDrawingsView,
 }: Props) {
   const controls = useRef<ComponentRef<typeof OrbitControls>>(null);
   const { camera, size, gl, invalidate } = useThree();
@@ -90,12 +92,13 @@ export function CameraControls({
     focusedPhoto.current = null;
     focusedNotebook.current = null;
     delete gl.domElement.dataset.drawingsView;
+    onDrawingsView(false);
     transition.tween?.kill();
     onCameraMotion(false);
     transition.onSettled?.(false);
     if (controls.current) controls.current.enableDamping = !reducedMotion;
     gl.domElement.dataset.cameraEntrance = 'interrupted';
-  }, [gl, reducedMotion, onCameraMotion]);
+  }, [gl, reducedMotion, onCameraMotion, onDrawingsView]);
   const playTransition = useCallback(() => {
     const transition = entrance.current;
     const orbit = controls.current;
@@ -137,7 +140,12 @@ export function CameraControls({
       const focused = book ?? photo;
       if (!smooth && focused && !entrance.current) {
         const fit = photo
-          ? fitPhotoCamera(photo, size.width / size.height, camera.fov)
+          ? fitPhotoCamera(
+              photo,
+              size.width / size.height,
+              camera.fov,
+              size.height,
+            )
           : fitNotebookCamera(focused, size.width / size.height, camera.fov);
         camera.position.copy(fit.position);
         controls.current.target.copy(fit.target);
@@ -151,6 +159,7 @@ export function CameraControls({
       focusedPhoto.current = null;
       focusedNotebook.current = null;
       delete gl.domElement.dataset.drawingsView;
+      onDrawingsView(false);
       controls.current.minPolarAngle =
         smooth && book && !reducedMotion
           ? notebookCamera.minPolarAngle
@@ -266,6 +275,7 @@ export function CameraControls({
       cancelEntrance,
       gl,
       playTransition,
+      onDrawingsView,
     ],
   );
   useImperativeHandle(cameraActions, () => {
@@ -285,6 +295,7 @@ export function CameraControls({
       focusedNotebook.current = null;
       delete gl.domElement.dataset.drawingsView;
       if (isNotebook) gl.domElement.dataset.drawingsView = 'moving';
+      onDrawingsView(isNotebook);
       controls.current.minPolarAngle = isNotebook
         ? notebookCamera.minPolarAngle
         : Math.PI / 4;
@@ -309,7 +320,12 @@ export function CameraControls({
         ? fitNotebookCamera(notebook, size.width / size.height, camera.fov)
         : focus instanceof Mesh
           ? isPhoto
-            ? fitPhotoCamera(focus, size.width / size.height, camera.fov)
+            ? fitPhotoCamera(
+                focus,
+                size.width / size.height,
+                camera.fov,
+                size.height,
+              )
             : fitMonitorCamera(
                 focus,
                 camera.position,
@@ -499,6 +515,7 @@ export function CameraControls({
     bounds,
     framingPoints,
     onReset,
+    onDrawingsView,
     camera,
     cancelEntrance,
     size.width,

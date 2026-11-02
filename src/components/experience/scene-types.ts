@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import type { Box3, Object3D } from 'three';
 import type { gsap as gsapApi } from 'gsap';
+import type { PhotoControlsLayout } from '../../lib/photo-controls-layout';
 
 export type GuitarPhase = 'idle' | 'opening' | 'open' | 'closing';
 
@@ -43,6 +44,8 @@ export interface CanvasProps {
   photoId: string | null;
   onPhotoRequest: (id: string) => void;
   onPhotoSettled: (completed: boolean) => void;
+  onPhotoLayout: (layout: PhotoControlsLayout | null) => void;
+  onDrawingsView: (open: boolean) => void;
   active: boolean;
   reducedMotion: boolean;
   cameraActions: RefObject<CameraActions | null>;

@@ -1,10 +1,11 @@
 import { Box3, MathUtils, Mesh, Object3D, Vector3 } from 'three';
 
 export const heroCamera = {
-  desktopWidth: 0.33,
-  mobileWidth: 0.8,
-  maxHeight: 0.6,
-  elevation: 0.18,
+  desktopWidth: 0.45,
+  mobileWidth: 0.94,
+  maxHeight: 0.7,
+  azimuth: 0.24,
+  elevation: 0.08,
   entranceSeconds: 2.8,
   resetSeconds: 0.9,
 } as const;
@@ -45,7 +46,7 @@ export function fitCamera(
   const center = bounds.getCenter(new Vector3());
   const direction = new Vector3(
     view === 'hero'
-      ? 0
+      ? heroCamera.azimuth
       : aspect < 1
         ? 0.06
         : view === 'comparison'

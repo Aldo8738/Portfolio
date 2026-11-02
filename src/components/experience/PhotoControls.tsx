@@ -1,15 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { photos, type MediaItem } from '../../content/media';
+import type { PhotoControlsLayout } from '../../lib/photo-controls-layout';
 import styles from './PhotoControls.module.css';
+import { BackToStandButton } from './BackToStandButton';
 
 interface Props {
   photo: MediaItem;
+  layout: PhotoControlsLayout | null;
   moving: boolean;
   onClose: () => void;
   onSelect: (id: string) => void;
 }
 
-export function PhotoControls({ photo, moving, onClose, onSelect }: Props) {
+export function PhotoControls({
+  photo,
+  layout,
+  moving,
+  onClose,
+  onSelect,
+}: Props) {
   const back = useRef<HTMLButtonElement>(null);
   const index = photos.findIndex((item) => item.id === photo.id);
   useEffect(() => back.current?.focus({ preventScroll: true }), []);
@@ -34,6 +43,17 @@ export function PhotoControls({ photo, moving, onClose, onSelect }: Props) {
       aria-describedby="focused-photo-description"
       aria-busy={moving}
       data-photo-controls
+      data-layout={layout && !moving ? 'sides' : 'row'}
+      style={
+        layout
+          ? ({
+              '--previous-x': `${layout.previousX}px`,
+              '--next-x': `${layout.nextX}px`,
+              '--photo-center-y': `${layout.centerY}px`,
+              '--counter-y': `${layout.counterY}px`,
+            } as CSSProperties)
+          : undefined
+      }
       onKeyDown={(event) => {
         if (event.altKey || event.ctrlKey || event.metaKey) return;
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -53,24 +73,28 @@ export function PhotoControls({ photo, moving, onClose, onSelect }: Props) {
         aria-label="Previous photo"
         onClick={() => select(-1)}
       >
-        <span aria-hidden="true">←</span>
+        <span className={styles.arrow} aria-hidden="true">
+          ←
+        </span>
+        <span aria-hidden="true">Prev</span>
       </button>
-      <button
-        className={styles.back}
-        ref={back}
-        type="button"
-        onClick={onClose}
-      >
-        Back to stand
-      </button>
+      <BackToStandButton buttonRef={back} onClick={onClose} />
       <button
         className={styles.next}
         type="button"
         aria-label="Next photo"
         onClick={() => select(1)}
       >
-        <span aria-hidden="true">→</span>
+        <span aria-hidden="true">Next</span>
+        <span className={styles.arrow} aria-hidden="true">
+          →
+        </span>
       </button>
+      <p className={styles.counter} aria-hidden="true" data-photo-counter>
+        {String(index + 1).padStart(2, '0')}
+        <span>/</span>
+        {String(photos.length).padStart(2, '0')}
+      </p>
     </nav>
   );
 }

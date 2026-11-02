@@ -270,6 +270,13 @@ pending original drawing assets.
 
 ### 4.5 Three hanging Polaroids → gentle string physics + zoom
 
+**Gallery navigation update:** The creator's
+[navigation polish brief](docs/GALLERY_NAVIGATION_POLISH_CODEX_BRIEF.md) refines
+the HTML overlays with outlined PREV/NEXT capsules, a paper exit label and a live
+position counter. Controls adapt to the available gaps without changing the frozen
+model or photo transitions. See the [photo review](docs/qa/PHOTO_CAMERA.md) for
+responsive framing, theme behavior, captures and verification.
+
 - Pivots: `POLAROID_0_SWING_PIVOT`, `POLAROID_1_SWING_PIVOT`, `POLAROID_2_SWING_PIVOT`; hit meshes `HIT_PHOTOS_POLAROID_0/1/2`.
 - When pointer moves near/over a photo, introduce a **small damped angular impulse**, then allow a spring-like settle around its existing hanging pivot. The original photo, clip and string should move together, while **the black horizontal photo rail stays fixed**. Aim for ~5–9° routine sway; cap the maximum angle to avoid clipping.
 - Use mathematical spring/damping in `useFrame`; no full rigid-body simulation needed. Interaction should remain stable at 30 or 60 FPS.
