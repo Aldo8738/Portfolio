@@ -5,6 +5,20 @@ existing Astro static site, TypeScript content modules, shared tokens and GSAP.
 The stand, model, audio actions, global navigation, CV configuration, About and
 Contact are preserved. No package or server dependency was added.
 
+The [later Knowledge Bridge handoff](../knowledge-bridge-codex-handoff.md) replaces
+that project's generic detail page and corrects its shared performance claim.
+See the [current Knowledge Bridge review](KNOWLEDGE_BRIDGE.md). The original
+Selected Work checkpoint and captures below are historical. The later
+[V2 revision](../knowledge-bridge-codex-revision-v2.md) further refines that page's
+scroll story, backend channels, snapshots and contribution strip.
+The [V3 art-direction/mobile revision](../knowledge-bridge-codex-art-direction-mobile-v3.md)
+then replaces the figure artwork and mobile choreography; the current review and
+its linked captures document that version.
+The [final V4 brief](../knowledge-bridge-codex-final-implementation-v4.md) and
+[approved reference](../knowledge-bridge-approved-reference.png) now supersede V3;
+the current review documents the single network, scrub control and creator-requested
+larger graph without the Figure 01 caption.
+
 ## Content and routes
 
 [`src/content/portfolio.ts`](../../src/content/portfolio.ts) is the canonical

@@ -10,6 +10,24 @@ provides the four approved project descriptions and the Work exhibition directio
 It supersedes the empty-project assumptions for `/work` and `/work/[slug]` only.
 See [implementation and QA notes](docs/qa/SELECTED_WORK.md); preserve the existing stand and navigation.
 
+**Knowledge Bridge update:** The later
+[project handoff](docs/knowledge-bridge-codex-handoff.md) supersedes the earlier
+performance wording and generic case-study composition for this project. It adds
+a scoped graph story and local checkpoint interaction. The subsequent
+[V2 revision](docs/knowledge-bridge-codex-revision-v2.md) requires scroll-driven
+motion on all screen sizes, explicit backend channels, gaming snapshots and the
+restored contribution strip. The subsequent
+[V3 art direction and mobile brief](docs/knowledge-bridge-codex-art-direction-mobile-v3.md)
+replaces uniform graph boxes with hierarchical artwork, adds four natural mobile
+illustrations and focuses checkpoint history on one relationship. The
+[final V4 brief](docs/knowledge-bridge-codex-final-implementation-v4.md) and
+[approved reference](docs/knowledge-bridge-approved-reference.png) supersede that
+separate-figure approach with one shared organic network and a continuous history
+slider. The creator subsequently requested a larger graph and removal of its
+visible illustration caption. See the
+[implementation review](docs/qa/KNOWLEDGE_BRIDGE.md); retain the other projects and
+the frozen taquería experience.
+
 **CV update:** The creator's [CV implementation brief](docs/CV_CODEX_IMPLEMENTATION_BRIEF.md)
 supplies the approved chronology and skills for `/cv`. It uses the existing shared
 navigation and static site shell, with the résumé download omitted until a verified

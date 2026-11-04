@@ -15,6 +15,22 @@ It does not authorize changes to the taquería, About, Contact or CV. See the
 illustration limits, route integration and verification. Earlier empty-content
 checkpoints below are historical; that increment emitted nine static pages.
 
+The later [Knowledge Bridge handoff](knowledge-bridge-codex-handoff.md) refines
+that project's static page into four sections, a reversible graph story and a
+local checkpoint interaction. It supersedes the earlier performance wording for
+Knowledge Bridge only: finish time and page load time are distinct controlled-test
+metrics. The [V2 revision](knowledge-bridge-codex-revision-v2.md) replaces mobile
+slide controls with natural scroll and specifies explicit backend channels,
+gaming snapshots and the contribution strip. See the [Knowledge Bridge review](qa/KNOWLEDGE_BRIDGE.md) for architecture,
+responsive behavior, assets and verification. The later
+[V3 art direction/mobile brief](knowledge-bridge-codex-art-direction-mobile-v3.md)
+replaces the graph and history artwork, introduces curated natural-scroll mobile
+states and keeps pinning only where the viewport has room.
+The [final V4 brief](knowledge-bridge-codex-final-implementation-v4.md) and
+[approved reference](knowledge-bridge-approved-reference.png) replace the separate
+mobile diagrams with one shared network and genuine history interpolation. The
+later creator instruction enlarges the graph and removes the Figure 01 caption.
+
 The subsequent [CV brief](CV_CODEX_IMPLEMENTATION_BRIEF.md) adds the static `/cv`
 career timeline and its typed skill catalog. Employment and overlapping education
 remain distinct. The shared header's existing CV link is enabled; normal document
