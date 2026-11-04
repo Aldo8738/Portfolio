@@ -10,10 +10,12 @@ import ProjectVisual from '../../components/work/ProjectVisual.astro';
 import '../../components/work/work.css';
 
 export const getStaticPaths = (() =>
-  orderedProjects.map((project) => ({
-    params: { slug: project.slug },
-    props: { project },
-  }))) satisfies GetStaticPaths;
+  orderedProjects
+    .filter((project) => project.slug !== 'knowledge-bridge')
+    .map((project) => ({
+      params: { slug: project.slug },
+      props: { project },
+    }))) satisfies GetStaticPaths;
 interface Props {
   project: Project;
 }

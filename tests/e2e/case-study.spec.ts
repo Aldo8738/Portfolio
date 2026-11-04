@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { orderedProjects, projectPath } from '../../src/content/portfolio';
 
-test('all four case studies share the exhibition entrance and animated diagram traces', async ({
+test('standard case studies retain their exhibition entrance and animated diagram traces', async ({
   page,
 }, testInfo) => {
   const errors: string[] = [],
@@ -10,7 +10,9 @@ test('all four case studies share the exhibition entrance and animated diagram t
   page.on('request', (request) => requests.push(request.url()));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  for (const project of orderedProjects) {
+  for (const project of orderedProjects.filter(
+    (project) => project.slug !== 'knowledge-bridge',
+  )) {
     await page.goto(projectPath(project));
     await expect(page.locator('[data-case-study]')).toHaveAttribute(
       'data-case-ready',
@@ -52,7 +54,7 @@ test('case-study sections replay in both directions and motion changes restore s
 }) => {
   await page.setViewportSize({ width: 390, height: 450 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/work/knowledge-bridge');
+  await page.goto('/work/trading-agent');
   const root = page.locator('[data-case-study]');
   await expect(root).toHaveAttribute('data-case-ready', 'true');
   const visual = page.locator('[data-work-visual]');
@@ -88,8 +90,6 @@ test('case-study sections replay in both directions and motion changes restore s
   await expect(root).toHaveAttribute('data-case-motion', 'reduced');
   await expect(heading).toHaveCSS('transform', 'none');
   await expect(visual).toHaveCSS('transform', 'none');
-  await expect(page.locator('[data-tag-corrected]')).toHaveCSS('opacity', '1');
-  await expect(page.locator('[data-tag-suggested]')).toHaveCSS('opacity', '0');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect(root).toHaveAttribute('data-case-motion', 'full');
   await page.getByRole('link', { name: 'Back to Selected work' }).click();

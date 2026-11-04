@@ -1,0 +1,11 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import KnowledgeBridgeCaseStudy from '../../components/work/knowledge-bridge/KnowledgeBridgeCaseStudy.astro';
+import { getProject } from '../../content/portfolio';
+const project = getProject('knowledge-bridge');
+if (!project) throw new Error('Knowledge Bridge content is missing');
+---
+
+<SiteLayout title={project.title} description={project.summary}>
+  <KnowledgeBridgeCaseStudy />
+</SiteLayout>

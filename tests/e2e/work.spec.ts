@@ -57,7 +57,7 @@ test('the complete exhibition and four real detail routes work without JavaScrip
     await section.getByRole('link', { name: 'View project' }).click();
     await expect(page).toHaveURL(new RegExp(`${projectPath(project)}$`));
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      project.title,
+      project.slug === 'knowledge-bridge' ? 'Knowledge Bridge.' : project.title,
     );
     await expect(page.getByText(project.caseStudy.intro)).toBeVisible();
     await page.getByRole('link', { name: 'Back to Selected work' }).click();
@@ -85,7 +85,7 @@ test('detail navigation, keyboard links, browser Back and live reduced-motion ch
     .getByRole('link', { name: 'View project' })
     .click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Knowledge Bridge',
+    'Knowledge Bridge.',
   );
   const next = page
     .getByRole('navigation', { name: 'Project navigation', exact: true })
@@ -97,7 +97,7 @@ test('detail navigation, keyboard links, browser Back and live reduced-motion ch
   );
   await page.goBack();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Knowledge Bridge',
+    'Knowledge Bridge.',
   );
   await page.getByRole('link', { name: 'Back to Selected work' }).click();
   await expect(root).toHaveAttribute('data-work-ready', 'true');

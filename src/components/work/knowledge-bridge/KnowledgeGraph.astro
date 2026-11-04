@@ -1,0 +1,224 @@
+---
+import {
+  knowledgeNodes,
+  graphLinks,
+  graphPoint,
+  curvedLink,
+  correctionPath,
+  peripheralPoints,
+  peripheralPath,
+} from '../../../content/knowledge-graph';
+---
+
+<svg
+  class="project-diagram kb-graph"
+  viewBox="0 0 400 360"
+  role="img"
+  aria-labelledby="kb-graph-title kb-graph-description"
+>
+  <title id="kb-graph-title">The living knowledge graph</title>
+  <desc id="kb-graph-description">
+    Illustrative knowledge canvas. Gaming discussions branch into Shooter, RPG
+    and Sports. A human corrects Skyrim from Sports to RPG; graph updates return
+    from the backend through WebSockets.
+  </desc>
+  <defs>
+    <marker
+      id="kb-arrow"
+      viewBox="0 0 8 8"
+      refX="7"
+      refY="4"
+      markerWidth="6"
+      markerHeight="6"
+      orient="auto"
+    >
+      <path d="M1 1L7 4L1 7" fill="none" stroke="currentColor" />
+    </marker>
+  </defs>
+  <g data-graph-scene>
+    {['gaming', 'shooter', 'rpg', 'sports'].map((anchor) => (
+      <g
+        class="kb-periphery"
+        data-extra-detail
+        data-network-detail
+        data-distant-detail={anchor !== 'rpg' ? '' : undefined}
+        data-near-detail={anchor === 'rpg' ? '' : undefined}
+      >
+        {peripheralPoints.map(
+          (point, index) =>
+            point.anchor === anchor && (
+              <g data-mobile-omit={!point.mobileVisible ? '' : undefined}>
+                <path
+                  d={peripheralPath(index, 'mobile')}
+                  data-peripheral-path={index}
+                />
+                <circle
+                  cx={point.mobile.x}
+                  cy={point.mobile.y}
+                  r={point.radius}
+                  data-peripheral-point={index}
+                />
+              </g>
+            ),
+        )}
+      </g>
+    ))}
+    <g class="kb-edges" data-graph-layer="structure">
+      {graphLinks.map(([from, to], index) => (
+        <path
+          d={curvedLink(graphPoint(from, 'mobile'), graphPoint(to, 'mobile'))}
+          data-network-edge={index}
+        />
+      ))}
+    </g>
+    <g class="kb-edges">
+      <path
+        d={correctionPath('mobile', false)}
+        data-incorrect-edge
+        opacity="0"
+      />
+      <path
+        d={correctionPath('mobile', true)}
+        data-corrected-edge
+        pathLength="1"
+        class="kb-accent-line"
+      />
+    </g>
+    <g data-graph-layer="viewport" class="kb-viewport" opacity="0">
+      <rect
+        x="210"
+        y="65"
+        width="170"
+        height="225"
+        rx="6"
+        pathLength="1"
+        data-viewport-frame
+      />
+      <text x="215" y="53" class="kb-art-note" data-viewport-label>
+        VISIBLE REGION
+      </text>
+    </g>
+    {knowledgeNodes.map((node) => (
+      <g
+        class={`kb-node kb-node--${node.role}`}
+        transform={`translate(${node.mobile.x} ${node.mobile.y})`}
+        data-node-id={node.id}
+        data-extra-detail={node.detail ? '' : undefined}
+        data-near-detail={node.focused ? '' : undefined}
+        data-distant-detail={node.detail && !node.focused ? '' : undefined}
+        data-flow-soften={
+          !['skyrim', 'rpg', 'sports'].includes(node.id) ? '' : undefined
+        }
+      >
+        <circle
+          class="kb-item-mark"
+          r={node.role === 'idea' ? 10 : node.role === 'cluster' ? 7 : 4.5}
+        />
+        <text
+          class="kb-anchor-label"
+          x="0"
+          y={
+            node.id === 'sports' || node.id === 'skyrim' || node.id === 'fifa'
+              ? 25
+              : -16
+          }
+          text-anchor="middle"
+        >
+          {node.label}
+        </text>
+        {node.id === 'skyrim' && (
+          <circle
+            class="kb-selection-ring"
+            r="14"
+            opacity="0"
+            data-selection-ring
+          />
+        )}
+      </g>
+    ))}
+    <g data-graph-layer="priority" opacity="0">
+      <path
+        data-priority-path
+        class="kb-channel"
+        d="M390 35C350 25 340 65 330 85"
+        marker-end="url(#kb-arrow)"
+      />
+      <text
+        class="kb-art-note"
+        x="388"
+        y="20"
+        text-anchor="end"
+        data-priority-label
+      >
+        BACKEND / PRIORITY UPDATE
+      </text>
+      <circle data-priority-packet r="3" class="kb-packet" opacity="0" />
+    </g>
+    <g data-graph-layer="backend" opacity="0">
+      <path
+        class="kb-channel"
+        data-edit-path
+        pathLength="1"
+        d="M185 50C100 50 22 90 22 210Q22 307 125 307"
+        marker-end="url(#kb-arrow)"
+      />
+      <path
+        class="kb-channel"
+        data-return-path
+        pathLength="1"
+        d="M275 307Q378 307 378 220V95Q378 50 215 50"
+        marker-end="url(#kb-arrow)"
+      />
+      <text
+        class="kb-art-note"
+        x="80"
+        y="215"
+        text-anchor="middle"
+        data-edit-label
+      >
+        <tspan x="80">USER EDIT</tspan>
+        <tspan x="80" dy="20">
+          / API
+        </tspan>
+      </text>
+      <text
+        class="kb-art-note"
+        x="312"
+        y="215"
+        text-anchor="middle"
+        data-return-label
+      >
+        <tspan x="312">WEBSOCKET</tspan>
+        <tspan x="312" dy="20">
+          UPDATE
+        </tspan>
+      </text>
+      <g
+        transform="translate(125 280)"
+        class="kb-backend-node"
+        data-backend-node
+      >
+        <rect width="150" height="54" rx="27" data-backend-shape />
+        <rect
+          width="150"
+          height="54"
+          rx="27"
+          class="kb-backend-pulse"
+          opacity="0"
+          data-backend-pulse
+        />
+        <text
+          x="75"
+          y="33"
+          text-anchor="middle"
+          class="kb-art-note"
+          data-backend-label
+        >
+          BACKEND
+        </text>
+      </g>
+      <circle data-feedback-packet r="3.5" class="kb-packet" opacity="0" />
+      <circle data-delivery-packet r="3.5" class="kb-packet" opacity="0" />
+    </g>
+  </g>
+</svg>

@@ -32,7 +32,7 @@ it('links only real projects and preserves the supplied highlights', () => {
     expect(link.source).not.toBe(link.target);
   }
   expect(getProject('knowledge-bridge')?.highlight).toBe(
-    '81% less loading time · 72% faster task completion',
+    '81.5% shorter graph finish time · 8.47s → 1.57s · Reddit, 100 items',
   );
   expect(getProject('trading-agent')?.highlight).toBe(
     'Co-built in under a month',

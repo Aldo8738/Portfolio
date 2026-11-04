@@ -1,0 +1,183 @@
+---
+import {
+  knowledgeBridge as content,
+  knowledgeBridgeBeats as beats,
+  knowledgeBridgeMeasurements as measurements,
+} from '../../../content/knowledge-bridge';
+import { orderedProjects, projectPath } from '../../../content/portfolio';
+import KnowledgeGraph from './KnowledgeGraph.astro';
+import CheckpointDemo from './CheckpointDemo.astro';
+import '../work.css';
+import './knowledge-bridge.css';
+const next = orderedProjects.find((project) => project.order === 2);
+---
+
+<article
+  class="work-case-study kb-page shell"
+  data-case-study
+  data-knowledge-bridge
+>
+  <a class="text-link" href="/work#project-knowledge-bridge">
+    <span aria-hidden="true">←</span> Back to Selected work
+  </a>
+  <header class="kb-hero" data-kb-section>
+    <div>
+      <p class="eyebrow">{content.eyebrow}</p>
+      <h1>{content.title}</h1>
+      <p class="kb-subheading">{content.subheading}</p>
+      <p class="kb-introduction">{content.introduction}</p>
+    </div>
+    <div class="kb-hero-visual">
+      <div class="kb-hero-dock" data-hero-dock></div>
+      <div class="kb-hero-metric">
+        <strong>
+          <span class="sr-only">{measurements[0].reduction}%</span>
+          <span data-hero-value aria-hidden="true">
+            {measurements[0].reduction}
+          </span>
+          <span class="kb-hero-unit" aria-hidden="true">
+            %
+          </span>
+        </strong>
+        <p>reduction in graph finish time</p>
+        <span class="kb-caption">8.47s → 1.57s · 100-item Reddit graph</span>
+      </div>
+    </div>
+  </header>
+  <dl class="case-study-facts kb-facts">
+    <div>
+      <dt>Contribution</dt>
+      <dd>{content.engineering.contribution}</dd>
+    </div>
+    <div>
+      <dt>Focus &amp; technologies</dt>
+      <dd>{content.engineering.technologies.join(' · ')}</dd>
+    </div>
+  </dl>
+  <section
+    class="kb-story"
+    aria-labelledby="kb-story-title"
+    data-kb-section
+    data-kb-story
+  >
+    <div class="kb-story-stage" data-story-stage>
+      <div class="kb-story-topline">
+        <p class="eyebrow" id="kb-story-title">
+          Figure 01 / The living graph
+        </p>
+        <span class="kb-caption" data-scroll-hint hidden>
+          Scroll to explore ↓
+        </span>
+      </div>
+      <div
+        class="kb-story-progress"
+        data-story-progress-track
+        hidden
+        aria-hidden="true"
+      >
+        <span data-story-progress></span>
+      </div>
+      <div class="kb-story-layout">
+        <div class="kb-story-copy" data-story-copy>
+          <ol class="kb-beats">
+            {beats.map((beat, index) => (
+              <li data-story-beat={index}>
+                <span class="kb-beat-number" aria-hidden="true">
+                  0{index + 1} / 04
+                </span>
+                <h2>{beat.title}</h2>
+                <p>{beat.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <figure
+          class="project-visual kb-story-figure"
+          data-work-visual="knowledge-hierarchy"
+        >
+          <div class="kb-graph-dock" data-story-dock>
+            <div class="kb-network" data-network-host data-layout="mobile">
+              <KnowledgeGraph />
+            </div>
+          </div>
+          <p class="kb-graph-metric" data-graph-metric>
+            <span>{measurements[0].before.toFixed(2)}s</span>
+            <span aria-hidden="true">→</span>
+            <strong>
+              <span data-story-time>{measurements[0].after.toFixed(2)}</span>s
+            </strong>
+          </p>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section
+    class="kb-checkpoints"
+    aria-labelledby="kb-checkpoint-title"
+    data-kb-section
+  >
+    <div class="kb-section-heading">
+      <p class="eyebrow">{content.checkpoint.eyebrow}</p>
+      <h2 id="kb-checkpoint-title">{content.checkpoint.heading}</h2>
+      <p>{content.checkpoint.description}</p>
+    </div>
+    <CheckpointDemo />
+  </section>
+  <section
+    class="kb-results"
+    aria-labelledby="kb-results-title"
+    data-kb-section
+  >
+    <div class="kb-section-heading">
+      <p class="eyebrow">{content.engineering.eyebrow}</p>
+      <h2 id="kb-results-title">{content.engineering.heading}</h2>
+    </div>
+    <dl class="kb-results-metrics">
+      <div class="kb-result-primary">
+        <dt>{measurements[0].reduction}% reduction in graph finish time</dt>
+        <dd>
+          <span>{measurements[0].before.toFixed(2)}s</span>
+          <span aria-hidden="true"> → </span>
+          <strong>{measurements[0].after.toFixed(2)}s</strong>
+          <small>Reddit · 100 items</small>
+        </dd>
+      </div>
+      <div class="kb-result-secondary">
+        <dt>shorter page load time</dt>
+        <dd>
+          <strong>{measurements[1].reduction}%</strong>
+          <small>
+            {measurements[1].before.toFixed(2)}s →{' '}
+            {measurements[1].after.toFixed(2)}s · Reddit, 600 items
+          </small>
+        </dd>
+      </div>
+    </dl>
+    <p class="kb-caption">{content.engineering.footnote}</p>
+    <nav class="project-sequence kb-sequence" aria-label="Project navigation">
+      <a class="text-link" href="/work">
+        All selected work <span aria-hidden="true">↗</span>
+      </a>
+      {next && (
+        <a href={projectPath(next)} rel="next">
+          Next: {next.title} <span aria-hidden="true">→</span>
+        </a>
+      )}
+    </nav>
+  </section>
+</article>
+
+<script>
+  import { mountKnowledgeBridge } from './knowledge-bridge';
+  const root = document.querySelector<HTMLElement>('[data-knowledge-bridge]');
+  if (root) {
+    let dispose = mountKnowledgeBridge(root);
+    window.addEventListener('pagehide', () => dispose());
+    document.addEventListener('astro:before-swap', () => dispose(), {
+      once: true,
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountKnowledgeBridge(root);
+    });
+  }
+</script>

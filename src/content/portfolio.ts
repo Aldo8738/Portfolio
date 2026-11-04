@@ -32,7 +32,7 @@ export interface Project {
   links?: { label: string; url: string }[];
 }
 
-// Approved facts from docs/SELECTED_WORK_CODEX_BRIEF.md; dates and original imagery are not yet confirmed.
+// Approved facts from the Selected Work brief and the later Knowledge Bridge handoff.
 export const projects: Project[] = [
   {
     slug: 'knowledge-bridge',
@@ -42,12 +42,20 @@ export const projects: Project[] = [
     hook: 'Making AI-generated knowledge human-friendly.',
     summary:
       'A real-time workspace for exploring knowledge graphs, reviewing AI-generated relationships, and making human corrections.',
-    highlight: '81% less loading time · 72% faster task completion',
-    technologies: ['React', 'TypeScript', 'WebSockets', 'Python', 'FastAPI'],
+    highlight:
+      '81.5% shorter graph finish time · 8.47s → 1.57s · Reddit, 100 items',
+    technologies: [
+      'React',
+      'TypeScript',
+      'React Flow',
+      'Python',
+      'FastAPI',
+      'WebSockets',
+    ],
     visualization: { kind: 'knowledge-hierarchy', accent: 'pink' },
     caseStudy: {
       intro:
-        'I joined an early knowledge-graph proof of concept and refactored its architecture, performance, UX, and human–AI interactions.',
+        'I helped turn an early knowledge-graph research prototype into a faster, more responsive interface for human–AI collaboration.',
       role: 'Full-stack development, UX, performance, human–AI interaction',
       sections: [
         {
@@ -60,7 +68,7 @@ export const projects: Project[] = [
         },
         {
           title: 'Keeping people in the loop',
-          body: 'People could correct AI-generated tags and relationships. Those corrections were sent back to the backend to support learning. The work achieved 81% less loading time and 72% faster task completion.',
+          body: 'People could correct graph information. The backend processed their feedback and streamed graph updates back. Controlled Chrome tests measured graph finish time falling from 8.47s to 1.57s for a 100-item Reddit graph, an 81.5% reduction.',
         },
       ],
     },

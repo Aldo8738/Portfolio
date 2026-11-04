@@ -1,0 +1,106 @@
+---
+import { knowledgeBridge } from '../../../content/knowledge-bridge';
+import { getHistoryFrame } from './history-state';
+const initial = getHistoryFrame(1);
+---
+
+<div class="kb-checkpoint-card" data-checkpoint data-checkpoint-version="1">
+  <div class="visual-topline">
+    <span role="status" aria-live="polite" data-checkpoint-status>
+      Human correction
+    </span>
+    <span>Local recreation</span>
+  </div>
+  <svg
+    id="kb-checkpoint-graph"
+    class="kb-checkpoint-graph"
+    viewBox="0 0 620 330"
+    role="img"
+    aria-label={initial.description}
+  >
+    <text x="35" y="42" class="kb-diff-note">
+      ONE RELATIONSHIP / TWO SAVED STATES
+    </text>
+    <path class="kb-history-guide" d="M455 95V245" />
+    <path class="kb-history-edge" data-history-edge d={initial.path} />
+    <circle cx="50" cy="150" r="9" class="kb-mobile-dot" />
+    <text x="78" y="166" class="kb-diff-entity">
+      Skyrim
+    </text>
+    <g class="kb-diff-category">
+      <circle cx="455" cy="95" r="3" />
+      <text x="475" y="103" data-history-after>
+        RPG
+      </text>
+      <circle cx="455" cy="245" r="3" />
+      <text x="475" y="253" data-history-before>
+        Sports
+      </text>
+    </g>
+    <circle
+      cx="455"
+      cy={initial.y}
+      r="7"
+      class="kb-history-endpoint"
+      data-history-endpoint
+    />
+    <text x="35" y="300" class="kb-diff-note">
+      SKYRIM: SPORTS → RPG
+    </text>
+  </svg>
+  <div class="kb-history-controls" data-checkpoint-controls hidden>
+    <label class="eyebrow" for="kb-history-range">
+      Scrub model history
+    </label>
+    <input
+      id="kb-history-range"
+      data-history-range
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value="100"
+      aria-controls="kb-checkpoint-graph"
+      aria-valuetext="Human correction: Skyrim linked to RPG."
+    />
+    <div
+      class="kb-history"
+      data-checkpoint-history
+      aria-label="Saved graph states"
+    >
+      {knowledgeBridge.checkpoint.versions.map((version, index) => (
+        <button
+          type="button"
+          data-checkpoint-select={index}
+          aria-pressed={index === 1 ? 'true' : 'false'}
+          aria-controls="kb-checkpoint-graph"
+        >
+          <span class="kb-version-number">0{index + 1}</span>
+          <span>{version}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+  <div class="kb-checkpoint-action">
+    <p class="kb-checkpoint-change" data-checkpoint-change>
+      {initial.caption}
+    </p>
+    <button
+      class="kb-restore"
+      type="button"
+      data-checkpoint-restore
+      hidden
+      aria-controls="kb-checkpoint-graph"
+    >
+      Restore original
+    </button>
+  </div>
+  <p class="kb-caption kb-checkpoint-caption">
+    Illustrative recreation · not connected to the original research backend
+  </p>
+  <noscript>
+    <p class="kb-caption">
+      Original: Skyrim linked to Sports. Human correction: Skyrim linked to RPG.
+    </p>
+  </noscript>
+</div>
