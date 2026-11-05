@@ -1,4 +1,4 @@
-﻿export type GraphLayout = 'desktop' | 'mobile';
+export type GraphLayout = 'desktop' | 'mobile';
 export interface GraphPoint {
   x: number;
   y: number;
@@ -8,128 +8,96 @@ export interface KnowledgeNode extends GraphPoint {
   label: string;
   role: 'idea' | 'cluster' | 'item';
   mobile: GraphPoint;
-  detail?: boolean;
+  mobileOmit?: boolean;
   focused?: boolean;
 }
+
+// Authored geography keeps each country's city and landmark on its own branch.
 export const knowledgeNodes: readonly KnowledgeNode[] = [
   {
-    id: 'gaming',
-    label: 'Gaming discussions',
+    id: 'europe',
+    label: 'Europe',
     role: 'idea',
-    x: 440,
-    y: 275,
-    mobile: { x: 165, y: 155 },
+    x: 450,
+    y: 75,
+    mobile: { x: 200, y: 35 },
   },
   {
-    id: 'shooter',
-    label: 'Shooter',
+    id: 'france',
+    label: 'France',
     role: 'cluster',
-    x: 205,
-    y: 145,
-    mobile: { x: 65, y: 85 },
+    x: 265,
+    y: 205,
+    mobile: { x: 95, y: 110 },
+    focused: true,
   },
   {
-    id: 'rpg',
-    label: 'RPG',
+    id: 'germany',
+    label: 'Germany',
     role: 'cluster',
-    x: 745,
-    y: 230,
-    mobile: { x: 330, y: 95 },
+    x: 645,
+    y: 205,
+    mobile: { x: 300, y: 110 },
   },
   {
-    id: 'sports',
-    label: 'Sports',
-    role: 'cluster',
-    x: 200,
-    y: 440,
-    mobile: { x: 65, y: 275 },
-  },
-  {
-    id: 'rainbow',
-    label: 'Rainbow Six',
+    id: 'paris',
+    label: 'Paris',
     role: 'item',
-    x: 100,
-    y: 220,
-    mobile: { x: 55, y: 180 },
+    x: 265,
+    y: 355,
+    mobile: { x: 95, y: 200 },
+    focused: true,
   },
   {
-    id: 'skyrim',
-    label: 'Skyrim',
+    id: 'berlin',
+    label: 'Berlin',
     role: 'item',
-    x: 610,
-    y: 425,
-    mobile: { x: 275, y: 245 },
+    x: 645,
+    y: 355,
+    mobile: { x: 300, y: 200 },
   },
   {
-    id: 'fifa',
-    label: 'FIFA',
+    id: 'eiffel',
+    label: 'Eiffel Tower',
     role: 'item',
-    x: 85,
+    x: 130,
     y: 475,
-    mobile: { x: 145, y: 310 },
-  },
-  {
-    id: 'teamplay',
-    label: 'Teamplay',
-    role: 'item',
-    x: 100,
-    y: 80,
-    mobile: { x: 95, y: 40 },
-    detail: true,
-  },
-  {
-    id: 'operators',
-    label: 'Operators',
-    role: 'item',
-    x: 315,
-    y: 80,
-    mobile: { x: 240, y: 55 },
-    detail: true,
-  },
-  {
-    id: 'modding',
-    label: 'Modding',
-    role: 'item',
-    x: 675,
-    y: 510,
-    mobile: { x: 340, y: 195 },
-    detail: true,
+    mobile: { x: 80, y: 305 },
     focused: true,
   },
   {
-    id: 'quests',
-    label: 'Quests',
+    id: 'gate',
+    label: 'Brandenburg Gate',
     role: 'item',
-    x: 755,
-    y: 420,
-    mobile: { x: 345, y: 285 },
-    detail: true,
-    focused: true,
+    x: 710,
+    y: 475,
+    mobile: { x: 290, y: 305 },
   },
   {
-    id: 'football',
-    label: 'Football',
-    role: 'item',
+    id: 'cities',
+    label: 'Cities',
+    role: 'cluster',
     x: 95,
-    y: 380,
-    mobile: { x: 35, y: 235 },
-    detail: true,
+    y: 100,
+    mobile: { x: 45, y: 30 },
+    mobileOmit: true,
   },
   {
-    id: 'leagues',
-    label: 'Leagues',
-    role: 'item',
-    x: 295,
-    y: 525,
-    mobile: { x: 200, y: 325 },
-    detail: true,
+    id: 'landmarks',
+    label: 'Landmarks',
+    role: 'cluster',
+    x: 440,
+    y: 505,
+    mobile: { x: 200, y: 330 },
+    mobileOmit: true,
   },
 ];
 export const knowledgeCorrection = {
-  entity: 'skyrim',
-  before: 'sports',
-  after: 'rpg',
+  entity: 'paris',
+  before: 'germany',
+  after: 'france',
 } as const;
+
 export function graphNode(id: string) {
   const node = knowledgeNodes.find((node) => node.id === id);
   if (!node) throw new Error(`Knowledge graph node missing: ${id}`);
@@ -148,22 +116,27 @@ export function graphPoint(
   const node = graphNode(id);
   return layout === 'mobile' ? node.mobile : node;
 }
+export function heroPoint(
+  id: 'paris' | 'france',
+  layout: GraphLayout,
+): GraphPoint {
+  return layout === 'desktop'
+    ? { x: id === 'paris' ? 140 : 610, y: id === 'paris' ? 300 : 120 }
+    : { x: id === 'paris' ? 105 : 295, y: 80 };
+}
 export function curvedLink(from: GraphPoint, to: GraphPoint) {
-  const middle = (from.x + to.x) / 2 + (from.y - to.y) * 0.16;
-  return `M${from.x} ${from.y}C${middle} ${from.y - 24} ${middle} ${to.y + 24} ${to.x} ${to.y}`;
+  const middle = (from.x + to.x) / 2 + (from.y - to.y) * 0.12;
+  return `M${from.x} ${from.y}C${middle} ${from.y + 18} ${middle} ${to.y - 18} ${to.x} ${to.y}`;
 }
 export const graphLinks = [
-  ['gaming', 'shooter'],
-  ['gaming', 'rpg'],
-  ['gaming', 'sports'],
-  ['shooter', 'rainbow'],
-  ['sports', 'fifa'],
-  ['shooter', 'teamplay'],
-  ['shooter', 'operators'],
-  ['skyrim', 'modding'],
-  ['rpg', 'quests'],
-  ['sports', 'football'],
-  ['sports', 'leagues'],
+  ['europe', 'france'],
+  ['europe', 'germany'],
+  ['germany', 'berlin'],
+  ['paris', 'eiffel'],
+  ['berlin', 'gate'],
+  ['cities', 'paris'],
+  ['landmarks', 'eiffel'],
+  ['landmarks', 'gate'],
 ] as const;
 export function correctionPath(
   layout: GraphLayout,
@@ -171,43 +144,57 @@ export function correctionPath(
   flow = false,
 ) {
   return curvedLink(
+    graphPoint(knowledgeCorrection.entity, layout, flow),
     graphPoint(
       corrected ? knowledgeCorrection.after : knowledgeCorrection.before,
       layout,
       flow,
     ),
-    graphPoint(knowledgeCorrection.entity, layout, flow),
   );
 }
 
-// Fixed arithmetic creates authored branch variation without runtime physics or randomness.
-export const peripheralPoints = Array.from({ length: 64 }, (_, index) => {
-  const angle = (index * Math.PI * 2) / 64;
-  const x = Math.round(440 + Math.cos(angle) * (245 + ((index * 19) % 105)));
-  const y = Math.round(280 + Math.sin(angle) * (150 + ((index * 31) % 100)));
-  const anchor = ['gaming', 'shooter', 'rpg', 'sports'][index % 4] ?? 'gaming';
-  return {
-    x,
-    y,
-    anchor,
-    radius: index % 7 === 0 ? 3.2 : index % 3 === 0 ? 2.2 : 1.4,
-    mobile: { x: Math.round((x / 900) * 400), y: Math.round((y / 600) * 360) },
-    mobileVisible: index % 3 === 0,
-  };
-});
+const branchOffsets = [
+  { x: -70, y: -45 },
+  { x: -95, y: 15 },
+  { x: 75, y: -35 },
+  { x: 90, y: 30 },
+] as const;
+// Small local branches add density without connections crossing the whole canvas.
+export const peripheralPoints = [
+  'europe',
+  'france',
+  'germany',
+  'paris',
+  'berlin',
+  'landmarks',
+].flatMap((anchor) =>
+  branchOffsets.map((offset, index) => {
+    const node = graphNode(anchor);
+    return {
+      x: node.x + offset.x,
+      y: node.y + offset.y,
+      anchor,
+      radius: index === 0 ? 2.5 : 1.8,
+      mobile: {
+        x: node.mobile.x + offset.x * 0.35,
+        y: node.mobile.y + offset.y * 0.4,
+      },
+      mobileVisible:
+        ['france', 'germany', 'paris', 'berlin'].includes(anchor) &&
+        index % 2 === 0,
+    };
+  }),
+);
 export function peripheralPath(index: number, layout: GraphLayout) {
   const point = peripheralPoints[index];
   if (!point) throw new Error('Missing peripheral point');
-  const from = graphPoint(point.anchor, layout);
-  const to = layout === 'mobile' ? point.mobile : point;
-  const dx = to.x - from.x,
-    dy = to.y - from.y;
-  const length = Math.max(1, Math.hypot(dx, dy));
-  const bend =
-    (index % 2 === 0 ? 1 : -1) *
-    (22 + ((index * 17) % 62)) *
-    (layout === 'mobile' ? 0.45 : 1);
-  const nx = (-dy / length) * bend,
-    ny = (dx / length) * bend;
-  return `M${from.x} ${from.y}C${from.x + dx * 0.25 + nx} ${from.y + dy * 0.25 + ny} ${from.x + dx * 0.75 + nx * 0.6} ${from.y + dy * 0.75 + ny * 0.6} ${to.x} ${to.y}`;
+  return curvedLink(
+    graphPoint(point.anchor, layout),
+    layout === 'mobile' ? point.mobile : point,
+  );
 }
+
+export const graphViewBox = {
+  desktop: { hero: '0 0 900 420', story: '0 0 900 600' },
+  mobile: { hero: '0 0 400 150', story: '0 0 400 360' },
+} as const;

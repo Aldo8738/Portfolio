@@ -13,10 +13,10 @@ export const knowledgeBridge = {
     versions: ['Original', 'Human correction'],
     restore: ['Restore correction', 'Restore original'],
     descriptions: [
-      'Checkpoint 01: Skyrim is incorrectly linked to Sports.',
-      'Checkpoint 02: Skyrim is corrected to RPG.',
+      'Checkpoint 01: Paris is incorrectly linked to Germany.',
+      'Checkpoint 02: Paris is corrected to France.',
     ],
-    changes: ['Original: Skyrim → Sports', 'Changed: Sports → RPG'],
+    changes: ['Original: Paris → Germany', 'Changed: Germany → France'],
   },
   engineering: {
     eyebrow: '03 / THE ENGINEERING',
@@ -39,21 +39,22 @@ export const knowledgeBridge = {
 export const knowledgeBridgeBeats = [
   {
     title: 'Everything, all at once.',
-    description:
-      'The original prototype rendered too much graph detail at once.',
+    description: 'Large graphs were expensive to load and hard to explore.',
   },
   {
     title: 'Render what matters.',
-    description: 'Viewport-aware rendering keeps relevant detail in focus.',
+    description:
+      'Viewport-aware rendering and prioritized streaming keep the interface responsive.',
   },
   {
     title: 'A two-way conversation.',
     description:
-      'People correct the graph. Prioritized updates return through WebSockets.',
+      'Humans refine relationships; the backend processes feedback and streams updated graph data.',
   },
   {
     title: 'Less waiting. More exploring.',
-    description: '81.5% shorter graph finish time in the 100-item Reddit test.',
+    description:
+      '81.5% shorter graph finish time in the 100-item Reddit benchmark.',
   },
 ] as const;
 

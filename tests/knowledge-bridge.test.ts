@@ -3,12 +3,19 @@ import { knowledgeBridgeMeasurements } from '../src/content/knowledge-bridge';
 import { getProject } from '../src/content/portfolio';
 import { getStoryBeat } from '../src/components/work/knowledge-bridge/story-state';
 import { getHistoryFrame } from '../src/components/work/knowledge-bridge/history-state';
-import { knowledgeCorrection, graphNode } from '../src/content/knowledge-graph';
+import {
+  knowledgeCorrection,
+  graphNode,
+  knowledgeNodes,
+  graphLinks,
+  correctionPath,
+  graphPoint,
+} from '../src/content/knowledge-graph';
 
 it('scrubs one relationship continuously between the graph’s saved classifications', () => {
-  expect(graphNode(knowledgeCorrection.entity).label).toBe('Skyrim');
-  expect(graphNode(knowledgeCorrection.before).label).toBe('Sports');
-  expect(graphNode(knowledgeCorrection.after).label).toBe('RPG');
+  expect(graphNode(knowledgeCorrection.entity).label).toBe('Paris');
+  expect(graphNode(knowledgeCorrection.before).label).toBe('Germany');
+  expect(graphNode(knowledgeCorrection.after).label).toBe('France');
   const original = getHistoryFrame(0),
     middle = getHistoryFrame(0.5),
     correction = getHistoryFrame(1);
@@ -20,6 +27,28 @@ it('scrubs one relationship continuously between the graph’s saved classificat
   expect(middle.description).toContain('not a saved state');
   expect(getHistoryFrame(-1)).toEqual(original);
   expect(getHistoryFrame(2)).toEqual(correction);
+});
+
+it('keeps all authored relationships attached to existing semantic nodes', () => {
+  expect(new Set(knowledgeNodes.map(({ id }) => id)).size).toBe(
+    knowledgeNodes.length,
+  );
+  for (const [from, to] of graphLinks) {
+    expect(graphNode(from)).toBeDefined();
+    expect(graphNode(to)).toBeDefined();
+  }
+  for (const layout of ['desktop', 'mobile'] as const) {
+    for (const corrected of [false, true]) {
+      const entity = graphPoint('paris', layout);
+      const target = graphPoint(corrected ? 'france' : 'germany', layout);
+      expect(correctionPath(layout, corrected)).toMatch(
+        new RegExp('^M' + entity.x + ' ' + entity.y),
+      );
+      expect(
+        correctionPath(layout, corrected).endsWith(target.x + ' ' + target.y),
+      ).toBe(true);
+    }
+  }
 });
 
 it('attributes each measured reduction to its metric and dataset condition', () => {

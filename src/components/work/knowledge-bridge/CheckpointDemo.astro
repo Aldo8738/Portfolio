@@ -1,6 +1,10 @@
 ---
 import { knowledgeBridge } from '../../../content/knowledge-bridge';
 import { getHistoryFrame } from './history-state';
+import {
+  graphNode,
+  knowledgeCorrection,
+} from '../../../content/knowledge-graph';
 const initial = getHistoryFrame(1);
 ---
 
@@ -25,16 +29,16 @@ const initial = getHistoryFrame(1);
     <path class="kb-history-edge" data-history-edge d={initial.path} />
     <circle cx="50" cy="150" r="9" class="kb-mobile-dot" />
     <text x="78" y="166" class="kb-diff-entity">
-      Skyrim
+      {graphNode(knowledgeCorrection.entity).label}
     </text>
     <g class="kb-diff-category">
       <circle cx="455" cy="95" r="3" />
       <text x="475" y="103" data-history-after>
-        RPG
+        {graphNode(knowledgeCorrection.after).label}
       </text>
       <circle cx="455" cy="245" r="3" />
       <text x="475" y="253" data-history-before>
-        Sports
+        {graphNode(knowledgeCorrection.before).label}
       </text>
     </g>
     <circle
@@ -45,7 +49,7 @@ const initial = getHistoryFrame(1);
       data-history-endpoint
     />
     <text x="35" y="300" class="kb-diff-note">
-      SKYRIM: SPORTS → RPG
+      PARIS: GERMANY → FRANCE
     </text>
   </svg>
   <div class="kb-history-controls" data-checkpoint-controls hidden>
@@ -61,7 +65,7 @@ const initial = getHistoryFrame(1);
       step="1"
       value="100"
       aria-controls="kb-checkpoint-graph"
-      aria-valuetext="Human correction: Skyrim linked to RPG."
+      aria-valuetext={initial.description}
     />
     <div
       class="kb-history"
@@ -75,7 +79,7 @@ const initial = getHistoryFrame(1);
           aria-pressed={index === 1 ? 'true' : 'false'}
           aria-controls="kb-checkpoint-graph"
         >
-          <span class="kb-version-number">0{index + 1}</span>
+          <span class="kb-version-number">v0{index + 1}</span>
           <span>{version}</span>
         </button>
       ))}
@@ -100,7 +104,8 @@ const initial = getHistoryFrame(1);
   </p>
   <noscript>
     <p class="kb-caption">
-      Original: Skyrim linked to Sports. Human correction: Skyrim linked to RPG.
+      Original: Paris linked to Germany. Human correction: Paris linked to
+      France.
     </p>
   </noscript>
 </div>

@@ -7,7 +7,19 @@ import {
   correctionPath,
   peripheralPoints,
   peripheralPath,
+  knowledgeCorrection,
+  graphNode,
 } from '../../../content/knowledge-graph';
+
+const revealGroups: Record<string, number> = {
+  europe: 0,
+  germany: 0,
+  cities: 1,
+  berlin: 1,
+  landmarks: 2,
+  eiffel: 2,
+  gate: 2,
+};
 ---
 
 <svg
@@ -18,9 +30,11 @@ import {
 >
   <title id="kb-graph-title">The living knowledge graph</title>
   <desc id="kb-graph-description">
-    Illustrative knowledge canvas. Gaming discussions branch into Shooter, RPG
-    and Sports. A human corrects Skyrim from Sports to RPG; graph updates return
-    from the backend through WebSockets.
+    Illustrative portfolio reconstruction, not the research dataset or original
+    product UI. Europe connects France and Germany with their cities and
+    landmarks. A proposed Paris to Germany relationship is corrected to Paris to
+    France. A user edit goes to the backend via an API; a WebSocket graph update
+    returns before the corrected relationship settles.
   </desc>
   <defs>
     <marker
@@ -36,40 +50,62 @@ import {
     </marker>
   </defs>
   <g data-graph-scene>
-    {['gaming', 'shooter', 'rpg', 'sports'].map((anchor) => (
-      <g
-        class="kb-periphery"
-        data-extra-detail
-        data-network-detail
-        data-distant-detail={anchor !== 'rpg' ? '' : undefined}
-        data-near-detail={anchor === 'rpg' ? '' : undefined}
-      >
-        {peripheralPoints.map(
-          (point, index) =>
-            point.anchor === anchor && (
-              <g data-mobile-omit={!point.mobileVisible ? '' : undefined}>
-                <path
-                  d={peripheralPath(index, 'mobile')}
-                  data-peripheral-path={index}
-                />
-                <circle
-                  cx={point.mobile.x}
-                  cy={point.mobile.y}
-                  r={point.radius}
-                  data-peripheral-point={index}
-                />
-              </g>
-            ),
-        )}
+    <g data-expansion>
+      {['europe', 'france', 'germany', 'paris', 'berlin', 'landmarks'].map(
+        (anchor) => (
+          <g
+            class="kb-periphery"
+            data-extra-detail
+            data-network-detail
+            data-distant-detail={
+              !['france', 'paris'].includes(anchor) ? '' : undefined
+            }
+            data-near-detail={
+              ['france', 'paris'].includes(anchor) ? '' : undefined
+            }
+          >
+            {peripheralPoints.map(
+              (point, index) =>
+                point.anchor === anchor && (
+                  <g data-mobile-omit={!point.mobileVisible ? '' : undefined}>
+                    <path
+                      d={peripheralPath(index, 'mobile')}
+                      data-peripheral-path={index}
+                    />
+                    <circle
+                      cx={point.mobile.x}
+                      cy={point.mobile.y}
+                      r={point.radius}
+                      data-peripheral-point={index}
+                    />
+                  </g>
+                ),
+            )}
+          </g>
+        ),
+      )}
+    </g>
+    <g data-expansion>
+      <g class="kb-edges" data-graph-layer="structure">
+        {graphLinks.map(([from, to], index) => (
+          <path
+            d={curvedLink(graphPoint(from, 'mobile'), graphPoint(to, 'mobile'))}
+            data-network-edge={index}
+            data-reveal-group={Math.max(
+              revealGroups[from] ?? -1,
+              revealGroups[to] ?? -1,
+            )}
+            data-mobile-omit={
+              graphNode(from).mobileOmit || graphNode(to).mobileOmit
+                ? ''
+                : undefined
+            }
+            data-distant-detail={
+              !['paris', 'france'].includes(from) ? '' : undefined
+            }
+          />
+        ))}
       </g>
-    ))}
-    <g class="kb-edges" data-graph-layer="structure">
-      {graphLinks.map(([from, to], index) => (
-        <path
-          d={curvedLink(graphPoint(from, 'mobile'), graphPoint(to, 'mobile'))}
-          data-network-edge={index}
-        />
-      ))}
     </g>
     <g class="kb-edges">
       <path
@@ -85,111 +121,133 @@ import {
       />
     </g>
     <g data-graph-layer="viewport" class="kb-viewport" opacity="0">
-      <rect
-        x="210"
-        y="65"
-        width="170"
-        height="225"
-        rx="6"
+      <path
+        d="M45 140V130H65M155 130H175V140M175 255V265H155M65 265H45V255"
         pathLength="1"
         data-viewport-frame
       />
-      <text x="215" y="53" class="kb-art-note" data-viewport-label>
+      <text x="50" y="118" class="kb-art-note" data-viewport-label>
         VISIBLE REGION
       </text>
     </g>
     {knowledgeNodes.map((node) => (
       <g
-        class={`kb-node kb-node--${node.role}`}
-        transform={`translate(${node.mobile.x} ${node.mobile.y})`}
-        data-node-id={node.id}
-        data-extra-detail={node.detail ? '' : undefined}
-        data-near-detail={node.focused ? '' : undefined}
-        data-distant-detail={node.detail && !node.focused ? '' : undefined}
-        data-flow-soften={
-          !['skyrim', 'rpg', 'sports'].includes(node.id) ? '' : undefined
-        }
+        data-expansion={!['paris', 'france'].includes(node.id) ? '' : undefined}
+        data-mobile-omit={node.mobileOmit ? '' : undefined}
       >
-        <circle
-          class="kb-item-mark"
-          r={node.role === 'idea' ? 10 : node.role === 'cluster' ? 7 : 4.5}
-        />
-        <text
-          class="kb-anchor-label"
-          x="0"
-          y={
-            node.id === 'sports' || node.id === 'skyrim' || node.id === 'fifa'
-              ? 25
-              : -16
+        <g
+          class={`kb-node kb-node--${node.role}`}
+          transform={`translate(${node.mobile.x} ${node.mobile.y})`}
+          data-node-id={node.id}
+          data-reveal-group={revealGroups[node.id]}
+          data-near-detail={node.focused ? '' : undefined}
+          data-distant-detail={!node.focused ? '' : undefined}
+          data-flow-soften={
+            !Object.values(knowledgeCorrection).some((id) => id === node.id)
+              ? ''
+              : undefined
           }
-          text-anchor="middle"
         >
-          {node.label}
-        </text>
-        {node.id === 'skyrim' && (
           <circle
-            class="kb-selection-ring"
-            r="14"
-            opacity="0"
-            data-selection-ring
+            class="kb-item-mark"
+            r={node.role === 'idea' ? 10 : node.role === 'cluster' ? 7 : 4.5}
           />
-        )}
+          {['paris', 'france'].includes(node.id) && (
+            <rect
+              data-label-frame
+              class="kb-label-frame"
+              x="-52"
+              y={node.id === 'paris' ? 10 : -43}
+              width="104"
+              height="36"
+              rx="18"
+              opacity="0"
+            />
+          )}
+          <text
+            class="kb-anchor-label"
+            x="0"
+            y={
+              ['paris', 'berlin', 'eiffel', 'gate'].includes(node.id) ? 25 : -16
+            }
+            text-anchor="middle"
+          >
+            {node.label}
+          </text>
+          {node.id === knowledgeCorrection.entity && (
+            <circle
+              class="kb-selection-ring"
+              r="14"
+              opacity="0"
+              data-selection-ring
+            />
+          )}
+        </g>
       </g>
     ))}
     <g data-graph-layer="priority" opacity="0">
       <path
         data-priority-path
         class="kb-channel"
-        d="M390 35C350 25 340 65 330 85"
+        d="M210 85C180 70 130 75 95 110"
         marker-end="url(#kb-arrow)"
       />
       <text
         class="kb-art-note"
-        x="388"
-        y="20"
+        x="230"
+        y="65"
         text-anchor="end"
         data-priority-label
       >
-        BACKEND / PRIORITY UPDATE
+        PRIORITIZED UPDATE
       </text>
       <circle data-priority-packet r="3" class="kb-packet" opacity="0" />
     </g>
     <g data-graph-layer="backend" opacity="0">
+      <text
+        class="kb-art-note"
+        x="200"
+        y="195"
+        text-anchor="middle"
+        data-proposal-label
+      >
+        PROPOSED / INCORRECT
+      </text>
       <path
         class="kb-channel"
         data-edit-path
         pathLength="1"
-        d="M185 50C100 50 22 90 22 210Q22 307 125 307"
+        d="M110 200C160 200 175 245 175 280"
         marker-end="url(#kb-arrow)"
       />
       <path
         class="kb-channel"
         data-return-path
         pathLength="1"
-        d="M275 307Q378 307 378 220V95Q378 50 215 50"
+        d="M175 280C175 245 160 200 110 200"
         marker-end="url(#kb-arrow)"
       />
       <text
         class="kb-art-note"
-        x="80"
-        y="215"
+        x="260"
+        y="245"
         text-anchor="middle"
         data-edit-label
       >
-        <tspan x="80">USER EDIT</tspan>
-        <tspan x="80" dy="20">
+        <tspan x="260">USER EDIT</tspan>
+        <tspan x="260" dy="20">
           / API
         </tspan>
       </text>
       <text
         class="kb-art-note"
-        x="312"
-        y="215"
+        x="260"
+        y="245"
         text-anchor="middle"
         data-return-label
       >
-        <tspan x="312">WEBSOCKET</tspan>
-        <tspan x="312" dy="20">
+        <tspan x="260">WEBSOCKET</tspan>
+        <tspan x="260" dy="20">
           UPDATE
         </tspan>
       </text>
@@ -199,14 +257,6 @@ import {
         data-backend-node
       >
         <rect width="150" height="54" rx="27" data-backend-shape />
-        <rect
-          width="150"
-          height="54"
-          rx="27"
-          class="kb-backend-pulse"
-          opacity="0"
-          data-backend-pulse
-        />
         <text
           x="75"
           y="33"

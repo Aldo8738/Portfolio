@@ -21,26 +21,40 @@ const next = orderedProjects.find((project) => project.order === 2);
     <span aria-hidden="true">←</span> Back to Selected work
   </a>
   <header class="kb-hero" data-kb-section>
-    <div>
+    <div data-hero-copy>
       <p class="eyebrow">{content.eyebrow}</p>
-      <h1>{content.title}</h1>
+      <h1>
+        {content.title.slice(0, -1)}
+        <span class="kb-title-dot">.</span>
+      </h1>
       <p class="kb-subheading">{content.subheading}</p>
       <p class="kb-introduction">{content.introduction}</p>
     </div>
     <div class="kb-hero-visual">
       <div class="kb-hero-dock" data-hero-dock></div>
-      <div class="kb-hero-metric">
-        <strong>
-          <span class="sr-only">{measurements[0].reduction}%</span>
-          <span data-hero-value aria-hidden="true">
-            {measurements[0].reduction}
-          </span>
-          <span class="kb-hero-unit" aria-hidden="true">
-            %
-          </span>
-        </strong>
+      <ol class="kb-hero-steps" aria-label="Graph story outline">
+        {['Overload', 'Focus', 'Human ↔ AI', 'Result'].map((label, index) => (
+          <li data-entry-step={index}>
+            <span>0{index + 1}</span>
+            {label}
+          </li>
+        ))}
+      </ol>
+      <p class="kb-entry-hint kb-caption">↓ Scroll to see the graph evolve</p>
+    </div>
+    <div class="kb-hero-metric">
+      <strong>
+        <span class="sr-only">{measurements[0].reduction}%</span>
+        <span data-hero-value aria-hidden="true">
+          {measurements[0].reduction}
+        </span>
+        <span class="kb-hero-unit" aria-hidden="true">
+          %
+        </span>
+      </strong>
+      <div>
         <p>reduction in graph finish time</p>
-        <span class="kb-caption">8.47s → 1.57s · 100-item Reddit graph</span>
+        <span class="kb-caption">8.47s → 1.57s · Reddit, 100 items</span>
       </div>
     </div>
   </header>
@@ -60,6 +74,11 @@ const next = orderedProjects.find((project) => project.order === 2);
     data-kb-section
     data-kb-story
   >
+    <div class="kb-scene-layer">
+      <div class="kb-network" data-network-host data-layout="mobile">
+        <KnowledgeGraph />
+      </div>
+    </div>
     <div class="kb-story-stage" data-story-stage>
       <div class="kb-story-topline">
         <p class="eyebrow" id="kb-story-title">
@@ -95,11 +114,7 @@ const next = orderedProjects.find((project) => project.order === 2);
           class="project-visual kb-story-figure"
           data-work-visual="knowledge-hierarchy"
         >
-          <div class="kb-graph-dock" data-story-dock>
-            <div class="kb-network" data-network-host data-layout="mobile">
-              <KnowledgeGraph />
-            </div>
-          </div>
+          <div class="kb-graph-dock" data-story-dock></div>
           <p class="kb-graph-metric" data-graph-metric>
             <span>{measurements[0].before.toFixed(2)}s</span>
             <span aria-hidden="true">→</span>
