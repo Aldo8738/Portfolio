@@ -1,0 +1,71 @@
+[
+  {
+    "profile": "desktop",
+    "after": {
+      "dockReads": 0,
+      "forced": 13,
+      "forcedMs": 3.46,
+      "layoutMs": 271.82,
+      "scriptMs": 180.81,
+      "longTasks": 0,
+      "entry95": 33.4,
+      "story95": 33.4
+    },
+    "step-2-5": {
+      "dockReads": 0,
+      "forced": 10,
+      "forcedMs": 2.86,
+      "layoutMs": 284.53,
+      "scriptMs": 174.44,
+      "longTasks": 0,
+      "entry95": 33.4,
+      "story95": 33.4
+    }
+  },
+  {
+    "profile": "short-desktop",
+    "after": {
+      "dockReads": 0,
+      "forced": 23,
+      "forcedMs": 22.57,
+      "layoutMs": 321.26,
+      "scriptMs": 224.32,
+      "longTasks": 0,
+      "entry95": 33.3,
+      "story95": 16.8
+    },
+    "step-2-5": {
+      "dockReads": 0,
+      "forced": 17,
+      "forcedMs": 15.52,
+      "layoutMs": 295.07,
+      "scriptMs": 194.81,
+      "longTasks": 0,
+      "entry95": 16.7,
+      "story95": 16.7
+    }
+  },
+  {
+    "profile": "mobile-cpu4",
+    "after": {
+      "dockReads": 0,
+      "forced": 12,
+      "forcedMs": 14.76,
+      "layoutMs": 1068.83,
+      "scriptMs": 836.4,
+      "longTasks": 7,
+      "entry95": 66.6,
+      "story95": 50
+    },
+    "step-2-5": {
+      "dockReads": 0,
+      "forced": 9,
+      "forcedMs": 12.29,
+      "layoutMs": 1008.18,
+      "scriptMs": 916.69,
+      "longTasks": 11,
+      "entry95": 66.7,
+      "story95": 33.4
+    }
+  }
+]

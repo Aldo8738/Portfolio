@@ -1,5 +1,9 @@
 ﻿# Knowledge Bridge V4 implementation review
 
+This is the historical V4 review. The later [continuous-scroll implementation](KNOWLEDGE_BRIDGE_CONTINUOUS.md)
+supersedes its gaming example and Flip reparenting; earlier screenshots remain evidence
+of that revision, not the current page.
+
 Implemented from the [final V4 brief](../knowledge-bridge-codex-final-implementation-v4.md)
 and [approved reference](../knowledge-bridge-approved-reference.png). The creator's
 subsequent instruction enlarges the graph and removes the visible Figure 01

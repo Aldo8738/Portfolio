@@ -1,0 +1,83 @@
+[
+  {
+    "profile": "desktop",
+    "before": {
+      "reads": 1436,
+      "forced": 278,
+      "forcedMs": 215.86,
+      "layoutMs": 431.94,
+      "scriptMs": 425.38,
+      "longTasks": 0,
+      "entry95": 33.4,
+      "story95": 33.4,
+      "reverseEntry95": 33.4,
+      "reverseStory95": 33.4
+    },
+    "after": {
+      "reads": 0,
+      "forced": 13,
+      "forcedMs": 3.46,
+      "layoutMs": 271.82,
+      "scriptMs": 180.81,
+      "longTasks": 0,
+      "entry95": 33.4,
+      "story95": 33.4,
+      "reverseEntry95": 33.4,
+      "reverseStory95": 33.4
+    }
+  },
+  {
+    "profile": "short-desktop",
+    "before": {
+      "reads": 2110,
+      "forced": 447,
+      "forcedMs": 422.56,
+      "layoutMs": 563.81,
+      "scriptMs": 651.28,
+      "longTasks": 0,
+      "entry95": 16.8,
+      "story95": 16.8,
+      "reverseEntry95": 33.2,
+      "reverseStory95": 16.7
+    },
+    "after": {
+      "reads": 0,
+      "forced": 23,
+      "forcedMs": 22.57,
+      "layoutMs": 321.26,
+      "scriptMs": 224.32,
+      "longTasks": 0,
+      "entry95": 33.3,
+      "story95": 16.8,
+      "reverseEntry95": 16.8,
+      "reverseStory95": 16.8
+    }
+  },
+  {
+    "profile": "mobile-cpu4",
+    "before": {
+      "reads": 796,
+      "forced": 157,
+      "forcedMs": 959.8,
+      "layoutMs": 1510.39,
+      "scriptMs": 1441.81,
+      "longTasks": 22,
+      "entry95": 66.7,
+      "story95": 50,
+      "reverseEntry95": 66.7,
+      "reverseStory95": 33.4
+    },
+    "after": {
+      "reads": 0,
+      "forced": 12,
+      "forcedMs": 14.76,
+      "layoutMs": 1068.83,
+      "scriptMs": 836.4,
+      "longTasks": 7,
+      "entry95": 66.6,
+      "story95": 50,
+      "reverseEntry95": 66.7,
+      "reverseStory95": 33.4
+    }
+  }
+]

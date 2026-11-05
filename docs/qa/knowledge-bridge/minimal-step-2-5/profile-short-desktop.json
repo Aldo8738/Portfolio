@@ -1,0 +1,299 @@
+{
+  "label": "step-2-5",
+  "profile": {
+    "name": "short-desktop",
+    "width": 1280,
+    "height": 600,
+    "cpu": 1
+  },
+  "browser": "156.0.8078.4",
+  "platform": "win32",
+  "durationPerSegmentMs": 1800,
+  "input": "Chrome native wheel gestures; RAF only samples cadence; mobile-sized CPU4 is a rendering proxy, not physical touch",
+  "bounds": {
+    "start": 200.078125,
+    "entryEnd": 808.078125,
+    "end": 1249.421875
+  },
+  "runs": [
+    {
+      "run": 0,
+      "positions": {
+        "entry-forward": 808,
+        "story-forward": 1249,
+        "story-reverse": 808,
+        "entry-reverse": 200
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 113,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 16.799999999999727,
+          "over25Ms": 2
+        },
+        "story-forward": {
+          "count": 113,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 0
+        },
+        "story-reverse": {
+          "count": 114,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 0
+        },
+        "entry-reverse": {
+          "count": 113,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 0
+        }
+      },
+      "metrics": {
+        "LayoutCount": 306,
+        "LayoutDuration": 0.34536199999999995,
+        "RecalcStyleCount": 508,
+        "RecalcStyleDuration": 0.17422,
+        "ScriptDuration": 0.239454,
+        "TaskDuration": 1.7343709999999999
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 4026,
+            "ms": 294.2019999999965
+          },
+          "PrePaint": {
+            "count": 464,
+            "ms": 148.72299999999993
+          },
+          "UpdateLayoutTree": {
+            "count": 508,
+            "ms": 183.90999999999966
+          },
+          "Layout": {
+            "count": 306,
+            "ms": 338.90800000000024
+          },
+          "Paint": {
+            "count": 861,
+            "ms": 287.1079999999997
+          }
+        },
+        "forcedLayoutCount": 17,
+        "forcedLayoutMs": 15.515000000000002,
+        "largestForcedLayouts": [
+          {
+            "ms": 3.233,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.455,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.446,
+            "functions": ["onUpdate", "Dt", "s.render", "xe", "Dt"]
+          },
+          {
+            "ms": 1.431,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.326,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          }
+        ]
+      }
+    },
+    {
+      "run": 1,
+      "positions": {
+        "entry-forward": 808,
+        "story-forward": 1249,
+        "story-reverse": 808,
+        "entry-reverse": 200
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 110,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 4
+        },
+        "story-forward": {
+          "count": 114,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 0
+        },
+        "story-reverse": {
+          "count": 113,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 0
+        },
+        "entry-reverse": {
+          "count": 110,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.80000000000291,
+          "over25Ms": 3
+        }
+      },
+      "metrics": {
+        "LayoutCount": 298,
+        "LayoutDuration": 0.29507300000000003,
+        "RecalcStyleCount": 483,
+        "RecalcStyleDuration": 0.162201,
+        "ScriptDuration": 0.194811,
+        "TaskDuration": 1.6363049999999997
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 3986,
+            "ms": 240.602999999997
+          },
+          "PrePaint": {
+            "count": 458,
+            "ms": 149.5839999999999
+          },
+          "UpdateLayoutTree": {
+            "count": 483,
+            "ms": 165.0210000000001
+          },
+          "Layout": {
+            "count": 298,
+            "ms": 288.7029999999999
+          },
+          "Paint": {
+            "count": 843,
+            "ms": 288.08399999999983
+          }
+        },
+        "forcedLayoutCount": 16,
+        "forcedLayoutMs": 13.564999999999998,
+        "largestForcedLayouts": [
+          {
+            "ms": 1.574,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.517,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.349,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.346,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.303,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          }
+        ]
+      }
+    },
+    {
+      "run": 2,
+      "positions": {
+        "entry-forward": 808,
+        "story-forward": 1249,
+        "story-reverse": 808,
+        "entry-reverse": 200
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 112,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 1
+        },
+        "story-forward": {
+          "count": 114,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 0
+        },
+        "story-reverse": {
+          "count": 113,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 0
+        },
+        "entry-reverse": {
+          "count": 114,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 0
+        }
+      },
+      "metrics": {
+        "LayoutCount": 305,
+        "LayoutDuration": 0.29181599999999996,
+        "RecalcStyleCount": 490,
+        "RecalcStyleDuration": 0.16098600000000002,
+        "ScriptDuration": 0.18746600000000002,
+        "TaskDuration": 1.6251809999999995
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 4039,
+            "ms": 233.71199999999703
+          },
+          "PrePaint": {
+            "count": 464,
+            "ms": 147.92199999999988
+          },
+          "UpdateLayoutTree": {
+            "count": 491,
+            "ms": 164.19099999999995
+          },
+          "Layout": {
+            "count": 306,
+            "ms": 287.03700000000003
+          },
+          "Paint": {
+            "count": 861,
+            "ms": 264.49099999999976
+          }
+        },
+        "forcedLayoutCount": 17,
+        "forcedLayoutMs": 15.64,
+        "largestForcedLayouts": [
+          {
+            "ms": 1.828,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.749,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.552,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.472,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          },
+          {
+            "ms": 1.438,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          }
+        ]
+      }
+    }
+  ]
+}

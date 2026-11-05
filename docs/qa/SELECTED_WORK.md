@@ -7,7 +7,7 @@ Contact are preserved. No package or server dependency was added.
 
 The [later Knowledge Bridge handoff](../knowledge-bridge-codex-handoff.md) replaces
 that project's generic detail page and corrects its shared performance claim.
-See the [current Knowledge Bridge review](KNOWLEDGE_BRIDGE.md). The original
+See the [current Knowledge Bridge review](KNOWLEDGE_BRIDGE_CONTINUOUS.md). The original
 Selected Work checkpoint and captures below are historical. The later
 [V2 revision](../knowledge-bridge-codex-revision-v2.md) further refines that page's
 scroll story, backend channels, snapshots and contribution strip.

@@ -24,8 +24,13 @@ illustrations and focuses checkpoint history on one relationship. The
 [approved reference](docs/knowledge-bridge-approved-reference.png) supersede that
 separate-figure approach with one shared organic network and a continuous history
 slider. The creator subsequently requested a larger graph and removal of its
-visible illustration caption. See the
-[implementation review](docs/qa/KNOWLEDGE_BRIDGE.md); retain the other projects and
+visible illustration caption. The later
+[continuous-scroll plan](docs/knowledge-bridge-continuous-scroll-implementation-plan.md)
+replaces the gaming example with a persistent Paris–France relationship. The
+creator's accompanying visual reference places the metric beneath the introduction;
+the desktop hero fades in place while the graph expands. See the
+[current implementation review](docs/qa/KNOWLEDGE_BRIDGE_CONTINUOUS.md) and
+[historical V4 review](docs/qa/KNOWLEDGE_BRIDGE.md); retain the other projects and
 the frozen taquería experience.
 
 **CV update:** The creator's [CV implementation brief](docs/CV_CODEX_IMPLEMENTATION_BRIEF.md)

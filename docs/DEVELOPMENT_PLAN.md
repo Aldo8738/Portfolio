@@ -30,6 +30,11 @@ The [final V4 brief](knowledge-bridge-codex-final-implementation-v4.md) and
 [approved reference](knowledge-bridge-approved-reference.png) replace the separate
 mobile diagrams with one shared network and genuine history interpolation. The
 later creator instruction enlarges the graph and removes the Figure 01 caption.
+The later [continuous-scroll plan](knowledge-bridge-continuous-scroll-implementation-plan.md)
+replaces the gaming example with Paris–France, removes graph reparenting and
+locks the desktop hero's position during its fade. The supplied visual reference
+informs the curved hero relationship, metric placement and passive step outline.
+See the [current implementation and QA review](qa/KNOWLEDGE_BRIDGE_CONTINUOUS.md).
 
 The subsequent [CV brief](CV_CODEX_IMPLEMENTATION_BRIEF.md) adds the static `/cv`
 career timeline and its typed skill catalog. Employment and overlapping education
