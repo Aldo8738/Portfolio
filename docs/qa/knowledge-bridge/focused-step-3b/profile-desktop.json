@@ -1,0 +1,299 @@
+{
+  "label": "chapter-one-final",
+  "profile": {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "cpu": 1
+  },
+  "browser": "156.0.8078.4",
+  "platform": "win32",
+  "durationPerSegmentMs": 1800,
+  "input": "Chrome native wheel gestures; RAF only samples cadence; mobile-sized CPU4 is a rendering proxy, not physical touch",
+  "bounds": {
+    "start": 0,
+    "entryEnd": 834.890625,
+    "end": 4074.890625
+  },
+  "runs": [
+    {
+      "run": 0,
+      "positions": {
+        "entry-forward": 834,
+        "story-forward": 4074,
+        "story-reverse": 835,
+        "entry-reverse": 0
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 93,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 33.40000000000009,
+          "over25Ms": 22
+        },
+        "story-forward": {
+          "count": 97,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 33.399999999999636,
+          "over25Ms": 15
+        },
+        "story-reverse": {
+          "count": 101,
+          "medianMs": 16.699999999999818,
+          "p95Ms": 33.30000000000018,
+          "over25Ms": 12
+        },
+        "entry-reverse": {
+          "count": 111,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 3
+        }
+      },
+      "metrics": {
+        "LayoutCount": 269,
+        "LayoutDuration": 0.4726309999999999,
+        "RecalcStyleCount": 425,
+        "RecalcStyleDuration": 0.153719,
+        "ScriptDuration": 0.24557599999999996,
+        "TaskDuration": 1.7516289999999999
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 3758,
+            "ms": 284.57199999999676
+          },
+          "PrePaint": {
+            "count": 413,
+            "ms": 117.24699999999982
+          },
+          "UpdateLayoutTree": {
+            "count": 425,
+            "ms": 158.034
+          },
+          "Layout": {
+            "count": 269,
+            "ms": 463.87599999999964
+          },
+          "Paint": {
+            "count": 357,
+            "ms": 172.47200000000012
+          }
+        },
+        "forcedLayoutCount": 14,
+        "forcedLayoutMs": 4.874000000000001,
+        "largestForcedLayouts": [
+          {
+            "ms": 0.684,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.599,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.421,
+            "functions": ["onUpdate", "Dt", "s.render", "xe", "Dt"]
+          },
+          {
+            "ms": 0.407,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.376,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          }
+        ]
+      }
+    },
+    {
+      "run": 1,
+      "positions": {
+        "entry-forward": 834,
+        "story-forward": 4074,
+        "story-reverse": 835,
+        "entry-reverse": 0
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 98,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 33.30000000000109,
+          "over25Ms": 15
+        },
+        "story-forward": {
+          "count": 111,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 3
+        },
+        "story-reverse": {
+          "count": 102,
+          "medianMs": 16.69999999999891,
+          "p95Ms": 33.30000000000109,
+          "over25Ms": 9
+        },
+        "entry-reverse": {
+          "count": 111,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 1
+        }
+      },
+      "metrics": {
+        "LayoutCount": 278,
+        "LayoutDuration": 0.322758,
+        "RecalcStyleCount": 443,
+        "RecalcStyleDuration": 0.156541,
+        "ScriptDuration": 0.20443199999999995,
+        "TaskDuration": 1.5711719999999998
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 3982,
+            "ms": 240.28999999999695
+          },
+          "PrePaint": {
+            "count": 432,
+            "ms": 117.84900000000005
+          },
+          "UpdateLayoutTree": {
+            "count": 443,
+            "ms": 157.46699999999993
+          },
+          "Layout": {
+            "count": 278,
+            "ms": 314.72
+          },
+          "Paint": {
+            "count": 370,
+            "ms": 197.38199999999983
+          }
+        },
+        "forcedLayoutCount": 14,
+        "forcedLayoutMs": 4.436999999999999,
+        "largestForcedLayouts": [
+          {
+            "ms": 1.016,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.564,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.536,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.516,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.269,
+            "functions": ["", "n", "on", "Lt"]
+          }
+        ]
+      }
+    },
+    {
+      "run": 2,
+      "positions": {
+        "entry-forward": 834,
+        "story-forward": 4074,
+        "story-reverse": 835,
+        "entry-reverse": 0
+      },
+      "dockReads": 0,
+      "longTasks": [],
+      "frames": {
+        "entry-forward": {
+          "count": 111,
+          "medianMs": 16.69999999999709,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 1
+        },
+        "story-forward": {
+          "count": 112,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 0
+        },
+        "story-reverse": {
+          "count": 109,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.799999999999272,
+          "over25Ms": 4
+        },
+        "entry-reverse": {
+          "count": 111,
+          "medianMs": 16.700000000000728,
+          "p95Ms": 16.700000000000728,
+          "over25Ms": 1
+        }
+      },
+      "metrics": {
+        "LayoutCount": 294,
+        "LayoutDuration": 0.32605400000000007,
+        "RecalcStyleCount": 467,
+        "RecalcStyleDuration": 0.16923699999999997,
+        "ScriptDuration": 0.19137400000000004,
+        "TaskDuration": 1.5297040000000002
+      },
+      "trace": {
+        "events": {
+          "FunctionCall": {
+            "count": 4182,
+            "ms": 225.38699999999736
+          },
+          "PrePaint": {
+            "count": 452,
+            "ms": 113.38399999999989
+          },
+          "UpdateLayoutTree": {
+            "count": 467,
+            "ms": 170.00200000000018
+          },
+          "Layout": {
+            "count": 294,
+            "ms": 318.61000000000007
+          },
+          "Paint": {
+            "count": 382,
+            "ms": 157.82599999999996
+          }
+        },
+        "forcedLayoutCount": 16,
+        "forcedLayoutMs": 6.048,
+        "largestForcedLayouts": [
+          {
+            "ms": 0.68,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.656,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.655,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.503,
+            "functions": ["", "n", "on", "Lt"]
+          },
+          {
+            "ms": 0.499,
+            "functions": ["onUpdate", "Dt", "s.render", "o.render", "Ce"]
+          }
+        ]
+      }
+    }
+  ]
+}

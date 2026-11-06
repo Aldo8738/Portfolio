@@ -18,6 +18,12 @@ it preserves the composition, reading boundary and scrub timing.
 The later [Step 2.5 animation refinement](KNOWLEDGE_BRIDGE_MINIMAL_ANIMATION_STEP_2_5.md)
 groups relationship reveals, settles mobile nodes and sequences a single compact
 request/response channel while retaining that performance work.
+The coordinated hero/table exit from [Step 3A](KNOWLEDGE_BRIDGE_READING_RHYTHM_STEP_3A.md)
+remains. The later [Step 3B Chapter 1 preview](KNOWLEDGE_BRIDGE_FOCUSED_CHAPTER_1_STEP_3B.md)
+supersedes the four-stage pacing experiment: Chapter 1 alone alternates centered
+text and a centered, still graph. Chapters 2-4 retain their existing presentation.
+The sections below describe the original continuous-scroll baseline; current
+scroll distances and validation are recorded in the Step 3B review.
 
 ## Audit and visual direction
 
