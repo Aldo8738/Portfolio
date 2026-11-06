@@ -1,7 +1,10 @@
 import { expect, it } from 'vitest';
 import { knowledgeBridgeMeasurements } from '../src/content/knowledge-bridge';
 import { getProject } from '../src/content/portfolio';
-import { getStoryBeat } from '../src/components/work/knowledge-bridge/story-state';
+import {
+  getStoryBeat,
+  getFocusedStoryBeat,
+} from '../src/components/work/knowledge-bridge/story-state';
 import { getHistoryFrame } from '../src/components/work/knowledge-bridge/history-state';
 import {
   knowledgeCorrection,
@@ -75,4 +78,10 @@ it('selects the same story beats when progressing and reversing across boundarie
   expect(progress.toReversed().map(getStoryBeat)).toEqual(
     expected.toReversed(),
   );
+});
+
+it('keeps Chapter 1 focused before preserving the later story boundaries', () => {
+  expect(
+    [0, 0.4, 0.624, 0.625, 0.749, 0.75, 0.899, 0.9, 1].map(getFocusedStoryBeat),
+  ).toEqual([0, 0, 0, 1, 1, 2, 2, 3, 3]);
 });

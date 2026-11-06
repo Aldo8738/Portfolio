@@ -133,15 +133,18 @@ for (const profile of profiles) {
             parseFloat(getComputedStyle(hero).paddingBottom),
         );
         const entryEnd = stage.getBoundingClientRect().top + scrollY;
+        const anchor =
+          document.querySelector<HTMLElement>('[data-network-host]')?.dataset
+            .layout === 'desktop'
+            ? innerHeight * motion.readingFraction
+            : figure.offsetHeight +
+              Math.min(
+                motion.readingGap,
+                (innerHeight - figure.offsetHeight) * motion.readingFraction,
+              );
         const end = document.querySelector('.pin-spacer')
           ? entryEnd + innerHeight * motion.scrollScreens
-          : copy.getBoundingClientRect().bottom +
-            scrollY -
-            figure.offsetHeight -
-            Math.min(
-              motion.readingGap,
-              (innerHeight - figure.offsetHeight) * motion.readingFraction,
-            );
+          : copy.getBoundingClientRect().bottom + scrollY - anchor;
         return { start, entryEnd, end };
       }, knowledgeStoryMotion);
       await page.evaluate((y) => scrollTo(0, y), Math.floor(bounds.start));

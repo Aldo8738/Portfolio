@@ -5,6 +5,7 @@ import {
 } from '../../src/content/knowledge-bridge';
 import { knowledgeStoryMotion } from '../../src/components/work/knowledge-bridge/graph-motion';
 import { writeFile } from 'node:fs/promises';
+import { getStoryBeat } from '../../src/components/work/knowledge-bridge/story-state';
 import { graphLinks } from '../../src/content/knowledge-graph';
 
 test.use({ hasTouch: true });
@@ -65,7 +66,16 @@ async function graphMatchesDock(page: import('@playwright/test').Page) {
           .querySelector('[data-network-host]')
           ?.getBoundingClientRect();
         const dock = document
-          .querySelector('[data-story-dock]')
+          .querySelector(
+            document
+              .querySelector('[data-knowledge-bridge]')
+              ?.getAttribute('data-story-mode') === 'pinned' &&
+              document
+                .querySelector('[data-knowledge-bridge]')
+                ?.getAttribute('data-story-beat') === '0'
+              ? '[data-chapter-one-dock]'
+              : '[data-story-dock]',
+          )
           ?.getBoundingClientRect();
         if (!host || !dock) throw new Error('Graph placement missing');
         return Math.max(
@@ -99,23 +109,51 @@ async function storyProgress(
       .locator('.kb-story-figure')
       .evaluate(
         (el, motion) =>
-          (el as HTMLElement).offsetHeight +
-          Math.min(
-            motion.readingGap,
-            (innerHeight - (el as HTMLElement).offsetHeight) *
-              motion.readingFraction,
-          ),
+          document.querySelector<HTMLElement>('[data-network-host]')?.dataset
+            .layout === 'desktop'
+            ? innerHeight * motion.readingFraction
+            : (el as HTMLElement).offsetHeight +
+              Math.min(
+                motion.readingGap,
+                (innerHeight - (el as HTMLElement).offsetHeight) *
+                  motion.readingFraction,
+              ),
         knowledgeStoryMotion,
       );
     start = dimensions.top - anchor;
     distance = dimensions.height;
   }
-  await page.evaluate((y) => scrollTo(0, y), start + distance * progress);
+  const mapped = pinned
+    ? progress < 0.25
+      ? 0.625 * (0.56 + progress * 1.4)
+      : 0.625 + (progress - 0.25) * 0.5
+    : (progress - 0.25) / 0.75;
+  const y =
+    !pinned && progress < 0.25
+      ? Math.min(
+          start - 2,
+          await page
+            .locator('[data-story-stage]')
+            .evaluate(
+              (el) =>
+                el.getBoundingClientRect().top + scrollY + innerHeight * 0.3,
+            ),
+        )
+      : start + distance * mapped;
+  await page.evaluate((y) => scrollTo(0, y), y);
   await page.waitForTimeout(450);
   await expect(page.locator('[data-knowledge-bridge]')).toHaveAttribute(
     'data-story-beat',
-    String(progress < 0.25 ? 0 : progress < 0.5 ? 1 : progress < 0.8 ? 2 : 3),
+    String(getStoryBeat(progress)),
   );
+}
+
+async function storyAction(
+  page: import('@playwright/test').Page,
+  progress: number,
+  pinned: boolean,
+) {
+  await storyProgress(page, progress, pinned);
 }
 
 async function entryProgress(
@@ -129,10 +167,14 @@ async function entryProgress(
       document.querySelector('.pin-spacer') ??
       document.querySelector('[data-story-stage]');
     if (!hero || !facts || !stage) throw new Error('Entry layout missing');
+    const transform = getComputedStyle(facts).transform;
+    const heldOffset =
+      transform === 'none' ? 0 : new DOMMatrixReadOnly(transform).m42;
     const start = Math.max(
       0,
       facts.getBoundingClientRect().bottom +
         scrollY -
+        heldOffset -
         innerHeight +
         parseFloat(getComputedStyle(hero).paddingBottom),
     );
@@ -326,29 +368,27 @@ test('records continuous entry with attached edges and unchanged graph identity'
           .evaluate((el) => el.getBoundingClientRect().top),
       ).toBeCloseTo(titleTop, 0);
       const opacity = await root
-        .locator('h1')
+        .locator('[data-hero-copy]')
         .evaluate((el) => Number(getComputedStyle(el).opacity));
-      if (progress <= 0.4) expect(opacity).toBe(1);
-      else if (progress < 0.6) {
+      if (progress < 0.18) expect(opacity).toBe(1);
+      else if (progress < 0.38) {
         expect(opacity).toBeGreaterThan(0);
         expect(opacity).toBeLessThan(1);
       } else expect(opacity).toBe(0);
+      expect(
+        await root
+          .locator('.kb-hero-metric')
+          .evaluate((el) => Number(getComputedStyle(el).opacity)),
+      ).toBe(opacity);
     }
+    const heroOpacity = await root
+      .locator('[data-hero-copy]')
+      .evaluate((el) => getComputedStyle(el).opacity);
+    await expect(root.locator('.kb-facts')).toHaveCSS('opacity', heroOpacity);
     if (progress === 0) {
-      for (const selector of [
-        'h1',
-        '.kb-subheading',
-        '.kb-introduction',
-        '.kb-hero-metric',
-      ])
-        await expect(root.locator(selector)).toHaveCSS('opacity', '1');
+      await expect(root.locator('[data-hero-copy]')).toHaveCSS('opacity', '1');
+      await expect(root.locator('.kb-hero-metric')).toHaveCSS('opacity', '1');
     }
-    if (progress === 0.4) {
-      await expect(root.locator('.kb-introduction')).toHaveCSS('opacity', '0');
-      await expect(root.locator('.kb-hero-metric')).toHaveCSS('opacity', '0');
-    }
-    if (progress === 0.5)
-      await expect(root.locator('.kb-subheading')).toHaveCSS('opacity', '0');
     for (const id of ['paris', 'france']) {
       await expect(
         root.locator('[data-node-id="' + id + '"]'),
@@ -538,7 +578,8 @@ test('one persistent Paris France network expands continuously and rewinds its c
   });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   for (const [width, height] of [
-    [1280, 800],
+    [1280, 720],
+    [1366, 768],
     [1440, 900],
     [1920, 1080],
   ]) {
@@ -567,7 +608,7 @@ test('one persistent Paris France network expands continuously and rewinds its c
     for (const [progress, stage] of [
       [0.23, 1],
       [0.42, 2],
-      [0.79, 3],
+      [0.7, 3],
       [0.98, 4],
     ] as const) {
       await storyProgress(page, progress, true);
@@ -605,19 +646,19 @@ test('one persistent Paris France network expands continuously and rewinds its c
     await expect(root.locator('[data-graph-metric]')).toContainText('1.57s');
     await storyProgress(page, 1.1, true);
     await graphMatchesDock(page);
-    await storyProgress(page, 0.36, true);
+    await storyAction(page, 0.36, true);
     const priority = await root
       .locator('[data-priority-packet]')
       .getAttribute('cx');
-    await storyProgress(page, 0.42, true);
+    await storyAction(page, 0.42, true);
     expect(
       await root.locator('[data-priority-packet]').getAttribute('cx'),
     ).not.toBe(priority);
-    await storyProgress(page, 0.62, true);
+    await storyAction(page, 0.62, true);
     const outgoing = await root
       .locator('[data-feedback-packet]')
       .getAttribute('cx');
-    await storyProgress(page, 0.64, true);
+    await storyAction(page, 0.64, true);
     expect(
       await root.locator('[data-feedback-packet]').getAttribute('cx'),
     ).not.toBe(outgoing);
@@ -625,11 +666,11 @@ test('one persistent Paris France network expands continuously and rewinds its c
       'opacity',
       '0',
     );
-    await storyProgress(page, 0.7, true);
+    await storyAction(page, 0.7, true);
     const incoming = await root
       .locator('[data-delivery-packet]')
       .getAttribute('cx');
-    await storyProgress(page, 0.72, true);
+    await storyAction(page, 0.72, true);
     expect(
       await root.locator('[data-delivery-packet]').getAttribute('cx'),
     ).not.toBe(incoming);
@@ -652,15 +693,118 @@ test('one persistent Paris France network expands continuously and rewinds its c
     );
     await expect(root.locator('.kb-graph')).toHaveCount(1);
     await storyProgress(page, 0.6, true);
+    const beforeReload = await page.evaluate(() => scrollY);
     await page.reload();
     await expect(root).toHaveAttribute('data-story-mode', 'pinned');
     await expect(page.locator('.pin-spacer')).toHaveCount(1);
     await expect(root).toHaveAttribute('data-story-beat', '2');
+    await expect
+      .poll(async () =>
+        Math.abs((await page.evaluate(() => scrollY)) - beforeReload),
+      )
+      .toBeLessThan(2);
     await graphMatchesDock(page);
     await storyProgress(page, 0.79, true);
   }
   expect(errors).toEqual([]);
   expect(warnings).toEqual([]);
+});
+
+test('Chapter 1 gives text and graph separate stable focus and reverses cleanly', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120000);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const [width, height] of [
+    [1440, 900],
+    [1366, 768],
+    [1280, 720],
+    [390, 844],
+    [375, 667],
+    [1280, 600],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/work/knowledge-bridge');
+    const root = page.locator('[data-knowledge-bridge]');
+    await expect(root).toHaveAttribute('data-case-ready', 'true');
+    await page.evaluate(() => document.fonts.ready);
+    const text = root.locator('.kb-chapter-one-copy');
+    const host = root.locator('[data-network-host]');
+    const pinned = width >= 1100 && height >= 650;
+    if (pinned) {
+      const start = await page
+        .locator('.pin-spacer')
+        .evaluate((el) => el.getBoundingClientRect().top + scrollY);
+      const chapter = async (progress: number) => {
+        await page.evaluate(
+          (y) => scrollTo(0, y),
+          start + height * 2.25 * progress,
+        );
+        await page.waitForTimeout(500);
+      };
+      for (const progress of [0.1, 0.3]) {
+        await chapter(progress);
+        await expect(text).toHaveCSS('opacity', '1');
+        await expect(text.locator('h2')).toBeInViewport({ ratio: 1 });
+        await expect(text.locator('p')).toBeInViewport({ ratio: 1 });
+        await expect(host).toHaveCSS('opacity', '0');
+      }
+      await page.screenshot({
+        path: testInfo.outputPath('chapter-text-' + width + '.png'),
+      });
+      await chapter(0.46);
+      await expect(text).toHaveCSS('opacity', '0');
+      await expect(host).toHaveCSS('opacity', '0');
+      let stable: string | undefined;
+      for (const progress of [0.6, 0.75, 0.9]) {
+        await chapter(progress);
+        await expect(host).toHaveCSS('opacity', '1');
+        await expect(text).toHaveCSS('opacity', '0');
+        await graphMatchesDock(page);
+        const geometry = await root
+          .locator('.kb-graph')
+          .evaluate((el) => el.innerHTML);
+        stable ??= geometry;
+        expect(geometry).toBe(stable);
+        for (const label of await root.locator('.kb-node text').all())
+          await expect(label).toBeInViewport({ ratio: 0.999 });
+      }
+      await page.screenshot({
+        path: testInfo.outputPath('chapter-graph-' + width + '.png'),
+      });
+      await chapter(0.97);
+      expect(
+        Number(await host.evaluate((el) => getComputedStyle(el).opacity)),
+      ).toBeLessThan(0.1);
+      await storyProgress(page, 0.34, true);
+      await chapter(0.75);
+      await expect(host).toHaveCSS('opacity', '1');
+      await expect(root).toHaveAttribute('data-story-beat', '0');
+      await chapter(0.2);
+      await expect(text).toHaveCSS('opacity', '1');
+      await expect(host).toHaveCSS('opacity', '0');
+    } else {
+      await expect(page.locator('.pin-spacer')).toHaveCount(0);
+      await text.locator('h2').scrollIntoViewIfNeeded();
+      await expect(text).toHaveCSS('opacity', '1');
+      await expect(text.locator('h2')).toBeInViewport({ ratio: 1 });
+      await text.locator('p').scrollIntoViewIfNeeded();
+      await expect(text.locator('p')).toBeInViewport({ ratio: 1 });
+      await expect(text).toHaveCSS('opacity', '1');
+      await expect(host).toHaveCSS('opacity', '0');
+      await page.screenshot({
+        path: testInfo.outputPath(
+          'chapter-natural-' + width + '-' + height + '.png',
+        ),
+      });
+      await storyProgress(page, 0.23, false);
+      await expect(host).toHaveCSS('opacity', '1');
+      await expect(text).toHaveCSS('opacity', '1');
+      await text.locator('h2').scrollIntoViewIfNeeded();
+      await expect(text).toHaveCSS('opacity', '1');
+    }
+    await noOverflow(page);
+  }
 });
 
 test('restrained reveal and one-channel response stay settled and rewind in order', async ({
@@ -676,14 +820,14 @@ test('restrained reveal and one-channel response stay settled and rewind in orde
     await page.evaluate(() => document.fonts.ready);
     let settled: string[] | undefined;
     const phases = [
-      0.06, 0.12, 0.23, 0.34, 0.39, 0.56, 0.58, 0.63, 0.675, 0.71, 0.79, 0.89,
+      0.23, 0.34, 0.39, 0.56, 0.58, 0.63, 0.675, 0.71, 0.79, 0.89,
     ];
     for (const [direction, progressList] of [
       ['forward', phases],
       ['reverse', phases.toReversed()],
     ] as const) {
       for (const progress of progressList) {
-        await storyProgress(page, progress, width === 1440);
+        await storyAction(page, progress, width === 1440);
         const state = await root.evaluate((element) => {
           const opacity = (selector: string) => {
             const target = element.querySelector(selector);
@@ -721,8 +865,6 @@ test('restrained reveal and one-channel response stay settled and rewind in orde
             responsePacket: opacity('[data-delivery-packet]'),
           };
         });
-        if (progress === 0.06) expect(state.groups).toEqual([1, 0, 0]);
-        if (progress === 0.12) expect(state.groups).toEqual([1, 1, 0]);
         if (progress >= 0.23) {
           if (progress === 0.23) expect(state.groups).toEqual([1, 1, 1]);
           settled ??= state.geometry;
@@ -739,7 +881,16 @@ test('restrained reveal and one-channel response stay settled and rewind in orde
           expect(
             progress === 0.63 ? state.editPacket : state.responsePacket,
           ).toBe(1);
-          expect(state.corrected + state.incorrect).toBe(0);
+          expect(
+            state.corrected + state.incorrect,
+            JSON.stringify({
+              width,
+              progress,
+              direction,
+              corrected: state.corrected,
+              incorrect: state.incorrect,
+            }),
+          ).toBe(0);
         }
         if (progress === 0.675) expect(state.edit + state.response).toBe(0);
         if (progress >= 0.79) {
@@ -850,7 +1001,7 @@ test('phone stages reuse one evolving SVG with readable labels and ordinary touc
   for (const [width, height] of [
     [320, 568],
     [360, 800],
-    [375, 812],
+    [375, 667],
     [390, 844],
     [430, 932],
   ]) {
@@ -887,12 +1038,12 @@ test('phone stages reuse one evolving SVG with readable labels and ordinary touc
     const storyHeight = await root
       .locator('[data-kb-story]')
       .evaluate((el) => el.getBoundingClientRect().height);
-    expect(storyHeight).toBeLessThan(height * 2.5);
+    expect(storyHeight).toBeLessThan(height * 4);
     for (const [progress, stage] of [
-      [0.2, 1],
-      [0.4, 2],
-      [0.79, 3],
-      [0.98, 4],
+      [0.08, 1],
+      [0.33, 2],
+      [0.58, 3],
+      [0.83, 4],
     ] as const) {
       await storyProgress(page, progress, false);
       if (Number(await root.getAttribute('data-graph-entry')) >= 0.999)
@@ -906,7 +1057,9 @@ test('phone stages reuse one evolving SVG with readable labels and ordinary touc
         .locator(`li[data-story-beat="${stage - 1}"] h2`)
         .boundingBox();
       if (!heading) throw new Error('Active heading missing');
-      expect(heading.y).toBeGreaterThanOrEqual(figure.y + figure.height - 1);
+      if (stage === 1) expect(heading.y).toBeLessThan(figure.y);
+      else
+        expect(heading.y).toBeGreaterThanOrEqual(figure.y + figure.height - 1);
       for (const text of await root.locator('.kb-graph text:visible').all()) {
         const size = await text.evaluate(
           (el) =>
@@ -921,7 +1074,7 @@ test('phone stages reuse one evolving SVG with readable labels and ordinary touc
           path: testInfo.outputPath(`mobile-${width}-beat-${stage}.png`),
         });
     }
-    await storyProgress(page, 0.6, false);
+    await storyAction(page, 0.6, false);
     await expect(root.locator('[data-node-id="paris"]')).toHaveAttribute(
       'transform',
       'translate(95 200)',
@@ -1149,6 +1302,13 @@ test('reduced motion, themes, resize, focused skip link and revisits restore a c
     await expect(root.locator('[data-corrected-edge]')).toHaveCSS(
       'opacity',
       '1',
+    );
+    const accent = await root
+      .locator('.kb-graph-metric strong')
+      .evaluate((element) => getComputedStyle(element).color);
+    await expect(root.locator('[data-corrected-edge]')).toHaveCSS(
+      'stroke',
+      accent,
     );
     await noOverflow(page);
   }

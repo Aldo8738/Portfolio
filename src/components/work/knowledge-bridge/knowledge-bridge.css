@@ -2,6 +2,11 @@
   max-width: 1440px;
   padding-top: 2rem;
 }
+/* This stylesheet is emitted only for the Knowledge Bridge route. */
+body {
+  /* Pin setup must not shift the browser's restored scroll position. */
+  overflow-anchor: none;
+}
 .kb-hero {
   display: grid;
   grid-template-columns: 0.95fr 1.35fr;
@@ -279,6 +284,7 @@
   font-size: 20px;
 }
 .kb-story-stage {
+  position: relative;
   padding-block: 1.5rem;
   background: var(--background);
 }
@@ -781,5 +787,81 @@
   }
   .kb-network[data-layout='mobile'] .kb-art-note {
     font-size: 18px;
+  }
+}
+
+.kb-chapter-one-copy {
+  max-width: 42rem;
+  margin-inline: auto;
+  padding-block: clamp(2.5rem, 7svh, 5rem);
+  text-align: center;
+}
+.kb-chapter-one-copy p {
+  margin-inline: auto;
+}
+.kb-chapter-one-dock {
+  display: none;
+}
+.kb-page[data-story-mode='pinned'] .kb-chapter-one-copy {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  padding: 0;
+  place-items: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.kb-page[data-story-mode='pinned'] .kb-chapter-one-copy li {
+  max-width: 42rem;
+  margin-inline: 1.5rem;
+}
+.kb-page[data-story-mode='pinned'] .kb-chapter-one-dock {
+  display: block;
+  position: absolute;
+  width: min(100%, 64rem);
+  height: min(calc(100svh - 10rem), 44rem);
+  left: 50%;
+  top: calc(50% + 1rem);
+  transform: translate(-50%, -50%);
+}
+.kb-page:not([data-network-enhanced='true']) .kb-story {
+  display: grid;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-story-stage {
+  display: contents;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-story-topline {
+  grid-row: 1;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-chapter-one-copy {
+  grid-row: 2;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-scene-layer {
+  position: relative;
+  grid-row: 3;
+  height: min(70vw, 36rem);
+}
+.kb-page:not([data-network-enhanced='true']) .kb-network {
+  top: 0;
+  right: auto;
+  left: 0;
+  width: 100%;
+  max-height: 100%;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-story-layout {
+  grid-row: 4;
+  display: block;
+}
+.kb-page:not([data-network-enhanced='true']) .kb-story-figure {
+  display: none;
+}
+
+/* Reserve the future pin before native history restoration can clamp the page. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1100px) and (min-height: 650px),
+  (prefers-reduced-motion: no-preference) and (min-width: 768px) and (max-width: 1099px) and (min-height: 850px) {
+  .js .kb-page:not([data-case-ready='true']) .kb-story {
+    padding-bottom: 360svh;
   }
 }

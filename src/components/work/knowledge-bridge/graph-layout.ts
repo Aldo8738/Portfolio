@@ -79,7 +79,7 @@ export function applyGraphLayout(root: HTMLElement, layout: GraphLayout) {
     y: desktop ? 110 : 65,
   });
   attributes(find('[data-backend-node]'), {
-    transform: desktop ? 'translate(500 485)' : 'translate(125 280)',
+    transform: desktop ? 'translate(520 410)' : 'translate(165 250)',
   });
   root
     .querySelectorAll('[data-backend-shape]')
@@ -93,20 +93,20 @@ export function applyGraphLayout(root: HTMLElement, layout: GraphLayout) {
   });
   attributes(find('[data-edit-path]'), {
     d: desktop
-      ? 'M280 355C390 355 390 512 500 512'
-      : 'M110 200C160 200 175 245 175 280',
+      ? 'M280 355C380 355 420 437 520 437'
+      : 'M110 200C140 200 140 277 165 277',
   });
   attributes(find('[data-return-path]'), {
     d: desktop
-      ? 'M500 512C390 512 390 355 280 355'
-      : 'M175 280C175 245 160 200 110 200',
+      ? 'M520 437C420 437 380 355 280 355'
+      : 'M165 277C140 277 140 200 110 200',
   });
   for (const direction of ['edit', 'return'] as const) {
     const label = find('[data-' + direction + '-label]');
-    const x = desktop ? 520 : 260;
+    const x = desktop ? 450 : 225;
     attributes(label, {
       x,
-      y: desktop ? 415 : 245,
+      y: desktop ? 332 : 205,
     });
     const lines = desktop
       ? direction === 'edit'

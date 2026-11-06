@@ -13,27 +13,20 @@ import {
 
 export const knowledgeStoryMotion = {
   heroCountDuration: 1.8,
-  scrollScreens: 1.8,
-  tabletScrollScreens: 1.5,
+  scrollScreens: 3.6,
+  tabletScrollScreens: 3.6,
   scrub: 0.2,
   checkpointDuration: 0.32,
-  readingGap: 280,
-  readingFraction: 0.95,
-  textRevealDuration: 5,
-  textRevealStagger: 2,
-  heroExit: {
-    metricStart: 0.12,
-    descriptionStart: 0.24,
-    subtitleStart: 0.34,
-    titleStart: 0.46,
-    duration: 0.14,
-  },
+  readingGap: 160,
+  readingFraction: 0.4,
+  heroExit: { start: 0.18, duration: 0.2 },
+  chapterFraction: 0.625,
 } as const;
 
 export function resetGraphPresentation(root: HTMLElement) {
   root
     .querySelectorAll(
-      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts, [data-graph-metric], [data-story-progress], li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
+      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts, [data-graph-metric], [data-story-progress], .kb-chapter-one-copy, li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
     )
     .forEach((element) => element.removeAttribute('style'));
   root
@@ -129,36 +122,23 @@ export function createGraphIntro(root: HTMLElement, layout: GraphLayout) {
       0.2,
     );
   const exit = knowledgeStoryMotion.heroExit;
-  // Clear lower copy first; keep the headline readable until the graph takes focus.
-  for (const [selector, start] of [
-    ['.kb-hero-metric, .kb-entry-hint', exit.metricStart],
-    ['.kb-introduction', exit.descriptionStart],
-    ['.kb-subheading', exit.subtitleStart],
-    [
-      '[data-hero-copy] h1, [data-hero-copy] .eyebrow, .kb-hero-steps',
-      exit.titleStart,
-    ],
-  ] as const) {
-    timeline.fromTo(
-      find(selector),
-      { opacity: 1 },
-      { opacity: 0, duration: exit.duration },
-      start,
-    );
-  }
+  // All hero content, including metadata, exits together after the reading boundary.
   timeline.fromTo(
-    find('.kb-facts'),
+    find(
+      '[data-hero-copy], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts',
+    ),
     { opacity: 1 },
-    { opacity: 0, duration: 0.15 },
-    0,
+    { opacity: 0, duration: exit.duration },
+    exit.start,
   );
+
   return timeline;
 }
 
 export function createGraphTimeline(
   root: HTMLElement,
   mobile: boolean,
-  revealText = true,
+  focused: boolean,
 ) {
   const find = (selector: string) => root.querySelectorAll(selector);
   const timeline = gsap.timeline({
@@ -173,7 +153,8 @@ export function createGraphTimeline(
     .addLabel('return', 68)
     .addLabel('correction', 75)
     .addLabel('evidence', 80)
-    .set(find('[data-network-detail], [data-reveal-group]'), { opacity: 0 }, 0)
+    .set(find('[data-network-detail]'), { opacity: 0.35 }, 0)
+    .set(find('[data-reveal-group]'), { opacity: 1 }, 0)
     .set(
       find(
         '[data-graph-layer="viewport"], [data-graph-layer="priority"], [data-graph-layer="backend"], [data-backend-node], [data-proposal-label], [data-edit-path], [data-return-path], [data-edit-label], [data-return-label], [data-graph-metric]',
@@ -184,21 +165,12 @@ export function createGraphTimeline(
     .set(find('[data-corrected-edge]'), { opacity: 1 }, 0)
     .set(find('[data-incorrect-edge]'), { opacity: 0 }, 0);
 
-  // Small relationship groups reveal in place, then settle before focus begins.
-  for (const [group, start] of [1, 7, 13].entries()) {
-    timeline.to(
-      find('[data-reveal-group="' + group + '"]'),
-      { opacity: 1, duration: 4 },
-      start,
-    );
-  }
   timeline
-    .to(find('[data-network-detail]'), { opacity: 0.35, duration: 3 }, 18)
     .to(
       find(
         '[data-distant-detail]:not(.kb-node), .kb-node[data-distant-detail] circle',
       ),
-      { opacity: 0.16, duration: 4 },
+      { opacity: 0.45, duration: 4 },
       25,
     )
     .to(find('[data-network-detail]'), { opacity: 0.1, duration: 4 }, 25)
@@ -268,45 +240,8 @@ export function createGraphTimeline(
       { opacity: 0, y: 12 },
       { opacity: 1, y: 0, duration: 6, ease: 'power2.out' },
       82,
-    )
-    .fromTo(
-      find('[data-story-progress]'),
-      { scaleX: 0 },
-      { scaleX: 1, duration: 100 },
-      0,
     );
 
-  if (mobile) {
-    // Keep the same node positions; contrast alone makes room for the response.
-    timeline
-      .to(
-        find('[data-flow-soften], [data-graph-layer="structure"]'),
-        { opacity: 0.12, duration: 3 },
-        47,
-      )
-      .to(
-        find('[data-flow-soften], [data-graph-layer="structure"]'),
-        { opacity: 1, duration: 4 },
-        80,
-      );
-  }
-  if (revealText) {
-    root.querySelectorAll('li[data-story-beat]').forEach((beat, index) => {
-      const start = [0, 25, 50, 80][index];
-      if (start !== undefined)
-        timeline.fromTo(
-          beat.querySelectorAll('h2, p'),
-          { opacity: 0, y: 12 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: knowledgeStoryMotion.textRevealDuration,
-            stagger: knowledgeStoryMotion.textRevealStagger,
-          },
-          start,
-        );
-    });
-  }
   addPacket(
     timeline,
     root,
@@ -330,6 +265,29 @@ export function createGraphTimeline(
     '[data-delivery-packet]',
     69,
     4,
+  );
+  const prefix = focused ? knowledgeStoryMotion.chapterFraction * 100 : 0;
+  const scale = (100 - prefix) / 75;
+  for (const tween of timeline.getChildren(false, true, false)) {
+    const start = tween.startTime();
+    if (start === 0) continue;
+    tween
+      .duration(tween.duration() * scale)
+      .startTime(prefix + (start - 25) * scale);
+  }
+  if (focused) {
+    timeline.fromTo(
+      find('.kb-chapter-one-copy'),
+      { opacity: 1 },
+      { opacity: 0, duration: prefix * 0.08 },
+      prefix * 0.36,
+    );
+  }
+  timeline.fromTo(
+    find('[data-story-progress]'),
+    { scaleX: 0 },
+    { scaleX: 1, duration: 100 },
+    0,
   );
   return timeline;
 }

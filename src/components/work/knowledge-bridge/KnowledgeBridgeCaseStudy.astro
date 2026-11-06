@@ -96,13 +96,27 @@ const next = orderedProjects.find((project) => project.order === 2);
       >
         <span data-story-progress></span>
       </div>
+      <ol class="kb-beats kb-chapter-one-copy" aria-label="Chapter 1">
+        <li data-story-beat="0">
+          <span class="kb-beat-number" aria-hidden="true">
+            01 / 04
+          </span>
+          <h2>{beats[0].title}</h2>
+          <p>{beats[0].description}</p>
+        </li>
+      </ol>
+      <div
+        class="kb-chapter-one-dock"
+        data-chapter-one-dock
+        aria-hidden="true"
+      ></div>
       <div class="kb-story-layout">
         <div class="kb-story-copy" data-story-copy>
-          <ol class="kb-beats">
-            {beats.map((beat, index) => (
-              <li data-story-beat={index}>
+          <ol class="kb-beats" start="2">
+            {beats.slice(1).map((beat, index) => (
+              <li data-story-beat={index + 1}>
                 <span class="kb-beat-number" aria-hidden="true">
-                  0{index + 1} / 04
+                  0{index + 2} / 04
                 </span>
                 <h2>{beat.title}</h2>
                 <p>{beat.description}</p>
