@@ -10,6 +10,7 @@ import CheckpointDemo from './CheckpointDemo.astro';
 import '../work.css';
 import './knowledge-bridge.css';
 const next = orderedProjects.find((project) => project.order === 2);
+const [titleFirstLine, titleSecondLine] = content.title.slice(0, -1).split(' ');
 ---
 
 <article
@@ -21,12 +22,16 @@ const next = orderedProjects.find((project) => project.order === 2);
     <span aria-hidden="true">←</span> Back to Selected work
   </a>
   <header class="kb-hero" data-kb-section>
-    <div data-hero-copy>
+    <div class="kb-hero-heading" data-hero-copy>
       <p class="eyebrow">{content.eyebrow}</p>
       <h1>
-        {content.title.slice(0, -1)}
+        {titleFirstLine}
+        <br />
+        {titleSecondLine}
         <span class="kb-title-dot">.</span>
       </h1>
+    </div>
+    <div class="kb-hero-description">
       <p class="kb-subheading">{content.subheading}</p>
       <p class="kb-introduction">{content.introduction}</p>
     </div>

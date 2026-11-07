@@ -1,0 +1,773 @@
+{
+  "description": "Paired Chromium native-wheel scroll profiles; 3 runs per condition. Viewport emulation and CPU throttling are lab proxies, not device measurements.",
+  "profiles": [
+    {
+      "name": "desktop",
+      "settings": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900,
+        "cpu": 1
+      },
+      "browser": "156.0.8078.4",
+      "platform": "win32",
+      "gestureDurationMs": 1800,
+      "before": {
+        "bounds": {
+          "start": 0,
+          "entryEnd": 847.921875,
+          "end": 6607.921875
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 105,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.29999999999973,
+                "over25Ms": 8
+              },
+              "story-forward": {
+                "count": 104,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.30000000000018,
+                "over25Ms": 10
+              },
+              "story-reverse": {
+                "count": 97,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 15
+              },
+              "entry-reverse": {
+                "count": 112,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 33,
+            "forcedLayoutMs": 128.12299999999996,
+            "layoutMs": 214.96300000000002,
+            "paint": {
+              "count": 252,
+              "ms": 127.24500000000005
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 102,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 33.30000000000109,
+                "over25Ms": 9
+              },
+              "story-forward": {
+                "count": 86,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 24
+              },
+              "story-reverse": {
+                "count": 78,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 50,
+                "over25Ms": 30
+              },
+              "entry-reverse": {
+                "count": 90,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 24
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 29,
+            "forcedLayoutMs": 46.687,
+            "layoutMs": 81.26400000000001,
+            "paint": {
+              "count": 80,
+              "ms": 67.67800000000001
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 83,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 30
+              },
+              "story-forward": {
+                "count": 74,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 50,
+                "over25Ms": 31
+              },
+              "story-reverse": {
+                "count": 64,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 66.59999999999854,
+                "over25Ms": 28
+              },
+              "entry-reverse": {
+                "count": 104,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.39999999999782,
+                "over25Ms": 12
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 27,
+            "forcedLayoutMs": 37.614,
+            "layoutMs": 71.19799999999998,
+            "paint": {
+              "count": 68,
+              "ms": 56.81000000000001
+            },
+            "longTasks": []
+          }
+        ]
+      },
+      "after": {
+        "bounds": {
+          "start": 0,
+          "entryEnd": 847.921875,
+          "end": 6607.921875
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 94,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.40000000000009,
+                "over25Ms": 16
+              },
+              "story-forward": {
+                "count": 91,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 49.900000000000546,
+                "over25Ms": 19
+              },
+              "story-reverse": {
+                "count": 73,
+                "medianMs": 33.29999999999927,
+                "p95Ms": 50,
+                "over25Ms": 38
+              },
+              "entry-reverse": {
+                "count": 85,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 29
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 27,
+            "forcedLayoutMs": 109.94600000000001,
+            "layoutMs": 194.004,
+            "paint": {
+              "count": 211,
+              "ms": 127.88500000000002
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 89,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 23
+              },
+              "story-forward": {
+                "count": 75,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 83.19999999999891,
+                "over25Ms": 27
+              },
+              "story-reverse": {
+                "count": 83,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 30
+              },
+              "entry-reverse": {
+                "count": 88,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 27
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 28,
+            "forcedLayoutMs": 72.08999999999999,
+            "layoutMs": 95.86800000000001,
+            "paint": {
+              "count": 71,
+              "ms": 63.01899999999999
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 82,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 29
+              },
+              "story-forward": {
+                "count": 86,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 30
+              },
+              "story-reverse": {
+                "count": 85,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 27
+              },
+              "entry-reverse": {
+                "count": 90,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 24
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 30,
+            "forcedLayoutMs": 59.34499999999999,
+            "layoutMs": 88.45000000000003,
+            "paint": {
+              "count": 80,
+              "ms": 88.202
+            },
+            "longTasks": [56]
+          }
+        ]
+      }
+    },
+    {
+      "name": "short-desktop",
+      "settings": {
+        "name": "short-desktop",
+        "width": 1280,
+        "height": 600,
+        "cpu": 1
+      },
+      "browser": "156.0.8078.4",
+      "platform": "win32",
+      "gestureDurationMs": 1800,
+      "before": {
+        "bounds": {
+          "start": 211.609375,
+          "entryEnd": 811.609375,
+          "end": 2907.96875
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 115,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 16.799999999999727,
+                "over25Ms": 0
+              },
+              "story-forward": {
+                "count": 105,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.30000000000018,
+                "over25Ms": 7
+              },
+              "story-reverse": {
+                "count": 104,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.30000000000018,
+                "over25Ms": 7
+              },
+              "entry-reverse": {
+                "count": 105,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 4
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 2.7809999999999997,
+            "layoutMs": 155.794,
+            "paint": {
+              "count": 271,
+              "ms": 182.27400000000011
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 113,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              },
+              "story-forward": {
+                "count": 112,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              },
+              "story-reverse": {
+                "count": 112,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.700000000000728,
+                "over25Ms": 0
+              },
+              "entry-reverse": {
+                "count": 112,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.700000000000728,
+                "over25Ms": 0
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 9,
+            "forcedLayoutMs": 1.6560000000000001,
+            "layoutMs": 68.18299999999999,
+            "paint": {
+              "count": 191,
+              "ms": 91.51099999999997
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 112,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 16.700000000000728,
+                "over25Ms": 0
+              },
+              "story-forward": {
+                "count": 110,
+                "medianMs": 16.69999999999709,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 2
+              },
+              "story-reverse": {
+                "count": 110,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 16.80000000000291,
+                "over25Ms": 1
+              },
+              "entry-reverse": {
+                "count": 113,
+                "medianMs": 16.69999999999709,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 11,
+            "forcedLayoutMs": 1.263,
+            "layoutMs": 63.79299999999999,
+            "paint": {
+              "count": 189,
+              "ms": 99.56699999999998
+            },
+            "longTasks": []
+          }
+        ]
+      },
+      "after": {
+        "bounds": {
+          "start": 211.609375,
+          "entryEnd": 811.609375,
+          "end": 2817.96875
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 112,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 16.799999999999727,
+                "over25Ms": 2
+              },
+              "story-forward": {
+                "count": 108,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 16.800000000000182,
+                "over25Ms": 5
+              },
+              "story-reverse": {
+                "count": 107,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.30000000000018,
+                "over25Ms": 6
+              },
+              "entry-reverse": {
+                "count": 111,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.80000000000109,
+                "over25Ms": 3
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 2.198,
+            "layoutMs": 157.33800000000002,
+            "paint": {
+              "count": 263,
+              "ms": 193.28600000000003
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 114,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.80000000000109,
+                "over25Ms": 2
+              },
+              "story-forward": {
+                "count": 101,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 12
+              },
+              "story-reverse": {
+                "count": 99,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 10
+              },
+              "entry-reverse": {
+                "count": 112,
+                "medianMs": 16.69999999999709,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 2.3320000000000003,
+            "layoutMs": 97.96999999999994,
+            "paint": {
+              "count": 160,
+              "ms": 125.006
+            },
+            "longTasks": []
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 113,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 16.700000000000728,
+                "over25Ms": 1
+              },
+              "story-forward": {
+                "count": 109,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.20000000000073,
+                "over25Ms": 6
+              },
+              "story-reverse": {
+                "count": 93,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.400000000001455,
+                "over25Ms": 16
+              },
+              "entry-reverse": {
+                "count": 111,
+                "medianMs": 16.69999999999709,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 0
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 2.5580000000000003,
+            "layoutMs": 76.22400000000007,
+            "paint": {
+              "count": 156,
+              "ms": 128.18599999999998
+            },
+            "longTasks": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "mobile-cpu4",
+      "settings": {
+        "name": "mobile-cpu4",
+        "width": 390,
+        "height": 844,
+        "cpu": 4
+      },
+      "browser": "156.0.8078.4",
+      "platform": "win32",
+      "gestureDurationMs": 1800,
+      "before": {
+        "bounds": {
+          "start": 134.25,
+          "entryEnd": 978.25,
+          "end": 3577.21875
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 38,
+                "medianMs": 50,
+                "p95Ms": 383.3000000000002,
+                "over25Ms": 28
+              },
+              "story-forward": {
+                "count": 16,
+                "medianMs": 233.40000000000146,
+                "p95Ms": 1200,
+                "over25Ms": 12
+              },
+              "story-reverse": {
+                "count": 15,
+                "medianMs": 150,
+                "p95Ms": 833.3000000000011,
+                "over25Ms": 13
+              },
+              "entry-reverse": {
+                "count": 27,
+                "medianMs": 50,
+                "p95Ms": 333.40000000000146,
+                "over25Ms": 18
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 564.377,
+            "layoutMs": 1670.7160000000003,
+            "paint": {
+              "count": 39,
+              "ms": 1039.96
+            },
+            "longTasks": [
+              62, 75, 101, 52, 81, 95, 318, 57, 77, 136, 79, 88, 70, 284, 954,
+              1212, 1160, 197, 137, 309, 786, 211, 136, 73, 214, 128, 202, 168,
+              872, 55
+            ]
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 40,
+                "medianMs": 49.900000000001455,
+                "p95Ms": 249.90000000000146,
+                "over25Ms": 31
+              },
+              "story-forward": {
+                "count": 12,
+                "medianMs": 350,
+                "p95Ms": 983.3000000000029,
+                "over25Ms": 12
+              },
+              "story-reverse": {
+                "count": 12,
+                "medianMs": 166.70000000000437,
+                "p95Ms": 1183.2999999999956,
+                "over25Ms": 12
+              },
+              "entry-reverse": {
+                "count": 57,
+                "medianMs": 33.299999999995634,
+                "p95Ms": 266.70000000000437,
+                "over25Ms": 30
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 8,
+            "forcedLayoutMs": 628.472,
+            "layoutMs": 2074.314,
+            "paint": {
+              "count": 26,
+              "ms": 682.3559999999999
+            },
+            "longTasks": [
+              64, 116, 119, 151, 68, 65, 71, 82, 145, 301, 150, 892, 960, 137,
+              68, 168, 384, 1020, 137, 166, 58, 134, 298, 225, 53, 77, 56, 56,
+              53, 59, 72, 145
+            ]
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 39,
+                "medianMs": 50,
+                "p95Ms": 233.40000000000146,
+                "over25Ms": 29
+              },
+              "story-forward": {
+                "count": 25,
+                "medianMs": 50.099999999998545,
+                "p95Ms": 400,
+                "over25Ms": 18
+              },
+              "story-reverse": {
+                "count": 17,
+                "medianMs": 133.3000000000029,
+                "p95Ms": 466.70000000000437,
+                "over25Ms": 16
+              },
+              "entry-reverse": {
+                "count": 36,
+                "medianMs": 33.400000000001455,
+                "p95Ms": 233.3000000000029,
+                "over25Ms": 20
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 9,
+            "forcedLayoutMs": 356.601,
+            "layoutMs": 948.4960000000004,
+            "paint": {
+              "count": 34,
+              "ms": 1104.6259999999997
+            },
+            "longTasks": [
+              79, 66, 71, 61, 57, 68, 243, 74, 56, 58, 58, 62, 60, 163, 156, 79,
+              127, 133, 286, 618, 341, 68, 126, 147, 312, 422, 297, 271, 94, 63,
+              90, 120, 68, 97, 68, 613, 114
+            ]
+          }
+        ]
+      },
+      "after": {
+        "bounds": {
+          "start": 134.25,
+          "entryEnd": 978.25,
+          "end": 3450.609375
+        },
+        "runs": [
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 108,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 10
+              },
+              "story-forward": {
+                "count": 63,
+                "medianMs": 16.699999999999818,
+                "p95Ms": 100,
+                "over25Ms": 21
+              },
+              "story-reverse": {
+                "count": 88,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 49.899999999999636,
+                "over25Ms": 25
+              },
+              "entry-reverse": {
+                "count": 119,
+                "medianMs": 16.69999999999891,
+                "p95Ms": 16.799999999999272,
+                "over25Ms": 4
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 12,
+            "forcedLayoutMs": 55.06,
+            "layoutMs": 666.5419999999999,
+            "paint": {
+              "count": 187,
+              "ms": 615.8560000000001
+            },
+            "longTasks": [56, 76, 155, 170, 131, 92, 52]
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 102,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 33.399999999999636,
+                "over25Ms": 16
+              },
+              "story-forward": {
+                "count": 78,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 66.60000000000218,
+                "over25Ms": 16
+              },
+              "story-reverse": {
+                "count": 86,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 50,
+                "over25Ms": 25
+              },
+              "entry-reverse": {
+                "count": 62,
+                "medianMs": 33.29999999999927,
+                "p95Ms": 66.60000000000218,
+                "over25Ms": 40
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 27.008000000000003,
+            "layoutMs": 273.26300000000003,
+            "paint": {
+              "count": 89,
+              "ms": 300.99199999999996
+            },
+            "longTasks": [56, 180, 88, 104, 54, 52, 168, 52]
+          },
+          {
+            "frames": {
+              "entry-forward": {
+                "count": 116,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 16.80000000000291,
+                "over25Ms": 4
+              },
+              "story-forward": {
+                "count": 88,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 50,
+                "over25Ms": 26
+              },
+              "story-reverse": {
+                "count": 89,
+                "medianMs": 16.700000000000728,
+                "p95Ms": 50,
+                "over25Ms": 18
+              },
+              "entry-reverse": {
+                "count": 114,
+                "medianMs": 16.69999999999709,
+                "p95Ms": 16.80000000000291,
+                "over25Ms": 3
+              }
+            },
+            "dockReads": 0,
+            "forcedLayoutCount": 10,
+            "forcedLayoutMs": 25.477,
+            "layoutMs": 273.52500000000026,
+            "paint": {
+              "count": 110,
+              "ms": 451.6420000000001
+            },
+            "longTasks": [64]
+          }
+        ]
+      }
+    }
+  ]
+}

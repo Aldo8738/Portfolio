@@ -240,11 +240,11 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           const chapter = chapterTimeline.progress();
           root.dataset.graphEntry = chapter.toFixed(3);
           root.dataset.chapterScene =
-            chapter < 0.32
+            chapter < 0.26
               ? 'text'
               : chapter < 0.6
                 ? 'overload'
-                : chapter < 0.78
+                : chapter < 0.74
                   ? 'focus'
                   : 'clean';
           queueNetwork();
@@ -337,6 +337,7 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
             : storyDock.getBoundingClientRect();
           if (inChapter !== previousChapter) {
             previousChapter = inChapter;
+            root.dataset.chapterScene = inChapter ? 'overload' : 'clean';
             gsap.set(root.querySelector('.kb-graph'), {
               attr: {
                 viewBox: inChapter

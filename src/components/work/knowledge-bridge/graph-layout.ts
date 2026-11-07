@@ -2,6 +2,8 @@ import {
   overloadNodes,
   overloadBranches,
   overloadPoint,
+  overloadConnections,
+  overloadConnectionPath,
   knowledgeNodes,
   graphLinks,
   graphPoint,
@@ -30,18 +32,23 @@ export function applyGraphLayout(root: HTMLElement, layout: GraphLayout) {
   attributes(find('.kb-graph'), { viewBox: graphViewBox[layout].story });
   overloadNodes.forEach((node) => {
     const point = overloadPoint(node.id, layout);
-    attributes(find('[data-overload-node="' + node.id + '"]'), {
+    const element = find('[data-overload-node="' + node.id + '"]');
+    attributes(element, {
       transform: `translate(${point.x} ${point.y})`,
     });
-    attributes(find('[data-overload-edge="' + node.id + '"]'), {
-      d: curvedLink(overloadPoint(node.parent, layout), point),
+    if (node.label)
+      attributes(element?.querySelector('text') ?? null, {
+        y:
+          !desktop && ['north-america', 'mexico'].includes(node.id) ? -28 : -13,
+      });
+  });
+  overloadConnections.forEach((_, index) => {
+    attributes(find('[data-overload-connection="' + index + '"]'), {
+      d: overloadConnectionPath(index, layout),
     });
   });
   overloadBranches.forEach((node, index) => {
     const point = desktop ? node : node.mobile;
-    attributes(find('[data-overload-branch="' + index + '"]'), {
-      d: curvedLink(overloadPoint(node.anchor, layout), point),
-    });
     attributes(find('[data-overload-point="' + index + '"]'), {
       cx: point.x,
       cy: point.y,

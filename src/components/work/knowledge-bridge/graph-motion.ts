@@ -38,15 +38,15 @@ export function createChapterTimeline(
     .fromTo(
       find('.kb-graph'),
       { opacity: 0 },
-      { opacity: 1, duration: 0.08 },
-      pinned ? 0.32 : 0.04,
+      { opacity: 1, duration: pinned ? 0.04 : 0.08 },
+      pinned ? 0.26 : 0.04,
     )
     .fromTo(
       find('.kb-graph'),
       { attr: { viewBox: overloadViewBox[layout] } },
       {
         attr: { viewBox: graphViewBox[layout].story },
-        duration: 0.18,
+        duration: 0.14,
         ease: 'power1.inOut',
       },
       0.6,
@@ -54,27 +54,33 @@ export function createChapterTimeline(
     .fromTo(
       find('[data-overload-only]'),
       { opacity: 1 },
-      { opacity: 0, duration: 0.18 },
-      0.6,
+      { opacity: 0, duration: 0.12 },
+      0.62,
     )
     .fromTo(
       find('.kb-item-mark'),
-      { attr: { r: 3 } },
-      { attr: { r: 4.5 }, duration: 0.18 },
+      { attr: { r: 4.2 } },
+      { attr: { r: 4.5 }, duration: 0.14 },
       0.6,
     )
     .fromTo(
       find('[data-network-detail]'),
       { opacity: 1 },
-      { opacity: 0.35, duration: 0.18 },
-      0.6,
+      { opacity: 0.35, duration: 0.12 },
+      0.62,
     )
-    .to({}, { duration: 0.22 }, 0.78);
+    .fromTo(
+      find('[data-core-relationships]'),
+      { opacity: 0.72 },
+      { opacity: 1, duration: 0.08 },
+      0.66,
+    )
+    .to({}, { duration: 0.26 }, 0.74);
   if (pinned)
     timeline.fromTo(
       find('.kb-chapter-one-copy'),
       { opacity: 1 },
-      { opacity: 0, duration: 0.08 },
+      { opacity: 0, duration: 0.04 },
       0.24,
     );
   return timeline;

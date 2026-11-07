@@ -7,6 +7,9 @@ import {
 } from '../src/components/work/knowledge-bridge/story-state';
 import { getHistoryFrame } from '../src/components/work/knowledge-bridge/history-state';
 import {
+  overloadConnections,
+  overloadConnectionPath,
+  peripheralPoints,
   overloadNodes,
   overloadBranches,
   overloadPoint,
@@ -121,4 +124,90 @@ it('keeps dense outer branches deterministic and attached in both layouts', () =
       expect(point.y).toBeLessThan(y + height);
     }
   }
+});
+
+it('forms one connected, varied overload topology with twelve labels and 97 nodes', () => {
+  const ids = [
+    ...knowledgeNodes.map((node) => node.id),
+    ...peripheralPoints.map((_, index) => 'detail-' + index),
+    ...overloadNodes.map((node) => node.id),
+    ...overloadBranches.map((node) => node.id),
+  ];
+  expect(ids).toHaveLength(97);
+  expect(new Set(ids).size).toBe(ids.length);
+  expect(
+    knowledgeNodes.length + overloadNodes.filter((node) => node.label).length,
+  ).toBe(12);
+  const neighbors = new Map(ids.map((id) => [id, new Set<string>()]));
+  const edges = [
+    ...graphLinks,
+    ['paris', 'france'],
+    ...peripheralPoints.map((node, index) => [node.anchor, 'detail-' + index]),
+    ...overloadConnections.map((edge) => [edge.from, edge.to]),
+  ];
+  for (const [from, to] of edges) {
+    if (!from || !to || !neighbors.has(from) || !neighbors.has(to))
+      throw new Error('Disconnected graph endpoint');
+    neighbors.get(from)?.add(to);
+    neighbors.get(to)?.add(from);
+  }
+  const visited = new Set<string>();
+  const queue = ['europe'];
+  while (queue.length) {
+    const id = queue.pop();
+    if (!id || visited.has(id)) continue;
+    visited.add(id);
+    queue.push(...(neighbors.get(id) ?? []));
+  }
+  expect(visited.size).toBe(ids.length);
+  const degrees = new Set(
+    overloadBranches.map((node) => neighbors.get(node.id)?.size),
+  );
+  expect(degrees.has(1)).toBe(true);
+  expect(degrees.has(2)).toBe(true);
+  expect(degrees.has(3)).toBe(true);
+  for (const layout of ['desktop', 'mobile'] as const) {
+    const [left = 0, top = 0, width = 0, height = 0] = overloadViewBox[layout]
+      .split(' ')
+      .map(Number);
+    for (const id of ids) {
+      const point = overloadPoint(id, layout);
+      expect(point.x).toBeGreaterThan(left);
+      expect(point.x).toBeLessThan(left + width);
+      expect(point.y).toBeGreaterThan(top);
+      expect(point.y).toBeLessThan(top + height);
+    }
+    overloadConnections.forEach((edge, index) => {
+      const from = overloadPoint(edge.from, layout),
+        to = overloadPoint(edge.to, layout);
+      expect(overloadConnectionPath(index, layout)).toMatch(
+        new RegExp('^M' + from.x + ' ' + from.y),
+      );
+      expect(
+        overloadConnectionPath(index, layout).endsWith(to.x + ' ' + to.y),
+      ).toBe(true);
+    });
+  }
+});
+
+it('shares a smooth tangent through a degree-two support junction', () => {
+  const id = 'queretaro-2';
+  const point = overloadPoint(id, 'desktop');
+  const vectors = overloadConnections.flatMap((edge, index) => {
+    if (edge.from !== id && edge.to !== id) return [];
+    const numbers = overloadConnectionPath(index, 'desktop')
+      .match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi)
+      ?.map(Number);
+    if (!numbers || numbers.length !== 8)
+      throw new Error('Expected a single cubic relationship');
+    const [x, y] = edge.from === id ? numbers.slice(2, 4) : numbers.slice(4, 6);
+    if (x === undefined || y === undefined)
+      throw new Error('Missing tangent control point');
+    return [{ x: x - point.x, y: y - point.y }];
+  });
+  expect(vectors).toHaveLength(2);
+  const [a, b] = vectors;
+  if (!a || !b) throw new Error('Missing shared tangent');
+  expect(a.x * b.y - a.y * b.x).toBeCloseTo(0, 6);
+  expect(a.x * b.x + a.y * b.y).toBeLessThan(0);
 });

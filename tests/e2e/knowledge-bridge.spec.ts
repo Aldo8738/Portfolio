@@ -411,21 +411,26 @@ test('phone stages reuse one evolving SVG with readable labels and ordinary touc
       if (stage === 1) expect(heading.y).toBeLessThan(figure.y);
       else
         expect(heading.y).toBeGreaterThanOrEqual(figure.y + figure.height - 1);
-      for (const text of await root.locator('.kb-graph text:visible').all()) {
-        const opacity = await text.evaluate((el) => {
-          let opacity = 1;
-          for (let node: Element | null = el; node; node = node.parentElement)
-            opacity *= Number(getComputedStyle(node).opacity);
-          return opacity;
-        });
-        if (opacity < 0.5) continue;
-        const size = await text.evaluate(
-          (el) =>
-            parseFloat(getComputedStyle(el).fontSize) *
-            ((el as SVGGraphicsElement).getScreenCTM()?.a ?? 0),
+      const labels = await root
+        .locator('.kb-graph text:visible')
+        .evaluateAll((elements) =>
+          elements.flatMap((el) => {
+            let opacity = 1;
+            for (let node: Element | null = el; node; node = node.parentElement)
+              opacity *= Number(getComputedStyle(node).opacity);
+            if (opacity < 0.5) return [];
+            return [
+              {
+                label: el.textContent,
+                size:
+                  parseFloat(getComputedStyle(el).fontSize) *
+                  ((el as SVGGraphicsElement).getScreenCTM()?.a ?? 0),
+              },
+            ];
+          }),
         );
-        expect(size).toBeGreaterThanOrEqual(12);
-      }
+      for (const { label, size } of labels)
+        expect(size, label ?? 'Graph label').toBeGreaterThanOrEqual(12);
       await noOverflow(page);
       if (width === 390 || width === 320)
         await page.screenshot({

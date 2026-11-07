@@ -5,6 +5,83 @@ This replaces the earlier hero graph and Chapter 01 preview in the
 [continuous-scroll review](KNOWLEDGE_BRIDGE_CONTINUOUS.md). Later story artwork,
 backend channels, checkpoint interaction, portfolio identity and frozen GLB remain unchanged.
 
+The later [Step 4 graph review](KNOWLEDGE_BRIDGE_STEP_4.md) supersedes the overload
+topology and focus pacing below. The hero and keyboard-accessibility refinements
+remain approved and unchanged.
+
+## Title scale, metric and skip-link refinement
+
+Before changing the title, the current desktop composition was compared with a
+smaller title and then with a raised metric using temporary browser-only styles.
+The selected desktop title uses `clamp(3.2rem, 8.8vw, 7.875rem)`, approximately
+7.4% smaller at the checked desktop widths. Its explicit two-line break remains;
+the existing mobile font size is preserved. A desktop-only `-0.08em` top margin
+on the metric value raises its visible numerals roughly 7-8px to align optically
+with the supporting text. The column and metadata layout remain unchanged.
+
+The reported visible skip link did not reproduce on a fresh production-page load.
+Its previous hiding used a transform and revealed on any `:focus`. The shared
+rule now places it offscreen and clips it to a pixel by default, restoring its
+size and top-left position only on `:focus-visible`. This retains its accessible
+name and keyboard reachability without relying on a transform. Its high stacking
+order remains; at entry, its focused position sits above the project heading.
+`SiteLayout.astro` makes the existing main destination programmatically focusable
+so activating the link transfers focus into content and hides the link again.
+
+`navigation.spec.ts` checks fresh-load hiding, keyboard reveal, no heading overlap,
+activation/focus transfer, and pointer-modality hiding on Knowledge Bridge, Work
+and About at desktop and phone widths. Chapter 01 and later animations are unchanged.
+
+Title comparison captures: [previous scale](knowledge-bridge/storytelling/title-scale-before.png)
+and [smaller scale](knowledge-bridge/storytelling/title-scale-smaller.png). These
+compare the title alone before changing metric alignment.
+
+Validation: formatting, lint, all 73 unit tests and production build/typecheck
+pass. Astro reports zero errors, warnings or hints; Vite retains its existing
+scene-bundle size warning. All 20 affected Chromium browser tests pass, including
+five hero/chapter viewport checks and shared keyboard navigation. The focused
+skip-link captures show its separation from the heading on
+[desktop](knowledge-bridge/storytelling/skip-focused-desktop.png) and
+[phone](knowledge-bridge/storytelling/skip-focused-mobile.png). Screen-reader and
+physical-device checks were not performed.
+
+## Subsequent hero composition refinement
+
+The creator's later hero direction replaces the narrow left-column composition.
+The title now spans the full header at `clamp(3.2rem, 9.5vw, 8.5rem)` with no
+character-width cap. The creator subsequently requested an explicit line break:
+Knowledge on the first line, Bridge and its magenta period on the second.
+The value proposition and supporting paragraph sit beside
+the existing metric and benchmark, separated by a subtle vertical rule. The
+metadata remains a full-width row beneath both columns. Below 768px the columns
+stack and the divider becomes horizontal. The title stays on two lines; no fixed
+hero height, new content, visual asset or dependency is introduced.
+
+Only the Chapter 01 text-to-graph handoff is tightened: pinned text fades from
+24% to 28% of the existing chapter timeline, while the graph reveals from 26%
+to 30%. Their brief crossfade keeps combined opacity at least 0.5 rather than
+passing through a fully empty frame. Reading time before the fade, graph geometry,
+inspection holds, focus timing, later chapters and scroll distance are preserved.
+In natural-scroll layouts, only the chapter introduction's bottom spacing reduces
+from 18svh to 6svh. Reduced-motion and JavaScript-disabled content remain static.
+
+Changed application files: `KnowledgeBridgeCaseStudy.astro`, `knowledge-bridge.css`
+and `graph-motion.ts`. `tests/e2e/knowledge-bridge-chapter.spec.ts` now verifies
+two-line titles across desktop and mobile, column alignment/stacking, metadata width and position,
+and sampled forward/reverse crossfade opacity in addition to the existing graph
+continuity checks. The hero screenshots below are refreshed for this composition.
+
+Refinement verification: production build and Astro typecheck pass with zero
+errors, warnings or hints; the existing Vite scene-bundle size warning remains.
+Repository formatting, lint, all 73 unit tests and frozen GLB validation pass.
+All 13 affected Chromium browser tests pass, including the five required viewport
+sizes (1440x900, 1366x768, 1280x720, 390x844 and 375x667), reverse scrolling,
+reduced motion, resize, later-story channels, checkpoints and JavaScript-disabled
+HTML. Desktop and phone hero screenshots were visually inspected and saved.
+The subsequent two-line title correction passes all five chapter browser tests,
+formatting, lint, 73 unit tests, and production build/typecheck. Both hero captures
+were refreshed. Physical-device testing and a new performance profile were not run.
+
 ## Implementation
 
 - `KnowledgeBridgeCaseStudy.astro` removes the hero graph and outline, places the
@@ -27,8 +104,9 @@ backend channels, checkpoint interaction, portfolio identity and frozen GLB rema
 ## Pacing and responsive behavior
 
 Desktop story scroll distance increases from 3.6 to 6.4 viewport heights. Chapter 01
-uses the first 62.5% (four viewport heights): text holds through 24%, fades alone
-through 32%, then the graph reveals through 40%. Overload holds through 60%; focus
+uses the first 62.5% (four viewport heights). The original handoff faded text
+through 32% and revealed the graph through 40%; the subsequent refinement above
+shortens only that handoff. Overload still holds through 60%; focus
 runs from 60% to 78%; the cleaned graph holds through 88% before moving into the
 existing later-story dock. Forward and reverse scrolling use the same timeline.
 
@@ -41,6 +119,7 @@ visitors retain all chapter text, the clean SVG and the saved relationship examp
 ## Review captures
 
 - [Desktop hero](knowledge-bridge/storytelling/desktop-hero.png)
+- [Phone hero](knowledge-bridge/storytelling/mobile-hero.png)
 - [Desktop overload](knowledge-bridge/storytelling/desktop-overload.png)
 - [Desktop clean graph](knowledge-bridge/storytelling/desktop-clean.png)
 - [Phone overload](knowledge-bridge/storytelling/mobile-overload.png)
@@ -50,7 +129,7 @@ These production Chromium captures were visually inspected. The phone compositio
 retains all nine core labels during Chapter 01; secondary density is reduced to
 fit its width. The geometry remains shared with later chapters.
 
-## Verification
+## Original graph revision verification
 
 Verified on Windows with the repository's portable Node 24.22.1 toolchain:
 

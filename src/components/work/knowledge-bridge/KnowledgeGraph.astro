@@ -2,7 +2,8 @@
 import {
   overloadNodes,
   overloadBranches,
-  overloadPoint,
+  overloadConnections,
+  overloadConnectionPath,
   knowledgeNodes,
   graphLinks,
   graphPoint,
@@ -33,7 +34,7 @@ const revealGroups: Record<string, number> = {
 >
   <title id="kb-graph-title">The living knowledge graph</title>
   <desc id="kb-graph-description">
-    A dense geographical network includes North America, Mexico and Quer?taro.
+    A dense geographical network includes North America, Mexico and Querétaro.
     It focuses into the same European cluster. Illustrative portfolio
     reconstruction, not the research dataset or original product UI. Europe
     connects France and Germany with their cities and landmarks. A proposed
@@ -56,39 +57,48 @@ const revealGroups: Record<string, number> = {
   </defs>
   <g data-graph-scene>
     <g class="kb-overload" data-overload-only opacity="0">
+      {overloadConnections.map((edge, index) => (
+        <path
+          data-overload-connection={index}
+          class={`kb-overload--${edge.role}`}
+          data-mobile-omit={!edge.mobileVisible ? '' : undefined}
+          d={overloadConnectionPath(index, 'mobile')}
+        />
+      ))}
       {overloadNodes.map((node) => (
-        <g>
-          <path
-            data-overload-edge={node.id}
-            d={curvedLink(overloadPoint(node.parent, 'mobile'), node.mobile)}
+        <g
+          data-overload-node={node.id}
+          transform={`translate(${node.mobile.x} ${node.mobile.y})`}
+        >
+          <circle
+            r={node.id === 'queretaro' ? 3 : node.label ? 4.2 : 3}
+            class={
+              node.id === 'queretaro'
+                ? 'kb-personal-dot'
+                : node.label
+                  ? 'kb-overload--primary'
+                  : 'kb-overload--secondary'
+            }
           />
-          <g
-            data-overload-node={node.id}
-            transform={`translate(${node.mobile.x} ${node.mobile.y})`}
-          >
-            <circle
-              r="3"
-              class={node.id === 'queretaro' ? 'kb-personal-dot' : ''}
-            />
-            <text y="-13" text-anchor="middle">
+          {node.label && (
+            <text
+              y={['north-america', 'mexico'].includes(node.id) ? -28 : -13}
+              text-anchor="middle"
+            >
               {node.label}
             </text>
-          </g>
+          )}
         </g>
       ))}
       {overloadBranches.map((node, index) => (
-        <g data-mobile-omit={!node.mobileVisible ? '' : undefined}>
-          <path
-            data-overload-branch={index}
-            d={curvedLink(overloadPoint(node.anchor, 'mobile'), node.mobile)}
-          />
-          <circle
-            data-overload-point={index}
-            cx={node.mobile.x}
-            cy={node.mobile.y}
-            r="1.7"
-          />
-        </g>
+        <circle
+          data-mobile-omit={!node.mobileVisible ? '' : undefined}
+          class={`kb-overload--${node.role}`}
+          data-overload-point={index}
+          cx={node.mobile.x}
+          cy={node.mobile.y}
+          r={node.role === 'secondary' ? 2.7 : 1.5}
+        />
       ))}
     </g>
     <g data-expansion>
@@ -127,7 +137,7 @@ const revealGroups: Record<string, number> = {
       )}
     </g>
     <g data-expansion>
-      <g class="kb-edges" data-graph-layer="structure">
+      <g class="kb-edges" data-graph-layer="structure" data-core-relationships>
         {graphLinks.map(([from, to], index) => (
           <path
             d={curvedLink(graphPoint(from, 'mobile'), graphPoint(to, 'mobile'))}
@@ -149,7 +159,7 @@ const revealGroups: Record<string, number> = {
         ))}
       </g>
     </g>
-    <g class="kb-edges">
+    <g class="kb-edges" data-core-relationships>
       <path
         d={correctionPath('mobile', false)}
         data-incorrect-edge
