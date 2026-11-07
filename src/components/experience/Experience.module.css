@@ -13,6 +13,7 @@
 .canvas {
   position: absolute;
   inset: 0;
+  z-index: 0;
   opacity: 0;
   filter: var(--scene-filter);
   transition:
@@ -21,6 +22,53 @@
 }
 .canvas[data-visible='true'] {
   opacity: 1;
+}
+.film {
+  --film-grain-opacity: 0.045;
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--film-treatment-opacity, 1);
+}
+.film::before,
+.film::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.film::before {
+  background: url('/textures/film-grain-tile.png') repeat;
+  background-size: 128px 128px;
+  opacity: var(--film-grain-opacity);
+}
+.film::after {
+  background: radial-gradient(
+    ellipse at 50% 46%,
+    transparent 55%,
+    rgb(4 9 20 / 2%) 80%,
+    rgb(4 9 20 / 8%) 100%
+  );
+}
+:global(html[data-theme='noir']) .film {
+  display: block;
+}
+@media (max-width: 640px) {
+  .film {
+    --film-grain-opacity: 0.025;
+  }
+  .film::after {
+    display: none;
+  }
+}
+.stage[data-photo-id] .film {
+  --film-grain-opacity: 0.0125;
+}
+.stage[data-photo-id] .film::after {
+  display: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .canvas {

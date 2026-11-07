@@ -67,6 +67,14 @@ CV transition or scene dependency is added. See the [About review](qa/ABOUT.md).
 
 ## Accepted loading and performance decisions
 
+The [cinematic film treatment brief](taqueria-cinematic-film-filter-codex.md)
+adds one tiny static grain tile and a mild CSS vignette inside the existing scene
+canvas wrapper, enabled only in Noir per the creator's latest direction.
+It adds no render pass or dependency and leaves HTML controls,
+the loader and content routes untreated. Mobile disables the vignette; photo
+viewing reduces grain. See the [film treatment review](qa/FILM_TREATMENT.md) for
+exact values, the A/B switch, browser checks and performance limits.
+
 The [gallery navigation polish brief](GALLERY_NAVIGATION_POLISH_CODEX_BRIEF.md)
 refines only the in-scene photo controls: outlined PREV/NEXT capsules, a restrained
 CSS paper exit label and a position counter derived from `photos`. Projected print

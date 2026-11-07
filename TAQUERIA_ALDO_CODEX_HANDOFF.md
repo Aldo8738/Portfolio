@@ -62,6 +62,13 @@ static editorial text and optional, scoped GSAP reveals. See the
 
 ## 1. Project vision and success criteria
 
+**Film treatment update:** The [cinematic film brief](docs/taqueria-cinematic-film-filter-codex.md)
+adds static neutral grain and a mild desktop corner vignette inside the scene
+canvas wrapper only. The creator's latest direction enables both effects only
+in Noir. Original, Synthwave, HTML controls, the loader and portfolio pages stay clear.
+See the [implementation and QA notes](docs/qa/FILM_TREATMENT.md) for tuning,
+comparison controls and verification limits.
+
 **The concept:** Visitors arrive at *Taquería Aldo*, a cinematic nighttime 3D taco stand that doubles as the navigation system for Aldo's personal portfolio. The experience should feel handcrafted, playful, warm, Mexican-inspired, and unmistakably personal—not like a generic 3D product demo. The stand is the welcome experience; **the work itself is a real, fast, readable HTML website**.
 
 **Visual foundation (already modeled; keep it):** midnight navy environment, magenta/pink striped/scalloped awning, navy-and-cream `TAQUERÍA ALDO` sign with blue stars, warm pendant lamps, rotating al-pastor trompo, detailed counter (mango drink, molcajete/guacamole, sauce bottles), blue refrigerator, vintage CRT monitor, sketchbook containing the creator's drawings, three hanging Polaroids, electric guitar amp/pedal, plants/cactus, stools, dark stone paving, warm/cool cinematic light contrast. **Do not add objects or silently change colors/layout/proportions.**

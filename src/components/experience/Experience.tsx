@@ -187,6 +187,9 @@ export default function Experience() {
                 onProgress={setProgress}
               />
             </SceneErrorBoundary>
+            {state.status === 'ready' && (
+              <div className={styles.film} data-scene-film aria-hidden="true" />
+            )}
           </div>
         )}
         <AmpAudio ref={ampAudio} />
