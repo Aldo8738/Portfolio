@@ -1,5 +1,49 @@
 import { expect, test } from '@playwright/test';
 
+test('skip link stays hidden until keyboard focus and moves focus into main', async ({
+  page,
+}, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const [width, height] of [
+    [1440, 900],
+    [390, 844],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    for (const route of ['/work/knowledge-bridge', '/work', '/about']) {
+      await page.goto(route);
+      const skip = page.getByRole('link', {
+        name: 'Skip to content',
+        exact: true,
+      });
+      await expect(skip).not.toBeInViewport();
+      await page.keyboard.press('Tab');
+      await expect(skip).toBeFocused();
+      await expect(skip).toBeInViewport({ ratio: 1 });
+      expect(await skip.evaluate((el) => el.matches(':focus-visible'))).toBe(
+        true,
+      );
+      const link = await skip.boundingBox();
+      const heading = await page.locator('h1').boundingBox();
+      if (!link || !heading) throw new Error('Skip-link layout missing');
+      expect(link.y + link.height).toBeLessThan(heading.y);
+      if (route === '/work/knowledge-bridge')
+        await page.screenshot({
+          path: testInfo.outputPath(`skip-focused-${width}.png`),
+        });
+      await page.keyboard.press('Enter');
+      await expect(page.locator('main')).toBeFocused();
+      await expect(skip).not.toBeInViewport();
+      await page.reload();
+      await page.mouse.click(width - 10, height - 10);
+      await skip.focus();
+      expect(await skip.evaluate((el) => el.matches(':focus-visible'))).toBe(
+        false,
+      );
+      await expect(skip).not.toBeInViewport();
+    }
+  }
+});
+
 test('HTML navigation works with JavaScript disabled', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
