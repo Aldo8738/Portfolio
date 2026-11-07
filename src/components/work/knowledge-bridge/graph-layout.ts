@@ -1,4 +1,7 @@
 import {
+  overloadNodes,
+  overloadBranches,
+  overloadPoint,
   knowledgeNodes,
   graphLinks,
   graphPoint,
@@ -25,6 +28,27 @@ export function applyGraphLayout(root: HTMLElement, layout: GraphLayout) {
   const host = root.querySelector<HTMLElement>('[data-network-host]');
   if (host) host.dataset.layout = layout;
   attributes(find('.kb-graph'), { viewBox: graphViewBox[layout].story });
+  overloadNodes.forEach((node) => {
+    const point = overloadPoint(node.id, layout);
+    attributes(find('[data-overload-node="' + node.id + '"]'), {
+      transform: `translate(${point.x} ${point.y})`,
+    });
+    attributes(find('[data-overload-edge="' + node.id + '"]'), {
+      d: curvedLink(overloadPoint(node.parent, layout), point),
+    });
+  });
+  overloadBranches.forEach((node, index) => {
+    const point = desktop ? node : node.mobile;
+    attributes(find('[data-overload-branch="' + index + '"]'), {
+      d: curvedLink(overloadPoint(node.anchor, layout), point),
+    });
+    attributes(find('[data-overload-point="' + index + '"]'), {
+      cx: point.x,
+      cy: point.y,
+    });
+  });
+  const berlin = graphPoint('berlin', layout);
+  attributes(find('[data-berlin-anchor]'), { cx: berlin.x, cy: berlin.y });
   knowledgeNodes.forEach((node) => {
     const point = graphPoint(node.id, layout);
     const element = find('[data-node-id="' + node.id + '"]');

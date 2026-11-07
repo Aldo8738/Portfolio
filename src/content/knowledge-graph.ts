@@ -88,7 +88,7 @@ export const knowledgeNodes: readonly KnowledgeNode[] = [
     role: 'cluster',
     x: 440,
     y: 505,
-    mobile: { x: 200, y: 330 },
+    mobile: { x: 200, y: 260 },
     mobileOmit: true,
   },
 ];
@@ -115,14 +115,6 @@ export function graphPoint(
   }
   const node = graphNode(id);
   return layout === 'mobile' ? node.mobile : node;
-}
-export function heroPoint(
-  id: 'paris' | 'france',
-  layout: GraphLayout,
-): GraphPoint {
-  return layout === 'desktop'
-    ? { x: id === 'paris' ? 140 : 610, y: id === 'paris' ? 300 : 120 }
-    : { x: id === 'paris' ? 105 : 295, y: 80 };
 }
 export function curvedLink(from: GraphPoint, to: GraphPoint) {
   const middle = (from.x + to.x) / 2 + (from.y - to.y) * 0.12;
@@ -195,6 +187,105 @@ export function peripheralPath(index: number, layout: GraphLayout) {
 }
 
 export const graphViewBox = {
-  desktop: { hero: '0 0 900 420', story: '0 0 900 600' },
-  mobile: { hero: '0 0 400 150', story: '0 0 400 360' },
+  desktop: { story: '0 0 900 600' },
+  mobile: { story: '0 0 400 360' },
+} as const;
+
+// Authored outer branches share the core graph's coordinate space and never move.
+export const overloadNodes = [
+  {
+    id: 'north-america',
+    label: 'North America',
+    x: -150,
+    y: 110,
+    mobile: { x: 35, y: 405 },
+    parent: 'cities',
+  },
+  {
+    id: 'mexico',
+    label: 'Mexico',
+    x: -175,
+    y: 270,
+    mobile: { x: 110, y: 475 },
+    parent: 'north-america',
+  },
+  {
+    id: 'queretaro',
+    label: 'Querétaro',
+    x: -100,
+    y: 410,
+    mobile: { x: 230, y: 470 },
+    parent: 'mexico',
+  },
+  {
+    id: 'canada',
+    label: '',
+    x: -310,
+    y: 180,
+    mobile: { x: 10, y: 475 },
+    parent: 'north-america',
+  },
+  {
+    id: 'arts',
+    label: 'Arts',
+    x: 1040,
+    y: 170,
+    mobile: { x: 360, y: 420 },
+    parent: 'landmarks',
+  },
+  {
+    id: 'architecture',
+    label: '',
+    x: 1080,
+    y: 380,
+    mobile: { x: 350, y: 490 },
+    parent: 'arts',
+  },
+  {
+    id: 'history',
+    label: 'History',
+    x: 950,
+    y: 570,
+    mobile: { x: 200, y: 560 },
+    parent: 'architecture',
+  },
+  {
+    id: 'places',
+    label: '',
+    x: 490,
+    y: 670,
+    mobile: { x: 70, y: 550 },
+    parent: 'landmarks',
+  },
+] as const;
+export function overloadPoint(id: string, layout: GraphLayout): GraphPoint {
+  const node = overloadNodes.find((node) => node.id === id);
+  return node
+    ? layout === 'mobile'
+      ? node.mobile
+      : node
+    : graphPoint(id, layout);
+}
+const outerOffsets = [
+  [-65, -65],
+  [-105, -20],
+  [-85, 55],
+  [-15, 75],
+  [65, 50],
+  [90, -15],
+  [40, -70],
+] as const;
+export const overloadBranches = overloadNodes.flatMap((node) =>
+  outerOffsets.map(([x, y], index) => ({
+    id: node.id + '-' + index,
+    anchor: node.id,
+    x: node.x + x,
+    y: node.y + y,
+    mobile: { x: node.mobile.x + x * 0.24, y: node.mobile.y + y * 0.3 },
+    mobileVisible: index % 2 === 0,
+  })),
+);
+export const overloadViewBox = {
+  desktop: '-450 -80 1700 900',
+  mobile: '-35 -25 470 640',
 } as const;

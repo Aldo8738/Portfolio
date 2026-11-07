@@ -1,13 +1,12 @@
 import { gsap, CSSPlugin } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  graphViewBox,
+  overloadViewBox,
+} from '../../../content/knowledge-graph';
 import { knowledgeBridgeMeasurements } from '../../../content/knowledge-bridge';
 import {
-  heroPoint,
-  curvedLink,
-  graphViewBox,
-} from '../../../content/knowledge-graph';
-import {
-  createGraphIntro,
+  createChapterTimeline,
   createGraphTimeline,
   knowledgeStoryMotion,
   resetGraphPresentation,
@@ -28,14 +27,11 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
       throw new Error('Knowledge Bridge markup missing: ' + selector);
     return element;
   }
-  const hero = required<HTMLElement>('.kb-hero');
-  const facts = required<HTMLElement>('.kb-facts');
   const stage = required<HTMLElement>('[data-story-stage]');
   const copy = required<HTMLElement>('[data-story-copy]');
   const figure = required<HTMLElement>('.kb-story-figure');
   const storyLayout = required<HTMLElement>('.kb-story-layout');
   const host = required<HTMLElement>('[data-network-host]');
-  const heroDock = required<HTMLElement>('[data-hero-dock]');
   const storyDock = required<HTMLElement>('[data-story-dock]');
   const chapterDock = required<HTMLElement>('[data-chapter-one-dock]');
   const heroValue = required<HTMLElement>('[data-hero-value]');
@@ -105,38 +101,29 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         root.dataset.networkEnhanced = 'true';
         hint.hidden = false;
         progress.hidden = false;
-        const intro = createGraphIntro(root, layout);
-        root.dataset.graphEntry = intro.progress().toFixed(3);
-        let entryStart = 0;
-        let entryDistance = 0;
-        const heroContent = root.querySelectorAll(
-          '[data-hero-copy], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts',
-        );
+        const chapterTimeline = createChapterTimeline(root, layout, pinned);
+        root.dataset.graphEntry = '0.000';
         const clamp = gsap.utils.clamp(0, 1);
         const setOpacity = gsap.quickSetter(host, 'opacity');
         const setX = gsap.quickSetter(host, 'x', 'px');
         const setY = gsap.quickSetter(host, 'y', 'px');
-        const setHeroY = gsap.quickSetter(heroContent, 'y', 'px');
         let storyTrigger: ScrollTrigger | undefined;
-        let heroBox:
-          { x: number; y: number; width: number; height: number } | undefined;
-        let storyBox: typeof heroBox;
-        let chapterBox: typeof heroBox;
+        type Box = { x: number; y: number; width: number; height: number };
+        let storyBox: Box | undefined;
+        let chapterBox: Box | undefined;
         const storyTimeline = createGraphTimeline(root, !desktopGraph, pinned);
-        let chapterReveal: gsap.core.Timeline | undefined;
+        let chapterTrigger: ScrollTrigger | undefined;
         let sticky = { top: 0, bottom: 0, height: 0, inset: 0, dockOffset: 0 };
         const rendered = {
           x: NaN,
           y: NaN,
           width: NaN,
           height: NaN,
-          heroY: NaN,
           opacity: NaN,
           visibility: '',
         };
         let queued = false;
         let viewportHeight = 0;
-        let chapterTextTop = 0;
         function pinOffset(scroll: number) {
           if (!pinned || !storyTrigger) return 0;
           if (storyTrigger.isActive) return scroll - storyTrigger.start;
@@ -148,56 +135,41 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         function positionNetwork() {
           gsap.ticker.remove(positionNetwork);
           queued = false;
-          if (!heroBox || !storyBox || !chapterBox) return;
-          const target =
-            pinned &&
-            storyTimeline.progress() <
-              knowledgeStoryMotion.chapterFraction * 0.97
-              ? chapterBox
-              : storyBox;
-          // Reuse ScrollTrigger's sampled scroll; a fresh window read can flush SVG layout.
+          if (!storyBox || !chapterBox) return;
+          // Reuse sampled scroll and refresh-time boxes; no scroll-frame layout reads.
           const scroll = storyTrigger?.scroll() ?? scrollY;
-          const blend = intro.progress();
-          const chapter =
-            storyTimeline.progress() / knowledgeStoryMotion.chapterFraction;
-          // Clear the hero graph before Chapter 1 text enters the reading area.
-          const opacity =
-            blend < 1
-              ? clamp(
-                  (chapterTextTop - scroll - viewportHeight * 0.8) /
-                    (viewportHeight * 0.2),
-                )
-              : !pinned
-                ? clamp(((chapterReveal?.progress() ?? 0) - 0.1) / 0.25)
-                : chapter < 0.94
-                  ? clamp((chapter - 0.48) / 0.08)
-                  : chapter < 0.97
-                    ? 1 - clamp((chapter - 0.94) / 0.03)
-                    : clamp((chapter - 0.97) / 0.03);
-          if (opacity !== rendered.opacity) {
-            setOpacity(opacity);
-            rendered.opacity = opacity;
-          }
-          const heroY = Math.max(
-            0,
-            Math.min(entryDistance, scroll - entryStart),
-          );
-          if (desktopGraph && heroY !== rendered.heroY) {
-            setHeroY(heroY);
-            rendered.heroY = heroY;
-          }
-          const fromY = heroBox.y - scroll;
+          const chapter = pinned
+            ? storyTimeline.progress() / knowledgeStoryMotion.chapterFraction
+            : chapterTimeline.progress();
+          const blend = pinned
+            ? clamp((chapter - 0.88) / 0.12)
+            : clamp(
+                (scroll - (chapterTrigger?.end ?? 0)) / (viewportHeight * 0.3),
+              );
+          const fromY = pinned
+            ? chapterBox.y - scroll + pinOffset(scroll)
+            : Math.min(
+                Math.max(chapterBox.y - scroll, viewportHeight * 0.16),
+                (chapterTrigger?.end ?? 0) - scroll + viewportHeight * 0.16,
+              );
           const toY = pinned
-            ? target.y - scroll + pinOffset(scroll)
+            ? storyBox.y - scroll + pinOffset(scroll)
             : Math.min(
                 Math.max(sticky.top - scroll, sticky.inset),
                 sticky.bottom - scroll - sticky.height,
               ) + sticky.dockOffset;
-          const x = heroBox.x + (target.x - heroBox.x) * blend;
+          const x = chapterBox.x + (storyBox.x - chapterBox.x) * blend;
           const y = fromY + (toY - fromY) * blend;
-          const width = heroBox.width + (target.width - heroBox.width) * blend;
+          const width =
+            chapterBox.width + (storyBox.width - chapterBox.width) * blend;
           const height =
-            heroBox.height + (target.height - heroBox.height) * blend;
+            chapterBox.height + (storyBox.height - chapterBox.height) * blend;
+          const opacity =
+            scroll < (chapterTrigger?.start ?? 0) && !pinned ? 0 : 1;
+          if (opacity !== rendered.opacity) {
+            setOpacity(opacity);
+            rendered.opacity = opacity;
+          }
           const visibility =
             y + height < 0 || y > viewportHeight ? 'hidden' : 'visible';
           if (visibility !== rendered.visibility) {
@@ -231,32 +203,19 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           // Read only on layout refresh, before the frame's placement writes.
           const scroll = scrollY;
           viewportHeight = innerHeight;
-          chapterTextTop =
-            required<HTMLElement>(
-              '.kb-chapter-one-copy li',
-            ).getBoundingClientRect().top +
-            scroll -
-            pinOffset(scroll);
-          const from = heroDock.getBoundingClientRect(),
-            to = storyDock.getBoundingClientRect();
-          heroBox = {
-            x: from.x,
-            y: from.y + scroll,
-            width: from.width,
-            height: from.height,
-          };
+          const to = storyDock.getBoundingClientRect();
           storyBox = {
             x: to.x,
             y: to.y + scroll - pinOffset(scroll),
             width: to.width,
             height: to.height,
           };
-          const chapter = pinned ? chapterDock.getBoundingClientRect() : to;
+          const chapter = chapterDock.getBoundingClientRect();
           chapterBox = {
             x: chapter.x,
             y: chapter.y + scroll - pinOffset(scroll),
             width: chapter.width,
-            height: chapter.height,
+            height: pinned ? chapter.height : innerHeight * 0.65,
           };
           if (!pinned) {
             const parent = storyLayout.getBoundingClientRect(),
@@ -277,34 +236,18 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           () => gsap.ticker.remove(positionNetwork),
           { once: true },
         );
-        intro.eventCallback('onUpdate', () => {
-          root.dataset.graphEntry = intro.progress().toFixed(3);
+        chapterTimeline.eventCallback('onUpdate', () => {
+          const chapter = chapterTimeline.progress();
+          root.dataset.graphEntry = chapter.toFixed(3);
+          root.dataset.chapterScene =
+            chapter < 0.32
+              ? 'text'
+              : chapter < 0.6
+                ? 'overload'
+                : chapter < 0.78
+                  ? 'focus'
+                  : 'clean';
           queueNetwork();
-        });
-        ScrollTrigger.create({
-          id: 'knowledge-bridge-entry',
-          trigger: facts,
-          // Read the full hero in natural flow before fading or holding its copy.
-          start: () =>
-            Math.max(
-              0,
-              facts.getBoundingClientRect().bottom +
-                scrollY -
-                (Number.isNaN(rendered.heroY) ? 0 : rendered.heroY) -
-                innerHeight +
-                parseFloat(getComputedStyle(hero).paddingBottom),
-            ),
-          endTrigger: stage,
-          end: 'top top',
-          animation: intro,
-          scrub: knowledgeStoryMotion.scrub,
-          invalidateOnRefresh: true,
-          onRefresh: (trigger) => {
-            entryStart = trigger.start;
-            entryDistance = trigger.end - trigger.start;
-            root.dataset.graphEntry = intro.progress().toFixed(3);
-            measureNetwork();
-          },
         });
         const timeline = storyTimeline;
         let current = -1;
@@ -314,17 +257,10 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
             : storyTrigger && storyTrigger.scroll() >= storyTrigger.start
               ? getStoryBeat(0.25 + progress * 0.75)
               : 0;
-          if (pinned) {
-            const chapter = progress / knowledgeStoryMotion.chapterFraction;
-            root.dataset.chapterScene =
-              chapter < 0.36
-                ? 'text'
-                : chapter < 0.56
-                  ? 'handoff'
-                  : chapter < 0.94
-                    ? 'graph'
-                    : 'exit';
-          }
+          if (pinned)
+            chapterTimeline.progress(
+              Math.min(1, progress / knowledgeStoryMotion.chapterFraction),
+            );
           if (index !== current) {
             current = index;
             beats.forEach((beat, beatIndex) => {
@@ -371,35 +307,17 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           },
         });
         if (!pinned) {
-          const reveal = gsap.timeline({
-            paused: true,
-            defaults: { ease: 'none', immediateRender: false },
-          });
-          reveal.to({}, { duration: 1 });
-          chapterReveal = reveal;
-          reveal.eventCallback('onUpdate', queueNetwork);
-          ScrollTrigger.create({
+          chapterTrigger = ScrollTrigger.create({
             id: 'knowledge-bridge-chapter-one',
-            trigger: storyDock,
-            start: () =>
-              Math.max(
-                stage.getBoundingClientRect().top + scrollY,
-                storyDock.getBoundingClientRect().top +
-                  scrollY -
-                  innerHeight * 0.75,
-              ),
-            end: () => '+=' + innerHeight * 0.4,
-            animation: reveal,
+            trigger: chapterDock,
+            start: 'top 25%',
+            end: () => '+=' + innerHeight * 1.5,
+            animation: chapterTimeline,
             scrub: knowledgeStoryMotion.scrub,
             invalidateOnRefresh: true,
-            onUpdate: (trigger) => {
-              root.dataset.chapterScene =
-                trigger.progress < 0.1
-                  ? 'text'
-                  : trigger.progress < 0.35
-                    ? 'handoff'
-                    : 'graph';
-              queueNetwork();
+            onRefresh: (trigger) => {
+              chapterTrigger = trigger;
+              measureNetwork();
             },
           });
         }
@@ -410,53 +328,31 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         measureNetwork();
       } else {
         root.dataset.networkEnhanced = 'true';
-        let inHero: boolean | undefined;
+        let previousChapter: boolean | undefined;
         function positionStaticNetwork() {
-          const heroBounds = heroDock.getBoundingClientRect();
-          const nextInHero = heroBounds.bottom > 0;
-          if (inHero !== nextInHero) {
-            inHero = nextInHero;
-            applyGraphLayout(root, layout);
-            gsap.set(root.querySelectorAll('[data-expansion]'), {
-              opacity: inHero ? 0 : 1,
-            });
-            gsap.set(root.querySelectorAll('[data-label-frame]'), {
-              opacity: inHero ? 1 : 0,
-            });
-            if (inHero) {
-              gsap.set(root.querySelector('.kb-graph'), {
-                attr: { viewBox: graphViewBox[layout].hero },
-              });
-              for (const id of ['paris', 'france'] as const) {
-                const point = heroPoint(id, layout);
-                gsap.set(root.querySelector('[data-node-id="' + id + '"]'), {
-                  attr: {
-                    transform: 'translate(' + point.x + ' ' + point.y + ')',
-                  },
-                });
-              }
-              gsap.set(root.querySelector('[data-corrected-edge]'), {
-                attr: {
-                  d: curvedLink(
-                    heroPoint('paris', layout),
-                    heroPoint('france', layout),
-                  ),
-                },
-              });
-            }
-          }
-          const target = inHero
-            ? heroBounds
+          const chapter = chapterDock.getBoundingClientRect();
+          const inChapter = chapter.bottom > innerHeight * 0.3;
+          const target = inChapter
+            ? chapter
             : storyDock.getBoundingClientRect();
+          if (inChapter !== previousChapter) {
+            previousChapter = inChapter;
+            gsap.set(root.querySelector('.kb-graph'), {
+              attr: {
+                viewBox: inChapter
+                  ? overloadViewBox[layout]
+                  : graphViewBox[layout].story,
+              },
+            });
+            gsap.set(root.querySelectorAll('[data-overload-only]'), {
+              opacity: inChapter ? 1 : 0,
+            });
+          }
           gsap.set(host, {
-            left: 0,
-            top: 0,
-            right: 'auto',
-            maxHeight: 'none',
             x: target.x,
             y: target.y,
             width: target.width,
-            height: target.height,
+            height: inChapter ? innerHeight * 0.6 : target.height,
             visibility:
               target.bottom < 0 || target.top > innerHeight
                 ? 'hidden'

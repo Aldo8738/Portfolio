@@ -1,32 +1,25 @@
 import { gsap } from 'gsap';
 import {
-  graphPoint,
-  heroPoint,
-  curvedLink,
-  correctionPath,
   graphViewBox,
-  graphLinks,
-  peripheralPoints,
-  peripheralPath,
+  overloadViewBox,
   type GraphLayout,
 } from '../../../content/knowledge-graph';
 
 export const knowledgeStoryMotion = {
   heroCountDuration: 1.8,
-  scrollScreens: 3.6,
-  tabletScrollScreens: 3.6,
+  scrollScreens: 6.4,
+  tabletScrollScreens: 6.4,
   scrub: 0.2,
   checkpointDuration: 0.32,
   readingGap: 160,
   readingFraction: 0.4,
-  heroExit: { start: 0.18, duration: 0.2 },
   chapterFraction: 0.625,
 } as const;
 
 export function resetGraphPresentation(root: HTMLElement) {
   root
     .querySelectorAll(
-      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts, [data-graph-metric], [data-story-progress], .kb-chapter-one-copy, li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
+      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-facts, [data-graph-metric], [data-story-progress], .kb-chapter-one-copy, li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
     )
     .forEach((element) => element.removeAttribute('style'));
   root
@@ -34,104 +27,56 @@ export function resetGraphPresentation(root: HTMLElement) {
     ?.removeAttribute('transform');
 }
 
-export function createGraphIntro(root: HTMLElement, layout: GraphLayout) {
+export function createChapterTimeline(
+  root: HTMLElement,
+  layout: GraphLayout,
+  pinned: boolean,
+) {
   const find = (selector: string) => root.querySelectorAll(selector);
-  const timeline = gsap.timeline({
-    paused: true,
-    defaults: { ease: 'power1.inOut' },
-  });
-  const introPoint = (id: string) =>
-    id === 'paris' || id === 'france'
-      ? heroPoint(id, layout)
-      : graphPoint(id, layout);
-  timeline.fromTo(
-    find('.kb-graph'),
-    { attr: { viewBox: graphViewBox[layout].hero } },
-    { attr: { viewBox: graphViewBox[layout].story }, duration: 1 },
-    0,
-  );
-  for (const id of ['paris', 'france'] as const) {
-    const hero = heroPoint(id, layout),
-      story = graphPoint(id, layout);
-    timeline.fromTo(
-      find('[data-node-id="' + id + '"]'),
-      { attr: { transform: 'translate(' + hero.x + ' ' + hero.y + ')' } },
-      {
-        attr: { transform: 'translate(' + story.x + ' ' + story.y + ')' },
-        duration: 1,
-      },
-      0,
-    );
-  }
-  graphLinks.forEach(([from, to], index) => {
-    if (![from, to].some((id) => id === 'paris' || id === 'france')) return;
-    timeline.fromTo(
-      find('[data-network-edge="' + index + '"]'),
-      { attr: { d: curvedLink(introPoint(from), introPoint(to)) } },
-      {
-        attr: {
-          d: curvedLink(graphPoint(from, layout), graphPoint(to, layout)),
-        },
-        duration: 1,
-      },
-      0,
-    );
-  });
-  peripheralPoints.forEach((point, index) => {
-    if (point.anchor !== 'paris' && point.anchor !== 'france') return;
-    timeline.fromTo(
-      find('[data-peripheral-path="' + index + '"]'),
-      {
-        attr: {
-          d: curvedLink(
-            introPoint(point.anchor),
-            layout === 'mobile' ? point.mobile : point,
-          ),
-        },
-      },
-      { attr: { d: peripheralPath(index, layout) }, duration: 1 },
-      0,
-    );
-  });
-  // Reveal branches once the growing viewBox can contain their labels.
-  const expansionStart = layout === 'mobile' ? 0.8 : 0.65;
+  const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
   timeline
     .fromTo(
-      find('[data-corrected-edge]'),
-      {
-        attr: {
-          d: curvedLink(
-            heroPoint('paris', layout),
-            heroPoint('france', layout),
-          ),
-        },
-      },
-      { attr: { d: correctionPath(layout, true) }, duration: 1 },
-      0,
-    )
-    .fromTo(
-      find('[data-expansion]'),
+      find('.kb-graph'),
       { opacity: 0 },
-      { opacity: 1, duration: 1 - expansionStart },
-      expansionStart,
+      { opacity: 1, duration: 0.08 },
+      pinned ? 0.32 : 0.04,
     )
     .fromTo(
-      find('[data-label-frame]'),
+      find('.kb-graph'),
+      { attr: { viewBox: overloadViewBox[layout] } },
+      {
+        attr: { viewBox: graphViewBox[layout].story },
+        duration: 0.18,
+        ease: 'power1.inOut',
+      },
+      0.6,
+    )
+    .fromTo(
+      find('[data-overload-only]'),
       { opacity: 1 },
-      { opacity: 0, duration: 0.6 },
-      0.2,
+      { opacity: 0, duration: 0.18 },
+      0.6,
+    )
+    .fromTo(
+      find('.kb-item-mark'),
+      { attr: { r: 3 } },
+      { attr: { r: 4.5 }, duration: 0.18 },
+      0.6,
+    )
+    .fromTo(
+      find('[data-network-detail]'),
+      { opacity: 1 },
+      { opacity: 0.35, duration: 0.18 },
+      0.6,
+    )
+    .to({}, { duration: 0.22 }, 0.78);
+  if (pinned)
+    timeline.fromTo(
+      find('.kb-chapter-one-copy'),
+      { opacity: 1 },
+      { opacity: 0, duration: 0.08 },
+      0.24,
     );
-  const exit = knowledgeStoryMotion.heroExit;
-  // All hero content, including metadata, exits together after the reading boundary.
-  timeline.fromTo(
-    find(
-      '[data-hero-copy], .kb-hero-metric, .kb-hero-steps, .kb-entry-hint, .kb-facts',
-    ),
-    { opacity: 1 },
-    { opacity: 0, duration: exit.duration },
-    exit.start,
-  );
-
   return timeline;
 }
 
@@ -153,7 +98,6 @@ export function createGraphTimeline(
     .addLabel('return', 68)
     .addLabel('correction', 75)
     .addLabel('evidence', 80)
-    .set(find('[data-network-detail]'), { opacity: 0.35 }, 0)
     .set(find('[data-reveal-group]'), { opacity: 1 }, 0)
     .set(
       find(
@@ -274,14 +218,6 @@ export function createGraphTimeline(
     tween
       .duration(tween.duration() * scale)
       .startTime(prefix + (start - 25) * scale);
-  }
-  if (focused) {
-    timeline.fromTo(
-      find('.kb-chapter-one-copy'),
-      { opacity: 1 },
-      { opacity: 0, duration: prefix * 0.08 },
-      prefix * 0.36,
-    );
   }
   timeline.fromTo(
     find('[data-story-progress]'),

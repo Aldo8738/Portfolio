@@ -7,6 +7,10 @@ import {
 } from '../src/components/work/knowledge-bridge/story-state';
 import { getHistoryFrame } from '../src/components/work/knowledge-bridge/history-state';
 import {
+  overloadNodes,
+  overloadBranches,
+  overloadPoint,
+  overloadViewBox,
   knowledgeCorrection,
   graphNode,
   knowledgeNodes,
@@ -84,4 +88,37 @@ it('keeps Chapter 1 focused before preserving the later story boundaries', () =>
   expect(
     [0, 0.4, 0.624, 0.625, 0.749, 0.75, 0.899, 0.9, 1].map(getFocusedStoryBeat),
   ).toEqual([0, 0, 0, 1, 1, 2, 2, 3, 3]);
+});
+
+it('keeps dense outer branches deterministic and attached in both layouts', () => {
+  expect(overloadBranches.length).toBeGreaterThan(knowledgeNodes.length * 5);
+  expect(new Set(overloadBranches.map((node) => node.id)).size).toBe(
+    overloadBranches.length,
+  );
+  expect(overloadNodes.find((node) => node.id === 'queretaro')?.parent).toBe(
+    'mexico',
+  );
+  expect(overloadNodes.find((node) => node.id === 'mexico')?.parent).toBe(
+    'north-america',
+  );
+  for (const layout of ['desktop', 'mobile'] as const) {
+    const [x, y, width, height] = overloadViewBox[layout]
+      .split(' ')
+      .map(Number);
+    if (
+      x === undefined ||
+      y === undefined ||
+      width === undefined ||
+      height === undefined
+    )
+      throw new Error('Invalid graph bounds');
+    for (const node of overloadNodes) {
+      expect(overloadPoint(node.parent, layout)).toBeDefined();
+      const point = overloadPoint(node.id, layout);
+      expect(point.x).toBeGreaterThan(x);
+      expect(point.x).toBeLessThan(x + width);
+      expect(point.y).toBeGreaterThan(y);
+      expect(point.y).toBeLessThan(y + height);
+    }
+  }
 });

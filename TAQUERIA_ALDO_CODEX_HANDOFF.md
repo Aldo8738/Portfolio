@@ -33,6 +33,12 @@ the desktop hero fades in place while the graph expands. See the
 [historical V4 review](docs/qa/KNOWLEDGE_BRIDGE.md); retain the other projects and
 the frozen taquería experience.
 
+The later [Graph Storytelling revision](docs/knowledge-bridge-graph-storytelling-codex-handoff.md)
+removes the hero graph and outline, keeps the contribution table in natural flow,
+and expands Chapter 01 into an overload-to-focus sequence within the same SVG.
+See the [implementation review](docs/qa/KNOWLEDGE_BRIDGE_GRAPH_STORYTELLING.md).
+Later chapters remain outside this revision's design scope.
+
 **CV update:** The creator's [CV implementation brief](docs/CV_CODEX_IMPLEMENTATION_BRIEF.md)
 supplies the approved chronology and skills for `/cv`. It uses the existing shared
 navigation and static site shell, with the résumé download omitted until a verified

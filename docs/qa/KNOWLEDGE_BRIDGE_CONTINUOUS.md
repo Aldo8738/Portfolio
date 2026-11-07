@@ -25,6 +25,9 @@ text and a centered, still graph. Chapters 2-4 retain their existing presentatio
 The sections below describe the original continuous-scroll baseline; current
 scroll distances and validation are recorded in the Step 3B review.
 
+The subsequent [Graph Storytelling revision](KNOWLEDGE_BRIDGE_GRAPH_STORYTELLING.md)
+removes the graph from the hero and supersedes Chapter 01 pacing and artwork below.
+
 ## Audit and visual direction
 
 The existing implementation already had one living SVG, deterministic geometry,

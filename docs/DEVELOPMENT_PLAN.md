@@ -36,6 +36,12 @@ locks the desktop hero's position during its fade. The supplied visual reference
 informs the curved hero relationship, metric placement and passive step outline.
 See the [current implementation and QA review](qa/KNOWLEDGE_BRIDGE_CONTINUOUS.md).
 
+The later [Graph Storytelling revision](knowledge-bridge-graph-storytelling-codex-handoff.md)
+removes the hero graph and outline, keeps the contribution table in natural flow,
+and expands Chapter 01 into an overload-to-focus sequence within the same SVG.
+See the [implementation review](qa/KNOWLEDGE_BRIDGE_GRAPH_STORYTELLING.md).
+Later chapters remain outside this revision's design scope.
+
 The subsequent [CV brief](CV_CODEX_IMPLEMENTATION_BRIEF.md) adds the static `/cv`
 career timeline and its typed skill catalog. Employment and overlapping education
 remain distinct. The shared header's existing CV link is enabled; normal document

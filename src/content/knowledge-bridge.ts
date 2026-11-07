@@ -39,7 +39,7 @@ export const knowledgeBridge = {
 export const knowledgeBridgeBeats = [
   {
     title: 'Everything, all at once.',
-    description: 'Large graphs were expensive to load and hard to explore.',
+    description: 'Large knowledge graphs were overwhelming to explore.',
   },
   {
     title: 'Render what matters.',

@@ -159,7 +159,7 @@ for (const profile of profiles) {
         });
         const before = (await session.send('Performance.getMetrics')).metrics;
         await page.evaluate(() => {
-          const dock = document.querySelector('[data-hero-dock]'),
+          const dock = document.querySelector('[data-chapter-one-dock]'),
             storyDock = document.querySelector('[data-story-dock]');
           const originalRect = Element.prototype.getBoundingClientRect;
           let dockReads = 0;
