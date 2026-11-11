@@ -3,10 +3,10 @@ import {
   knowledgeBridge as content,
   knowledgeBridgeBeats as beats,
   knowledgeBridgeMeasurements as measurements,
+  knowledgeBridgeHumanAi as humanAi,
 } from '../../../content/knowledge-bridge';
 import { orderedProjects, projectPath } from '../../../content/portfolio';
 import KnowledgeGraph from './KnowledgeGraph.astro';
-import CheckpointDemo from './CheckpointDemo.astro';
 import '../work.css';
 import './knowledge-bridge.css';
 const next = orderedProjects.find((project) => project.order === 2);
@@ -46,8 +46,8 @@ const [titleFirstLine, titleSecondLine] = content.title.slice(0, -1).split(' ');
         </span>
       </strong>
       <div>
-        <p>reduction in graph finish time</p>
-        <span class="kb-caption">8.47s → 1.57s · Reddit, 100 items</span>
+        <p>Shorter graph rendering time</p>
+        <span class="kb-caption">Reddit, 100 items</span>
       </div>
     </div>
     <dl class="case-study-facts kb-facts">
@@ -75,7 +75,7 @@ const [titleFirstLine, titleSecondLine] = content.title.slice(0, -1).split(' ');
     <div class="kb-story-stage" data-story-stage>
       <div class="kb-story-topline">
         <p class="eyebrow" id="kb-story-title">
-          Figure 01 / The living graph
+          The living graph / Knowledge Bridge
         </p>
         <span class="kb-caption" data-scroll-hint hidden>
           Scroll to explore ↓
@@ -98,52 +98,35 @@ const [titleFirstLine, titleSecondLine] = content.title.slice(0, -1).split(' ');
           <p>{beats[0].description}</p>
         </li>
       </ol>
-      <div
-        class="kb-chapter-one-dock"
-        data-chapter-one-dock
-        aria-hidden="true"
-      ></div>
-      <div class="kb-story-layout">
-        <div class="kb-story-copy" data-story-copy>
-          <ol class="kb-beats" start="2">
-            {beats.slice(1).map((beat, index) => (
-              <li data-story-beat={index + 1}>
-                <span class="kb-beat-number" aria-hidden="true">
-                  0{index + 2} / 04
-                </span>
-                <h2>{beat.title}</h2>
-                <p>{beat.description}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <figure
-          class="project-visual kb-story-figure"
-          data-work-visual="knowledge-hierarchy"
-        >
-          <div class="kb-graph-dock" data-story-dock></div>
-          <p class="kb-graph-metric" data-graph-metric>
-            <span>{measurements[0].before.toFixed(2)}s</span>
-            <span aria-hidden="true">→</span>
-            <strong>
-              <span data-story-time>{measurements[0].after.toFixed(2)}</span>s
-            </strong>
-          </p>
-        </figure>
+      <div class="kb-chapter-one-dock" data-chapter-one-dock aria-hidden="true">
+        <div class="kb-overload-dock" data-overload-dock></div>
       </div>
+      <ol class="kb-beats kb-solution-copy" aria-label="Chapter 2">
+        <li data-story-beat="1">
+          <span class="kb-beat-number" aria-hidden="true">
+            02 / FOCUS
+          </span>
+          <h2>{beats[1].title}</h2>
+          <p>{beats[1].description}</p>
+        </li>
+      </ol>
+      <div class="kb-focus-dock" data-focus-dock aria-hidden="true"></div>
+      <ol class="kb-beats kb-human-copy" aria-label="Chapter 3">
+        <li data-story-beat="2">
+          <span class="kb-beat-number" aria-hidden="true">
+            {humanAi.eyebrow}
+          </span>
+          <h2>{beats[2].title}</h2>
+          <p>{beats[2].description}</p>
+        </li>
+      </ol>
+      <ol class="kb-human-summary" aria-label="Illustrated human correction">
+        {humanAi.steps.map((step) => (
+          <li>{step}</li>
+        ))}
+      </ol>
+      <div class="kb-human-dock" data-human-dock aria-hidden="true"></div>
     </div>
-  </section>
-  <section
-    class="kb-checkpoints"
-    aria-labelledby="kb-checkpoint-title"
-    data-kb-section
-  >
-    <div class="kb-section-heading">
-      <p class="eyebrow">{content.checkpoint.eyebrow}</p>
-      <h2 id="kb-checkpoint-title">{content.checkpoint.heading}</h2>
-      <p>{content.checkpoint.description}</p>
-    </div>
-    <CheckpointDemo />
   </section>
   <section
     class="kb-results"
@@ -156,7 +139,7 @@ const [titleFirstLine, titleSecondLine] = content.title.slice(0, -1).split(' ');
     </div>
     <dl class="kb-results-metrics">
       <div class="kb-result-primary">
-        <dt>{measurements[0].reduction}% reduction in graph finish time</dt>
+        <dt>{measurements[0].reduction}% shorter graph rendering time</dt>
         <dd>
           <span>{measurements[0].before.toFixed(2)}s</span>
           <span aria-hidden="true"> → </span>

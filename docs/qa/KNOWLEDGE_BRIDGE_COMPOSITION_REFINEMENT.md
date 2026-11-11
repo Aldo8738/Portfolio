@@ -4,6 +4,37 @@ Refines the [Step 4 graph](KNOWLEDGE_BRIDGE_STEP_4.md) without changing the appr
 hero, focused composition, scroll controller, pin distances, later timeline or
 checkpoint behavior.
 
+The subsequent [overload layout correction](KNOWLEDGE_BRIDGE_OVERLOAD_CORRECTION.md)
+supersedes the density refinement and measurements below. It removes the desktop
+editorial-width constraint and records the required production browser captures.
+
+## Latest density refinement (pending creator review)
+
+The creator's `docs/The Living Knowledge Graph.png` reference informs a denser
+European core and irregular connected satellite clusters. The overload network
+now contains 221 nodes with the same 12 desktop labels. Seven new neighborhoods
+attach to Europe, France, Germany, Paris, Berlin, Landmarks and Cities. Existing
+outer neighborhoods gain small forks and satellite clusters; 40 additional
+cross-links connect neighboring regions. New nodes remain unlabeled and use the
+existing secondary/peripheral contrast hierarchy. Only Querétaro and Berlin
+retain magenta dots.
+
+The desktop overload viewport is now `-550 -140 1940 1000`, with branches reaching
+farther above and below the core. The pinned Chapter 01 dock uses up to `52rem`
+and reserves `7rem` of viewport clearance, giving the expanded geometry more
+vertical room. This changes the geometry rather than uniformly scaling the old
+SVG. The existing focus viewport, core coordinates, hero, later chapters and
+scroll timings remain unchanged. All new detail belongs to the existing
+overload-only group and recedes through its existing fade. No ongoing motion,
+new renderer or dependency is added. Mobile keeps its existing viewport and
+reduces the new core neighborhoods to two visible supporting points each.
+
+The creator will inspect the result visually and explicitly deferred tests.
+No tests or browser captures were added or run for this refinement. Earlier
+measured bounds and verification below describe the previous revision, not this
+one. Actual 85–90% scene-width coverage remains pending visual review. The existing
+unit test's fixed 97-node expectation needs updating when test work is authorized.
+
 ## Composition findings and changes
 
 Baseline geometry already reached 86-96% of desktop canvas width. Its faint outer

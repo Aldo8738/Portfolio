@@ -1,18 +1,15 @@
 import { gsap, CSSPlugin } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  graphViewBox,
-  overloadViewBox,
-} from '../../../content/knowledge-graph';
 import { knowledgeBridgeMeasurements } from '../../../content/knowledge-bridge';
 import {
   createChapterTimeline,
   createGraphTimeline,
+  getGraphStoryTiming,
+  getLegacyStoryProgress,
   knowledgeStoryMotion,
   resetGraphPresentation,
 } from './graph-motion';
 import { applyGraphLayout } from './graph-layout';
-import { mountHistory } from './history-controller';
 import { getStoryBeat, getFocusedStoryBeat } from './story-state';
 
 gsap.registerPlugin(CSSPlugin, ScrollTrigger);
@@ -28,12 +25,11 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
     return element;
   }
   const stage = required<HTMLElement>('[data-story-stage]');
-  const copy = required<HTMLElement>('[data-story-copy]');
-  const figure = required<HTMLElement>('.kb-story-figure');
-  const storyLayout = required<HTMLElement>('.kb-story-layout');
   const host = required<HTMLElement>('[data-network-host]');
-  const storyDock = required<HTMLElement>('[data-story-dock]');
-  const chapterDock = required<HTMLElement>('[data-chapter-one-dock]');
+  const overloadDock = required<HTMLElement>('[data-overload-dock]');
+  const focusDock = required<HTMLElement>('[data-focus-dock]');
+  const humanCopy = required<HTMLElement>('.kb-human-copy');
+  const humanDock = required<HTMLElement>('[data-human-dock]');
   const heroValue = required<HTMLElement>('[data-hero-value]');
   const hint = required<HTMLElement>('[data-scroll-hint]');
   const progress = required<HTMLElement>('[data-story-progress-track]');
@@ -41,7 +37,6 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const events = new AbortController();
   const motion = gsap.matchMedia();
-  const disposeHistory = mountHistory(root, reduced);
   const heroTotal = knowledgeBridgeMeasurements[0].reduction;
   let heroTween: gsap.core.Tween | undefined;
   const heroMotion = gsap.context(() => {
@@ -74,16 +69,13 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
     {
       wide: '(min-width: 1100px)',
       desktop: '(min-width: 1100px) and (min-height: 650px)',
-      tablet:
-        '(min-width: 768px) and (max-width: 1099px) and (min-height: 850px)',
       reduced: '(prefers-reduced-motion: reduce)',
       full: '(prefers-reduced-motion: no-preference)',
     },
     (context) => {
       resetGraphPresentation(root);
       const pinned =
-        Boolean(context.conditions?.desktop || context.conditions?.tablet) &&
-        !context.conditions?.reduced;
+        Boolean(context.conditions?.desktop) && !context.conditions?.reduced;
       const desktopGraph = Boolean(context.conditions?.wide) || pinned;
       const layout = desktopGraph ? 'desktop' : 'mobile';
       root.dataset.caseMotion = context.conditions?.reduced
@@ -109,11 +101,15 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         const setY = gsap.quickSetter(host, 'y', 'px');
         let storyTrigger: ScrollTrigger | undefined;
         type Box = { x: number; y: number; width: number; height: number };
-        let storyBox: Box | undefined;
         let chapterBox: Box | undefined;
-        const storyTimeline = createGraphTimeline(root, !desktopGraph, pinned);
+        let overloadBox: Box | undefined;
+        const focusEase = gsap.parseEase('power1.inOut');
+        const storyTimeline = createGraphTimeline(root, pinned);
+        const storyTiming = getGraphStoryTiming(pinned);
+        let humanBox: Box | undefined;
+        let humanTextBox: Box | undefined;
         let chapterTrigger: ScrollTrigger | undefined;
-        let sticky = { top: 0, bottom: 0, height: 0, inset: 0, dockOffset: 0 };
+        let focusBox: Box | undefined;
         const rendered = {
           x: NaN,
           y: NaN,
@@ -135,37 +131,108 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         function positionNetwork() {
           gsap.ticker.remove(positionNetwork);
           queued = false;
-          if (!storyBox || !chapterBox) return;
+          if (!chapterBox || !overloadBox) return;
           // Reuse sampled scroll and refresh-time boxes; no scroll-frame layout reads.
           const scroll = storyTrigger?.scroll() ?? scrollY;
+          if (!pinned && focusBox && humanBox && humanTextBox) {
+            const readStart = humanTextBox.y - viewportHeight * 0.4;
+            const graphStart = humanBox.y - viewportHeight * 0.2;
+            const graphEnd = humanBox.y + humanBox.height - viewportHeight;
+            const time =
+              scroll < readStart
+                ? 0
+                : scroll < graphStart
+                  ? knowledgeStoryMotion.humanAiDuration *
+                    0.32 *
+                    clamp(
+                      (scroll - readStart) /
+                        Math.max(1, graphStart - readStart),
+                    )
+                  : knowledgeStoryMotion.humanAiDuration *
+                    (0.32 +
+                      0.68 *
+                        clamp(
+                          (scroll - graphStart) /
+                            Math.max(1, graphEnd - graphStart),
+                        ));
+            if (storyTimeline.time() !== time) storyTimeline.time(time, false);
+          }
+          const scene = knowledgeStoryMotion.chapter;
           const chapter = pinned
-            ? storyTimeline.progress() / knowledgeStoryMotion.chapterFraction
-            : chapterTimeline.progress();
-          const blend = pinned
-            ? clamp((chapter - 0.88) / 0.12)
-            : clamp(
-                (scroll - (chapterTrigger?.end ?? 0)) / (viewportHeight * 0.3),
-              );
+            ? storyTimeline.time() /
+              (100 * knowledgeStoryMotion.chapterFraction)
+            : scene.restoreStart +
+              (1 - scene.restoreStart) * (chapterTrigger?.progress ?? 0);
+          if (!pinned) chapterTimeline.progress(chapter);
+          root.dataset.graphEntry = Math.min(1, chapter).toFixed(3);
+          root.dataset.chapterScene =
+            chapter < scene.overloadStart
+              ? 'problem'
+              : chapter < scene.overloadEnd
+                ? 'overload'
+                : chapter < scene.restoreStart
+                  ? 'solution'
+                  : chapter < scene.focusStart
+                    ? 'overload'
+                    : chapter < scene.focusEnd
+                      ? 'focusing'
+                      : 'focused';
+          // Only overload breaks the editorial grid; focus returns to its original dock.
+          const focus = focusEase(
+            clamp(
+              (chapter - scene.focusStart) /
+                (scene.focusEnd - scene.focusStart),
+            ),
+          );
+          const from = {
+            x: overloadBox.x + (chapterBox.x - overloadBox.x) * focus,
+            y: overloadBox.y + (chapterBox.y - overloadBox.y) * focus,
+            width:
+              overloadBox.width +
+              (chapterBox.width - overloadBox.width) * focus,
+            height:
+              overloadBox.height +
+              (chapterBox.height - overloadBox.height) * focus,
+          };
+          // Natural-flow mobile docks leave the solution copy entirely clear.
+          const inFocus =
+            !pinned && focusBox && scroll >= focusBox.y - viewportHeight * 0.75;
+          const inHuman =
+            !pinned && humanBox && scroll >= humanBox.y - viewportHeight * 0.8;
+          const naturalDock = inHuman && humanBox ? humanBox : focusBox;
+          if (!pinned && naturalDock) {
+            const target = inHuman || inFocus ? naturalDock : overloadBox;
+            from.x = target.x;
+            from.width = target.width;
+            from.height = Math.min(target.height, viewportHeight * 0.65);
+            from.y = target.y;
+          }
           const fromY = pinned
-            ? chapterBox.y - scroll + pinOffset(scroll)
-            : Math.min(
-                Math.max(chapterBox.y - scroll, viewportHeight * 0.16),
-                (chapterTrigger?.end ?? 0) - scroll + viewportHeight * 0.16,
-              );
-          const toY = pinned
-            ? storyBox.y - scroll + pinOffset(scroll)
-            : Math.min(
-                Math.max(sticky.top - scroll, sticky.inset),
-                sticky.bottom - scroll - sticky.height,
-              ) + sticky.dockOffset;
-          const x = chapterBox.x + (storyBox.x - chapterBox.x) * blend;
-          const y = fromY + (toY - fromY) * blend;
-          const width =
-            chapterBox.width + (storyBox.width - chapterBox.width) * blend;
-          const height =
-            chapterBox.height + (storyBox.height - chapterBox.height) * blend;
-          const opacity =
-            scroll < (chapterTrigger?.start ?? 0) && !pinned ? 0 : 1;
+            ? from.y - scroll + pinOffset(scroll)
+            : (inHuman || inFocus) && naturalDock
+              ? Math.min(
+                  Math.max(naturalDock.y - scroll, viewportHeight * 0.16),
+                  naturalDock.y + naturalDock.height - scroll - from.height,
+                )
+              : from.y - scroll;
+          const x = from.x;
+          const y = fromY;
+          const width = from.width;
+          const height = from.height;
+          const opacity = pinned
+            ? 1
+            : inHuman || inFocus
+              ? clamp(
+                  (viewportHeight * 0.75 - (from.y - scroll)) /
+                    (viewportHeight * 0.12),
+                )
+              : clamp(
+                  (viewportHeight * 0.85 - (from.y - scroll)) /
+                    (viewportHeight * 0.15),
+                ) *
+                clamp(
+                  (from.y + from.height - scroll) / (viewportHeight * 0.15),
+                );
           if (opacity !== rendered.opacity) {
             setOpacity(opacity);
             rendered.opacity = opacity;
@@ -203,31 +270,40 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           // Read only on layout refresh, before the frame's placement writes.
           const scroll = scrollY;
           viewportHeight = innerHeight;
-          const to = storyDock.getBoundingClientRect();
-          storyBox = {
-            x: to.x,
-            y: to.y + scroll - pinOffset(scroll),
-            width: to.width,
-            height: to.height,
-          };
-          const chapter = chapterDock.getBoundingClientRect();
+          const chapter = focusDock.getBoundingClientRect();
           chapterBox = {
             x: chapter.x,
             y: chapter.y + scroll - pinOffset(scroll),
             width: chapter.width,
             height: pinned ? chapter.height : innerHeight * 0.65,
           };
-          if (!pinned) {
-            const parent = storyLayout.getBoundingClientRect(),
-              bounds = figure.getBoundingClientRect();
-            sticky = {
-              top: parent.top + scroll,
-              bottom: parent.bottom + scroll,
-              height: bounds.height,
-              inset: parseFloat(getComputedStyle(figure).top),
-              dockOffset: to.top - bounds.top,
-            };
-          }
+          const overload = overloadDock.getBoundingClientRect();
+          overloadBox = {
+            x: overload.x,
+            y: overload.y + scroll - pinOffset(scroll),
+            width: overload.width,
+            height: overload.height,
+          };
+          focusBox = {
+            x: chapter.x,
+            y: chapter.y + scroll - pinOffset(scroll),
+            width: chapter.width,
+            height: chapter.height,
+          };
+          const human = humanDock.getBoundingClientRect();
+          humanBox = {
+            x: human.x,
+            y: human.y + scroll,
+            width: human.width,
+            height: human.height,
+          };
+          const humanText = humanCopy.getBoundingClientRect();
+          humanTextBox = {
+            x: humanText.x,
+            y: humanText.y + scroll,
+            width: humanText.width,
+            height: humanText.height,
+          };
           gsap.ticker.remove(positionNetwork);
           positionNetwork();
         }
@@ -236,31 +312,17 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
           () => gsap.ticker.remove(positionNetwork),
           { once: true },
         );
-        chapterTimeline.eventCallback('onUpdate', () => {
-          const chapter = chapterTimeline.progress();
-          root.dataset.graphEntry = chapter.toFixed(3);
-          root.dataset.chapterScene =
-            chapter < 0.26
-              ? 'text'
-              : chapter < 0.6
-                ? 'overload'
-                : chapter < 0.74
-                  ? 'focus'
-                  : 'clean';
-          queueNetwork();
-        });
         const timeline = storyTimeline;
         let current = -1;
         function showBeat(progress = 0) {
           const index = pinned
             ? getFocusedStoryBeat(progress)
-            : storyTrigger && storyTrigger.scroll() >= storyTrigger.start
+            : humanTextBox &&
+                (storyTrigger?.scroll() ?? scrollY) >=
+                  humanTextBox.y - viewportHeight * 0.4
               ? getStoryBeat(0.25 + progress * 0.75)
               : 0;
-          if (pinned)
-            chapterTimeline.progress(
-              Math.min(1, progress / knowledgeStoryMotion.chapterFraction),
-            );
+
           if (index !== current) {
             current = index;
             beats.forEach((beat, beatIndex) => {
@@ -268,52 +330,65 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
             });
             root.dataset.storyBeat = String(index);
           }
-          queueNetwork();
         }
-        timeline.eventCallback('onUpdate', queueNetwork);
-        showBeat();
-        const readingAnchor = () =>
-          desktopGraph
-            ? innerHeight * knowledgeStoryMotion.readingFraction
-            : figure.offsetHeight +
+        timeline.eventCallback('onUpdate', () => {
+          if (pinned)
+            chapterTimeline.progress(
               Math.min(
-                knowledgeStoryMotion.readingGap,
-                (innerHeight - figure.offsetHeight) *
-                  knowledgeStoryMotion.readingFraction,
-              );
+                1,
+                timeline.time() / (100 * knowledgeStoryMotion.chapterFraction),
+              ),
+            );
+          showBeat(getLegacyStoryProgress(timeline.time(), pinned));
+          queueNetwork();
+        });
+        showBeat();
         storyTrigger = ScrollTrigger.create({
           id: 'knowledge-bridge-story',
-          trigger: pinned ? stage : copy,
-          animation: timeline,
+          trigger: pinned ? stage : focusDock,
+          animation: pinned ? timeline : undefined,
           pin: pinned ? stage : false,
-          start: pinned ? 'top top' : () => 'top ' + readingAnchor() + 'px',
+          start: 'top top',
           end: pinned
             ? () =>
                 '+=' +
-                innerHeight *
-                  (context.conditions?.tablet
-                    ? knowledgeStoryMotion.tabletScrollScreens
-                    : knowledgeStoryMotion.scrollScreens)
-            : () => 'bottom ' + readingAnchor() + 'px',
-          scrub: knowledgeStoryMotion.scrub,
+                (innerHeight *
+                  knowledgeStoryMotion.scrollScreens *
+                  storyTiming.total) /
+                  100
+            : () =>
+                humanDock.getBoundingClientRect().bottom +
+                scrollY -
+                innerHeight,
+          scrub: pinned ? knowledgeStoryMotion.scrub : false,
           invalidateOnRefresh: true,
           anticipatePin: pinned ? 1 : 0,
-          onUpdate: (trigger) => showBeat(trigger.progress),
+          onUpdate: () => {
+            showBeat(getLegacyStoryProgress(timeline.time(), pinned));
+            queueNetwork();
+          },
           // GSAP suppresses animation callbacks while restoring progress on refresh.
           onRefresh: (trigger) => {
             storyTrigger = trigger;
+            if (pinned)
+              chapterTimeline.progress(
+                Math.min(
+                  1,
+                  timeline.time() /
+                    (100 * knowledgeStoryMotion.chapterFraction),
+                ),
+              );
             measureNetwork();
-            showBeat(trigger.progress);
+            showBeat(getLegacyStoryProgress(timeline.time(), pinned));
           },
         });
         if (!pinned) {
           chapterTrigger = ScrollTrigger.create({
             id: 'knowledge-bridge-chapter-one',
-            trigger: chapterDock,
-            start: 'top 25%',
-            end: () => '+=' + innerHeight * 1.5,
-            animation: chapterTimeline,
-            scrub: knowledgeStoryMotion.scrub,
+            trigger: focusDock,
+            start: 'top top',
+            end: 'top -45%',
+            onUpdate: queueNetwork,
             invalidateOnRefresh: true,
             onRefresh: (trigger) => {
               chapterTrigger = trigger;
@@ -328,32 +403,30 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
         measureNetwork();
       } else {
         root.dataset.networkEnhanced = 'true';
-        let previousChapter: boolean | undefined;
+        const staticTimeline = createChapterTimeline(root, layout, false);
+        let previousFocus: boolean | undefined;
         function positionStaticNetwork() {
-          const chapter = chapterDock.getBoundingClientRect();
-          const inChapter = chapter.bottom > innerHeight * 0.3;
-          const target = inChapter
-            ? chapter
-            : storyDock.getBoundingClientRect();
-          if (inChapter !== previousChapter) {
-            previousChapter = inChapter;
-            root.dataset.chapterScene = inChapter ? 'overload' : 'clean';
-            gsap.set(root.querySelector('.kb-graph'), {
-              attr: {
-                viewBox: inChapter
-                  ? overloadViewBox[layout]
-                  : graphViewBox[layout].story,
-              },
-            });
-            gsap.set(root.querySelectorAll('[data-overload-only]'), {
-              opacity: inChapter ? 1 : 0,
-            });
+          const dense = overloadDock.getBoundingClientRect();
+          const focus = focusDock.getBoundingClientRect();
+          const human = humanDock.getBoundingClientRect();
+          const inFocus = focus.top < innerHeight * 0.75;
+          const target =
+            human.top < innerHeight * 0.75 ? human : inFocus ? focus : dense;
+          if (inFocus !== previousFocus) {
+            previousFocus = inFocus;
+            root.dataset.chapterScene = inFocus ? 'focused' : 'overload';
+            staticTimeline.progress(
+              inFocus ? 1 : knowledgeStoryMotion.chapter.restoreStart,
+            );
           }
+          gsap.set(root.querySelector('[data-ai-learns-label]'), {
+            opacity: target === human ? 1 : 0,
+          });
           gsap.set(host, {
             x: target.x,
             y: target.y,
             width: target.width,
-            height: inChapter ? innerHeight * 0.6 : target.height,
+            height: Math.min(target.height, innerHeight * 0.65),
             visibility:
               target.bottom < 0 || target.top > innerHeight
                 ? 'hidden'
@@ -401,7 +474,6 @@ export function mountKnowledgeBridge(root: HTMLElement): () => void {
     events.abort();
     motion.revert();
     heroMotion.revert();
-    disposeHistory();
     resetGraphPresentation(root);
     applyGraphLayout(root, 'mobile');
     heroValue.textContent = String(heroTotal);

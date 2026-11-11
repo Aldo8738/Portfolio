@@ -42,8 +42,7 @@ export const projects: Project[] = [
     hook: 'Making AI-generated knowledge human-friendly.',
     summary:
       'A real-time workspace for exploring knowledge graphs, reviewing AI-generated relationships, and making human corrections.',
-    highlight:
-      '81.5% shorter graph finish time · 8.47s → 1.57s · Reddit, 100 items',
+    highlight: '81.5% less time to render a graph.',
     technologies: [
       'React',
       'TypeScript',
@@ -55,7 +54,7 @@ export const projects: Project[] = [
     visualization: { kind: 'knowledge-hierarchy', accent: 'pink' },
     caseStudy: {
       intro:
-        'I helped turn an early knowledge-graph research prototype into a faster, more responsive interface for human–AI collaboration.',
+        'I helped turn a knowledge-graph research prototype into a faster, more intuitive interface where people can explore and refine AI-generated connections.',
       role: 'Full-stack development, UX, performance, human–AI interaction',
       sections: [
         {

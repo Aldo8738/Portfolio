@@ -14,12 +14,23 @@ export const knowledgeStoryMotion = {
   readingGap: 160,
   readingFraction: 0.4,
   chapterFraction: 0.625,
+  humanAiDuration: 50,
+  chapter: {
+    problemEnd: 0.18,
+    overloadStart: 0.24,
+    overloadEnd: 0.42,
+    solutionStart: 0.48,
+    solutionEnd: 0.64,
+    restoreStart: 0.68,
+    focusStart: 0.72,
+    focusEnd: 0.84,
+  },
 } as const;
 
 export function resetGraphPresentation(root: HTMLElement) {
   root
     .querySelectorAll(
-      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-facts, [data-graph-metric], [data-story-progress], .kb-chapter-one-copy, li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
+      '.kb-graph [style], .kb-graph[style], [data-network-host], [data-hero-copy], [data-hero-copy] [style], .kb-hero-metric, .kb-facts, [data-story-progress], .kb-chapter-one-copy, .kb-solution-copy, .kb-human-copy, .kb-human-note, li[data-story-beat], li[data-story-beat] h2, li[data-story-beat] p',
     )
     .forEach((element) => element.removeAttribute('style'));
   root
@@ -34,234 +45,223 @@ export function createChapterTimeline(
 ) {
   const find = (selector: string) => root.querySelectorAll(selector);
   const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
+  const scene = knowledgeStoryMotion.chapter;
+  // One owner for chapter visibility and geometry; reading never changes the graph.
+  if (pinned) {
+    timeline
+      .fromTo(
+        find('.kb-chapter-one-copy'),
+        { opacity: 1 },
+        { opacity: 0, duration: 0.04 },
+        scene.problemEnd,
+      )
+      .fromTo(
+        find('.kb-graph'),
+        { opacity: 0 },
+        { opacity: 1, duration: 0.04 },
+        0.2,
+      )
+      .to(find('.kb-graph'), { opacity: 0, duration: 0.04 }, scene.overloadEnd)
+      .fromTo(
+        find('.kb-solution-copy'),
+        { opacity: 0 },
+        { opacity: 1, duration: 0.04 },
+        0.44,
+      )
+      .to(
+        find('.kb-solution-copy'),
+        { opacity: 0, duration: 0.04 },
+        scene.solutionEnd,
+      )
+      .to(
+        find('.kb-graph'),
+        { opacity: 1, duration: 0.04 },
+        scene.restoreStart,
+      );
+  }
   timeline
-    .fromTo(
-      find('.kb-graph'),
-      { opacity: 0 },
-      { opacity: 1, duration: pinned ? 0.04 : 0.08 },
-      pinned ? 0.26 : 0.04,
-    )
     .fromTo(
       find('.kb-graph'),
       { attr: { viewBox: overloadViewBox[layout] } },
       {
         attr: { viewBox: graphViewBox[layout].story },
-        duration: 0.14,
+        duration: 0.12,
         ease: 'power1.inOut',
       },
-      0.6,
+      scene.focusStart,
     )
     .fromTo(
       find('[data-overload-only]'),
       { opacity: 1 },
-      { opacity: 0, duration: 0.12 },
-      0.62,
+      { opacity: 0, duration: 0.1 },
+      0.74,
     )
     .fromTo(
-      find('.kb-item-mark'),
-      { attr: { r: 4.2 } },
-      { attr: { r: 4.5 }, duration: 0.14 },
-      0.6,
+      find('.kb-node:not([data-node-id="berlin"]) .kb-item-mark'),
+      { attr: { r: layout === 'desktop' ? 7 : 4.2 } },
+      { attr: { r: 4.5 }, duration: 0.12 },
+      scene.focusStart,
     )
     .fromTo(
       find('[data-network-detail]'),
       { opacity: 1 },
-      { opacity: 0.35, duration: 0.12 },
-      0.62,
+      { opacity: 0, duration: 0.1 },
+      0.74,
     )
     .fromTo(
       find('[data-core-relationships]'),
       { opacity: 0.72 },
       { opacity: 1, duration: 0.08 },
-      0.66,
+      0.76,
     )
-    .to({}, { duration: 0.26 }, 0.74);
-  if (pinned)
+    .to({}, { duration: 0.16 }, scene.focusEnd);
+  root.querySelectorAll<SVGTextElement>('.kb-node text').forEach((label) => {
+    const style = getComputedStyle(label);
     timeline.fromTo(
-      find('.kb-chapter-one-copy'),
-      { opacity: 1 },
-      { opacity: 0, duration: 0.04 },
-      0.24,
+      label,
+      {
+        fill: 'var(--text)',
+        opacity: 1,
+        fontSize: style.getPropertyValue('--kb-overload-label-size').trim(),
+        fontWeight: style.getPropertyValue('--kb-overload-label-weight').trim(),
+      },
+      {
+        fill: 'var(--text)',
+        opacity: Number(style.getPropertyValue('--kb-focused-label-opacity')),
+        fontSize: style.fontSize,
+        fontWeight: style.getPropertyValue('--kb-focused-label-weight').trim(),
+        duration: 0.12,
+      },
+      scene.focusStart,
     );
+  });
   return timeline;
 }
 
-export function createGraphTimeline(
-  root: HTMLElement,
-  mobile: boolean,
-  focused: boolean,
-) {
+// Chapter 02 hands directly to Chapter 03 after the focused graph's existing hold.
+export function getGraphStoryTiming(pinned: boolean) {
+  const start = pinned ? knowledgeStoryMotion.chapterFraction * 100 : 0;
+  const end = start + knowledgeStoryMotion.humanAiDuration;
+  return { start, end, total: end };
+}
+
+export function getLegacyStoryProgress(time: number, pinned: boolean) {
+  const { start, end } = getGraphStoryTiming(pinned);
+  if (time < start) return time / 100;
+  if (time >= end) return 1;
+  const progress = (time - start) / (end - start);
+  return pinned ? 0.75 + progress * 0.15 : 1 / 3 + progress * 0.4;
+}
+
+export function createGraphTimeline(root: HTMLElement, pinned: boolean) {
   const find = (selector: string) => root.querySelectorAll(selector);
+  const timing = getGraphStoryTiming(pinned);
   const timeline = gsap.timeline({
     paused: true,
     defaults: { ease: 'none', immediateRender: false },
   });
   timeline
-    .addLabel('overload', 0)
-    .addLabel('viewport', 25)
-    .addLabel('feedback', 50)
-    .addLabel('edit', 60)
-    .addLabel('return', 68)
-    .addLabel('correction', 75)
-    .addLabel('evidence', 80)
     .set(find('[data-reveal-group]'), { opacity: 1 }, 0)
     .set(
       find(
-        '[data-graph-layer="viewport"], [data-graph-layer="priority"], [data-graph-layer="backend"], [data-backend-node], [data-proposal-label], [data-edit-path], [data-return-path], [data-edit-label], [data-return-label], [data-graph-metric]',
+        '[data-graph-layer="viewport"], [data-graph-layer="priority"], [data-graph-layer="backend"], [data-backend-node], [data-proposal-label], [data-edit-path], [data-return-path], [data-edit-label], [data-return-label]',
       ),
       { opacity: 0 },
       0,
     )
-    .set(find('[data-corrected-edge]'), { opacity: 1 }, 0)
-    .set(find('[data-incorrect-edge]'), { opacity: 0 }, 0);
+    .set(
+      find('[data-corrected-edge]'),
+      { opacity: 1, strokeDasharray: 1, strokeDashoffset: 0 },
+      0,
+    )
+    .set(find('[data-incorrect-edge]'), { opacity: 0 }, 0)
+    .add(
+      createHumanAiTimeline(root, pinned).duration(
+        knowledgeStoryMotion.humanAiDuration,
+      ),
+      timing.start,
+    )
+    .fromTo(
+      find('[data-story-progress]'),
+      { scaleX: 0 },
+      { scaleX: 1, duration: timing.total },
+      0,
+    );
+  return timeline;
+}
 
+function createHumanAiTimeline(root: HTMLElement, pinned: boolean) {
+  const find = (selector: string) => root.querySelectorAll(selector);
+  const timeline = gsap.timeline({
+    defaults: { ease: 'none', immediateRender: false },
+  });
   timeline
+    .addLabel('read', 0)
+    .addLabel('observe', 32)
+    .addLabel('correct', 48)
+    .addLabel('settled', 62)
+    .set(
+      find('[data-corrected-edge]'),
+      { strokeDasharray: 1, strokeDashoffset: 0 },
+      0,
+    )
+    .to(find('[data-corrected-edge]'), { opacity: 0, duration: 4 }, 0)
+    .to(find('[data-core-edge]'), { opacity: 0.2, duration: 4 }, 0)
+    .to(find('[data-flow-soften]'), { opacity: 0.35, duration: 4 }, 0)
+    .to(find('[data-network-detail]'), { opacity: 0, duration: 4 }, 0)
+    .fromTo(
+      find('[data-incorrect-edge]'),
+      { opacity: 0, stroke: 'var(--text)' },
+      { opacity: 1, duration: 4 },
+      28,
+    )
+    .to(find('[data-proposal-label]'), { opacity: 1, duration: 4 }, 28)
+    .to(find('[data-human-note]'), { opacity: 1, duration: 4 }, 28)
+    .to(find('[data-selection-ring]'), { opacity: 1, duration: 2 }, 'correct')
+    .to(
+      find('[data-incorrect-edge]'),
+      { stroke: 'var(--accent)', duration: 2 },
+      'correct',
+    )
+    .to(find('[data-human-edit-label]'), { opacity: 1, duration: 2 }, 'correct')
+    .to(find('[data-proposal-label]'), { opacity: 0, duration: 2 }, 'correct')
     .to(
       find(
-        '[data-distant-detail]:not(.kb-node), .kb-node[data-distant-detail] circle',
+        '[data-incorrect-edge], [data-selection-ring], [data-human-edit-label]',
       ),
-      { opacity: 0.45, duration: 4 },
-      25,
-    )
-    .to(find('[data-network-detail]'), { opacity: 0.1, duration: 4 }, 25)
-    .to(find('[data-graph-layer="viewport"]'), { opacity: 1, duration: 2 }, 29)
-    .fromTo(
-      find('[data-viewport-frame]'),
-      { strokeDasharray: 1, strokeDashoffset: 1 },
-      { strokeDashoffset: 0, duration: 4, ease: 'power1.inOut' },
-      29,
-    )
-    .to(find('[data-graph-layer="priority"]'), { opacity: 1, duration: 1 }, 35)
-    .to(find('[data-graph-layer="priority"]'), { opacity: 0, duration: 2 }, 43)
-    .to(find('[data-corrected-edge]'), { opacity: 0, duration: 2 }, 47)
-    .to(find('[data-graph-layer="viewport"]'), { opacity: 0, duration: 2 }, 50)
-    .to(find('[data-graph-layer="backend"]'), { opacity: 1, duration: 1 }, 53)
-    .to(
-      find('[data-incorrect-edge], [data-proposal-label]'),
-      { opacity: 1, duration: 2 },
-      53,
-    )
-    .to(find('[data-selection-ring]'), { opacity: 1, duration: 2 }, 56)
-    .to(find('[data-proposal-label]'), { opacity: 0, duration: 2 }, 56)
-    .to(find('[data-incorrect-edge]'), { opacity: 0, duration: 2 }, 58)
-    .to(find('[data-backend-node]'), { opacity: 1, duration: 2 }, 58)
-    .to(find('[data-selection-ring]'), { opacity: 0, duration: 1 }, 'edit')
-    .to(
-      find('[data-edit-path], [data-edit-label]'),
-      { opacity: 1, duration: 1 },
-      'edit',
-    )
-    .to(
-      find('[data-edit-path], [data-edit-label]'),
-      { opacity: 0, duration: 1 },
-      66,
-    )
-    .to(
-      find('[data-return-path], [data-return-label]'),
-      { opacity: 1, duration: 1 },
-      'return',
-    )
-    .to(
-      find('[data-return-path], [data-return-label]'),
-      { opacity: 0, duration: 1 },
-      74,
+      { opacity: 0, duration: 2 },
+      54,
     )
     .fromTo(
       find('[data-corrected-edge]'),
       { opacity: 0, strokeDasharray: 1, strokeDashoffset: 1 },
-      { opacity: 1, strokeDashoffset: 0, duration: 3 },
-      'correction',
-    )
-    .to(find('[data-graph-layer="backend"]'), { opacity: 0, duration: 2 }, 78)
-    .to(
-      find('[data-network-detail]'),
-      { opacity: mobile ? 0.12 : 0.22, duration: 4 },
-      80,
+      { opacity: 1, strokeDashoffset: 0, duration: 6 },
+      56,
     )
     .to(
-      find(
-        '[data-distant-detail]:not(.kb-node), .kb-node[data-distant-detail] circle',
-      ),
-      { opacity: 0.45, duration: 4 },
-      80,
+      find('[data-flow-soften], [data-core-edge]'),
+      { opacity: 1, duration: 6 },
+      56,
     )
     .fromTo(
-      find('[data-graph-metric]'),
-      { opacity: 0, y: 12 },
-      { opacity: 1, y: 0, duration: 6, ease: 'power2.out' },
-      82,
-    );
-
-  addPacket(
-    timeline,
-    root,
-    '[data-priority-path]',
-    '[data-priority-packet]',
-    36,
-    5,
-  );
-  addPacket(
-    timeline,
-    root,
-    '[data-edit-path]',
-    '[data-feedback-packet]',
-    61,
-    4,
-  );
-  addPacket(
-    timeline,
-    root,
-    '[data-return-path]',
-    '[data-delivery-packet]',
-    69,
-    4,
-  );
-  const prefix = focused ? knowledgeStoryMotion.chapterFraction * 100 : 0;
-  const scale = (100 - prefix) / 75;
-  for (const tween of timeline.getChildren(false, true, false)) {
-    const start = tween.startTime();
-    if (start === 0) continue;
-    tween
-      .duration(tween.duration() * scale)
-      .startTime(prefix + (start - 25) * scale);
-  }
-  timeline.fromTo(
-    find('[data-story-progress]'),
-    { scaleX: 0 },
-    { scaleX: 1, duration: 100 },
-    0,
-  );
-  return timeline;
-}
-
-function addPacket(
-  timeline: gsap.core.Timeline,
-  root: ParentNode,
-  pathSelector: string,
-  packetSelector: string,
-  start: number,
-  duration: number,
-) {
-  const path = root.querySelector<SVGPathElement>(pathSelector);
-  const dot = root.querySelector<SVGCircleElement>(packetSelector);
-  if (!path || !dot) return;
-  const distance = path.getTotalLength();
-  const travel = { progress: 0 };
-  gsap.set(dot, { attr: { cx: 0, cy: 0 } });
-  timeline
-    .to(dot, { opacity: 1, duration: 1 }, start)
-    .to(
-      travel,
-      {
-        progress: 1,
-        duration,
-        onUpdate: () => {
-          const point = path.getPointAtLength(distance * travel.progress);
-          dot.setAttribute('cx', String(point.x));
-          dot.setAttribute('cy', String(point.y));
-        },
-      },
-      start,
+      find('[data-ai-learns-label]'),
+      { opacity: 0 },
+      { opacity: 1, duration: 2 },
+      'settled',
     )
-    .to(dot, { opacity: 0, duration: 1 }, start + duration);
+    .to(find('[data-ai-learns-label]'), { opacity: 0, duration: 4 }, 96)
+    .to({}, { duration: 38 }, 'settled');
+  if (pinned)
+    timeline
+      .fromTo(find('.kb-graph'), { opacity: 1 }, { opacity: 0, duration: 4 }, 0)
+      .fromTo(
+        find('.kb-human-copy'),
+        { opacity: 0 },
+        { opacity: 1, duration: 4 },
+        4,
+      )
+      .to(find('.kb-human-copy'), { opacity: 0, duration: 4 }, 24)
+      .to(find('.kb-graph'), { opacity: 1, duration: 4 }, 28)
+      .to(find('[data-human-note]'), { opacity: 0, duration: 4 }, 96);
+  return timeline;
 }

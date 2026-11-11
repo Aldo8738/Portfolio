@@ -38,9 +38,8 @@ const revealGroups: Record<string, number> = {
     It focuses into the same European cluster. Illustrative portfolio
     reconstruction, not the research dataset or original product UI. Europe
     connects France and Germany with their cities and landmarks. A proposed
-    Paris to Germany relationship is corrected to Paris to France. A user edit
-    goes to the backend via an API; a WebSocket graph update returns before the
-    corrected relationship settles.
+    Paris to Germany relationship is corrected to Paris to France. The corrected
+    relationship reconnects and remains visible.
   </desc>
   <defs>
     <marker
@@ -71,7 +70,7 @@ const revealGroups: Record<string, number> = {
           transform={`translate(${node.mobile.x} ${node.mobile.y})`}
         >
           <circle
-            r={node.id === 'queretaro' ? 3 : node.label ? 4.2 : 3}
+            r={node.id === 'queretaro' ? 4 : node.label ? 6 : 3.5}
             class={
               node.id === 'queretaro'
                 ? 'kb-personal-dot'
@@ -82,6 +81,9 @@ const revealGroups: Record<string, number> = {
           />
           {node.label && (
             <text
+              data-overload-label={
+                node.id === 'queretaro' ? 'tertiary' : 'secondary'
+              }
               y={['north-america', 'mexico'].includes(node.id) ? -28 : -13}
               text-anchor="middle"
             >
@@ -97,7 +99,7 @@ const revealGroups: Record<string, number> = {
           data-overload-point={index}
           cx={node.mobile.x}
           cy={node.mobile.y}
-          r={node.role === 'secondary' ? 2.7 : 1.5}
+          r={node.role === 'secondary' ? 3.5 : 2.1}
         />
       ))}
     </g>
@@ -219,6 +221,7 @@ const revealGroups: Record<string, number> = {
           )}
           <text
             class="kb-anchor-label"
+            data-overload-label={node.overloadLabelTier}
             x="0"
             y={
               ['paris', 'berlin', 'eiffel', 'gate'].includes(node.id) ? 25 : -16
@@ -256,16 +259,37 @@ const revealGroups: Record<string, number> = {
       </text>
       <circle data-priority-packet r="3" class="kb-packet" opacity="0" />
     </g>
+    <text
+      class="kb-art-note"
+      x="200"
+      y="70"
+      text-anchor="middle"
+      data-proposal-label
+      opacity="0"
+    >
+      PROPOSED / INCORRECT
+    </text>
+    <text
+      class="kb-art-note kb-human-edit-label"
+      x="200"
+      y="70"
+      text-anchor="middle"
+      data-human-edit-label
+      opacity="0"
+    >
+      HUMAN CORRECTION
+    </text>
+    <text
+      class="kb-art-note kb-human-edit-label"
+      x="200"
+      y="70"
+      text-anchor="middle"
+      data-ai-learns-label
+      opacity="0"
+    >
+      AI LEARNS
+    </text>
     <g data-graph-layer="backend" opacity="0">
-      <text
-        class="kb-art-note"
-        x="200"
-        y="195"
-        text-anchor="middle"
-        data-proposal-label
-      >
-        PROPOSED / INCORRECT
-      </text>
       <path
         class="kb-channel"
         data-edit-path
@@ -318,6 +342,16 @@ const revealGroups: Record<string, number> = {
           data-backend-label
         >
           BACKEND
+        </text>
+        <text
+          x="75"
+          y="33"
+          text-anchor="middle"
+          class="kb-art-note"
+          data-processing-label
+          opacity="0"
+        >
+          PROCESSING
         </text>
       </g>
       <circle data-feedback-packet r="3.5" class="kb-packet" opacity="0" />

@@ -3,7 +3,7 @@ export const knowledgeBridge = {
   title: 'Knowledge Bridge.',
   subheading: 'Making AI-generated knowledge human-friendly.',
   introduction:
-    'I helped turn an early knowledge-graph research prototype into a faster, more responsive interface for human–AI collaboration.',
+    'I helped transform a research prototype into a faster, more intuitive tool for exploring and refining AI-generated knowledge.',
   checkpoint: {
     eyebrow: '02 / MODEL VERSION CONTROL',
     heading: 'Every change has a history.',
@@ -19,7 +19,7 @@ export const knowledgeBridge = {
     changes: ['Original: Paris → Germany', 'Changed: Germany → France'],
   },
   engineering: {
-    eyebrow: '03 / THE ENGINEERING',
+    eyebrow: '04 / THE ENGINEERING',
     heading: 'Designed for people. Engineered for speed.',
     contribution:
       'Full-stack development, UX, performance, human–AI interaction',
@@ -39,17 +39,15 @@ export const knowledgeBridge = {
 export const knowledgeBridgeBeats = [
   {
     title: 'Everything, all at once.',
-    description: 'Large knowledge graphs were overwhelming to explore.',
+    description: 'The entire graph had to load before anything appeared.',
   },
   {
     title: 'Render what matters.',
-    description:
-      'Viewport-aware rendering and prioritized streaming keep the interface responsive.',
+    description: "Stream nodes as they're ready. Render only what's visible.",
   },
   {
     title: 'A two-way conversation.',
-    description:
-      'Humans refine relationships; the backend processes feedback and streams updated graph data.',
+    description: 'AI proposes connections. People can refine them.',
   },
   {
     title: 'Less waiting. More exploring.',
@@ -76,3 +74,12 @@ export const knowledgeBridgeMeasurements = [
     items: 600,
   },
 ] as const;
+
+export const knowledgeBridgeHumanAi = {
+  eyebrow: '03 / HUMAN + AI',
+  steps: [
+    'AI proposal: Paris is linked to Germany.',
+    'Human correction: replace Germany with France.',
+    'AI LEARNS: the corrected graph links Paris to France.',
+  ],
+} as const;
