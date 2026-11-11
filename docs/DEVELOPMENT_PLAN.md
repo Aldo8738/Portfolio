@@ -1,5 +1,7 @@
 # Taquería Aldo development plan
 
+The current homepage interaction direction is the [diegetic brief](taqueria-diegetic-interactions-codex-plan.md). It supersedes permanent floating labels; see [implementation and checks](qa/DIEGETIC_INTERACTIONS.md).
+
 Planning baseline: 21 October 2026. The authoritative specification remains
 [`TAQUERIA_ALDO_CODEX_HANDOFF.md`](../TAQUERIA_ALDO_CODEX_HANDOFF.md); this document
 turns it into delivery checkpoints. Follow [coding conventions](CODING_CONVENTIONS.md)
@@ -41,6 +43,25 @@ removes the hero graph and outline, keeps the contribution table in natural flow
 and expands Chapter 01 into an overload-to-focus sequence within the same SVG.
 See the [implementation review](qa/KNOWLEDGE_BRIDGE_GRAPH_STORYTELLING.md).
 Later chapters remain outside this revision's design scope.
+The later [Step 5 scroll-storytelling brief](knowledge-bridge-step-5-scroll-storytelling.md)
+adds separate problem, overload, solution, focusing and focused scenes for Chapters
+01-02. It preserves the approved hero and graph geometry, uses natural flow on
+mobile and leaves Chapter 03 unchanged. See the
+[implementation notes](qa/KNOWLEDGE_BRIDGE_STEP_5.md).
+The subsequent [Step 6 Human + AI brief](knowledge-bridge-step-6-human-ai-chapter.md)
+adds Chapter 03's read, observe, correct, respond and settle sequence. It retains
+the single graph and the approved earlier desktop scroll ranges. See the
+[Chapter 03 implementation notes](qa/KNOWLEDGE_BRIDGE_STEP_6.md) for the
+representative correction, transport evidence and verification limits.
+The creator's subsequent final structure is Hero, 01 Overload, 02 Focus,
+03 Human + AI, and 04 Engineering / Impact. The standalone Model Version Control
+section and checkpoint demo are removed; Chapter 03 leads directly into the
+existing ending. This supersedes earlier instructions to retain that demo.
+Chapter 02 now ends after the dense-to-simple transition and stable focused hold,
+then goes directly into Chapter 03 text. The legacy viewport/priority sequence,
+rightward graph movement and duplicate final graph metric/copy are removed.
+Chapter 03 shows Human Correction, reconnection and AI LEARNS without backend
+signal steps. Benchmark comparisons appear only in the final Engineering section.
 
 The subsequent [CV brief](CV_CODEX_IMPLEMENTATION_BRIEF.md) adds the static `/cv`
 career timeline and its typed skill catalog. Employment and overlapping education
@@ -483,6 +504,19 @@ deployment and domain setup depend on the chosen host and access.
 
 ## Verification at each implementation checkpoint
 
+### Contextual navigation increment
+
+The [floating-label review](qa/annotations/REVIEW.md) documents the replacement of
+detached object links with projected HTML annotations. The original Work, photo,
+notebook and guitar actions remain shared with their 3D targets. At widths up to
+1024px, Explore exposes the same controls. Desktop also exposes Explore if an
+anchor falls outside the conservative front cone, safe viewport or collision
+budget. The header supplies the static Work fallback; the duplicate bottom CTA
+is removed. The onboarding hint fades after interaction, while Reset strengthens
+after direct camera movement. This increment does not change the frozen model,
+lighting, framing, themes or audio lifecycle. See the review for captures,
+verification results and the limits of conservative visibility checks.
+
 Run formatting checks, TypeScript checks, lint, relevant tests and a production build.
 The script names are `format:check`, `typecheck`, `lint`, `test`, `test:e2e`,
 `validate:asset` and `build`. Expand browser checks as features land.
@@ -542,3 +576,5 @@ These inputs do not block scaffolding, HTML templates or interaction infrastruct
 They do block claiming a complete, content-ready public portfolio. The recommended
 first implementation scope is Phases 0–1, followed by a review of the HTML shell and
 then Phase 2 visual integration.
+
+The later [diegetic interaction brief](taqueria-diegetic-interactions-codex-plan.md) supersedes permanent floating labels. See the [implementation notes](qa/DIEGETIC_INTERACTIONS.md).

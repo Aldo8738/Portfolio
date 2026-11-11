@@ -1,5 +1,7 @@
 # Taquería Aldo — Codex Implementation Handover
 
+**Current interaction direction:** The [diegetic brief](docs/taqueria-diegetic-interactions-codex-plan.md) supersedes permanent floating labels. See [implementation and verification](docs/qa/DIEGETIC_INTERACTIONS.md). Earlier floating-label notes below are historical.
+
 **Status:** Build-ready specification · **Date:** 21 October 2026  
 **Project:** Personal creative/developer portfolio presented as an interactive, stylized 3D Mexican taco stand  
 **Design baseline:** **Frozen Blender v3.12.9** — do not redesign the geometry  
@@ -38,6 +40,25 @@ removes the hero graph and outline, keeps the contribution table in natural flow
 and expands Chapter 01 into an overload-to-focus sequence within the same SVG.
 See the [implementation review](docs/qa/KNOWLEDGE_BRIDGE_GRAPH_STORYTELLING.md).
 Later chapters remain outside this revision's design scope.
+The later [Step 5 scroll-storytelling brief](docs/knowledge-bridge-step-5-scroll-storytelling.md)
+adds separate problem, overload, solution, focusing and focused scenes for Chapters
+01-02. It preserves the approved hero and graph geometry, uses natural flow on
+mobile and leaves Chapter 03 unchanged. See the
+[implementation notes](docs/qa/KNOWLEDGE_BRIDGE_STEP_5.md).
+The subsequent [Step 6 Human + AI brief](docs/knowledge-bridge-step-6-human-ai-chapter.md)
+adds Chapter 03's read, observe, correct, respond and settle sequence. It retains
+the single graph and the approved earlier desktop scroll ranges. See the
+[Chapter 03 implementation notes](docs/qa/KNOWLEDGE_BRIDGE_STEP_6.md) for the
+representative correction, transport evidence and verification limits.
+The creator's subsequent final structure is Hero, 01 Overload, 02 Focus,
+03 Human + AI, and 04 Engineering / Impact. The standalone Model Version Control
+section and checkpoint demo are removed; Chapter 03 leads directly into the
+existing ending. This supersedes earlier instructions to retain that demo.
+Chapter 02 now ends after the dense-to-simple transition and stable focused hold,
+then goes directly into Chapter 03 text. The legacy viewport/priority sequence,
+rightward graph movement and duplicate final graph metric/copy are removed.
+Chapter 03 shows Human Correction, reconnection and AI LEARNS without backend
+signal steps. Benchmark comparisons appear only in the final Engineering section.
 
 **CV update:** The creator's [CV implementation brief](docs/CV_CODEX_IMPLEMENTATION_BRIEF.md)
 supplies the approved chronology and skills for `/cv`. It uses the existing shared
@@ -61,6 +82,16 @@ static editorial text and optional, scoped GSAP reveals. See the
 [About implementation review](docs/qa/ABOUT.md); editable copy lives in `src/content/about.ts`.
 
 ## 1. Project vision and success criteria
+
+**Contextual navigation update:** The creator's floating-label direction replaces
+the detached Guitar, Drawings and Photos controls and bottom Work CTA with
+camera-projected annotations. The monitor, outer-right Polaroid, left sketchbook
+page and amplifier supply invisible anchors. A compact Explore menu provides the
+same actions at widths up to 1024px and whenever desktop annotations cannot fit.
+The header remains the static Work fallback. See the
+[implementation and verification review](docs/qa/annotations/REVIEW.md).
+This supersedes the earlier requirement for a separate bottom `View work` CTA;
+the frozen scene, camera composition and existing object actions remain intact.
 
 **Film treatment update:** The [cinematic film brief](docs/taqueria-cinematic-film-filter-codex.md)
 adds static neutral grain and a mild desktop corner vignette inside the scene
@@ -553,3 +584,5 @@ if (!work || work.userData.interaction !== 'work') {
 ## Appendix B — Freeze / change policy
 
 **Freeze v3.12.9 visual composition.** Only change the web application, loading strategy, material overrides needed for fidelity/contrast, event groups and animation. Do not edit the Blender asset or recolor scene elements casually. If a mesh really must change, create an explicit new asset version, compare screenshots and obtain creator approval before replacing the frozen master.
+
+The later [diegetic interaction brief](docs/taqueria-diegetic-interactions-codex-plan.md) supersedes permanent floating labels. See the [implementation notes](docs/qa/DIEGETIC_INTERACTIONS.md).
