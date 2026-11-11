@@ -4,6 +4,7 @@
   background: transparent;
 }
 
+.portfolio-flight [data-scene-annotations],
 .portfolio-flight [data-camera-tools],
 .portfolio-flight [data-photo-picker],
 .portfolio-flight [data-scene-debug] {

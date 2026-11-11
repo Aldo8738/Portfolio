@@ -35,6 +35,8 @@ import { fitNotebookCamera, notebookCamera } from '../../lib/notebook-camera';
 
 interface Props extends Pick<
   CanvasProps,
+  | 'onCameraExplore'
+  | 'onCameraReset'
   | 'active'
   | 'reducedMotion'
   | 'cameraActions'
@@ -54,6 +56,8 @@ interface Props extends Pick<
 const keyboardStep = Math.PI / 18;
 
 export function CameraControls({
+  onCameraExplore,
+  onCameraReset,
   amp,
   guitarPhase,
   photoId,
@@ -72,6 +76,7 @@ export function CameraControls({
   const { camera, size, gl, invalidate } = useThree();
   const comparison = new URLSearchParams(location.search).has('compare');
   const initialView = useRef(true);
+  const exploring = useRef(false);
   const focusedPhoto = useRef<Mesh | null>(null);
   const focusedNotebook = useRef<Object3D | null>(null);
   const guitarRestore = useRef<(() => void) | null>(null);
@@ -156,6 +161,7 @@ export function CameraControls({
         return;
       }
       cancelEntrance();
+      onCameraReset();
       focusedPhoto.current = null;
       focusedNotebook.current = null;
       delete gl.domElement.dataset.drawingsView;
@@ -276,6 +282,7 @@ export function CameraControls({
       gl,
       playTransition,
       onDrawingsView,
+      onCameraReset,
     ],
   );
   useImperativeHandle(cameraActions, () => {
@@ -558,7 +565,22 @@ export function CameraControls({
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       const orbit = controls.current;
       if (!orbit?.enabled) return;
+      if (
+        ![
+          'ArrowLeft',
+          'ArrowRight',
+          'ArrowUp',
+          'ArrowDown',
+          'Home',
+          '+',
+          '=',
+          '-',
+          '_',
+        ].includes(event.key)
+      )
+        return;
       cancelEntrance();
+      if (event.key !== 'Home') onCameraExplore();
       switch (event.key) {
         case 'ArrowLeft':
           orbit.setAzimuthalAngle(orbit.getAzimuthalAngle() - keyboardStep);
@@ -591,14 +613,25 @@ export function CameraControls({
     };
     canvas.addEventListener('keydown', onKeyDown);
     return () => canvas.removeEventListener('keydown', onKeyDown);
-  }, [gl, resetView, cancelEntrance, onReset]);
+  }, [gl, resetView, cancelEntrance, onReset, onCameraExplore]);
 
   return (
     <OrbitControls
       ref={controls}
       domElement={gl.domElement}
       enabled={active && !photoId && guitarPhase === 'idle'}
-      onStart={cancelEntrance}
+      onStart={() => {
+        cancelEntrance();
+        exploring.current = true;
+      }}
+      onChange={() => {
+        if (!exploring.current) return;
+        exploring.current = false;
+        onCameraExplore();
+      }}
+      onEnd={() => {
+        exploring.current = false;
+      }}
       enablePan={false}
       enableZoom
       zoomSpeed={0.7}

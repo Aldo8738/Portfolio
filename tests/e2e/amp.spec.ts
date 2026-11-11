@@ -21,7 +21,10 @@ test('amp video is lazy, owns sound, restores ambience and returns to the saved 
     false,
   );
   const canvas = stage.locator('canvas');
+  // The onboarding hint intentionally fades after interaction; compare the scene independently of that utility.
+  const captureOptions = { mask: [page.locator('[data-camera-tools]')] };
   const original = await canvas.screenshot({
+    ...captureOptions,
     path: testInfo.outputPath('before-video.png'),
   });
   const metrics: SceneMetrics = JSON.parse(
@@ -65,18 +68,23 @@ test('amp video is lazy, owns sound, restores ambience and returns to the saved 
   await page.keyboard.press('Escape');
   await expect(stage).toHaveAttribute('data-guitar-phase', 'idle');
   await expect(
-    page.getByRole('button', { name: "Play Aldo's guitar video" }),
+    page.getByRole('button', { name: 'Explore', exact: true }),
   ).toBeFocused();
   await expect(sound).toHaveAttribute('data-music-source', 'off');
   await expect(player).not.toHaveAttribute('src');
-  // Focus return is asserted above; its HTML outline must not affect the camera image comparison.
   await page
-    .getByRole('button', { name: "Play Aldo's guitar video" })
+    .getByRole('button', { name: 'Explore', exact: true })
     .evaluate((button) => button.blur());
-  await canvas.screenshot({ path: testInfo.outputPath('after-video.png') });
+  await canvas.screenshot({
+    ...captureOptions,
+    path: testInfo.outputPath('after-video.png'),
+  });
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(original))
+    .poll(async () =>
+      (await canvas.screenshot(captureOptions)).equals(original),
+    )
     .toBe(true);
+  await page.getByRole('button', { name: 'Explore', exact: true }).click();
   await sound.click();
   await expect(sound).toHaveAttribute('data-music-state', 'playing');
   await page.getByRole('button', { name: "Play Aldo's guitar video" }).click();

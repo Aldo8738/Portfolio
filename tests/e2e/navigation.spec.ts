@@ -56,7 +56,10 @@ test('HTML navigation works with JavaScript disabled', async ({ browser }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'Taquería Aldo',
   );
-  await page.getByRole('link', { name: 'View work' }).first().click();
+  await page
+    .getByRole('navigation', { name: 'Main navigation' })
+    .getByRole('link', { name: 'Work', exact: true })
+    .click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Selected work.',
   );

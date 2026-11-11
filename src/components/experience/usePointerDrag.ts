@@ -15,7 +15,11 @@ export function usePointerDrag(element: HTMLElement) {
       };
     };
     const onMove = (event: PointerEvent) => {
-      if (!start || event.pointerId !== start.pointerId) return;
+      if (!start) {
+        dragged.current = false;
+        return;
+      }
+      if (event.pointerId !== start.pointerId) return;
       if (
         Math.hypot(event.clientX - start.x, event.clientY - start.y) >
         dragThreshold
@@ -30,7 +34,7 @@ export function usePointerDrag(element: HTMLElement) {
       start = null;
       dragged.current = true;
     };
-    // Capture before R3F dispatches a click; keep the result until the next gesture.
+    // Suppress the release click; allow hover again on the next free pointer move.
     element.addEventListener('pointerdown', onDown, true);
     element.addEventListener('pointermove', onMove, true);
     element.addEventListener('pointerup', onUp, true);

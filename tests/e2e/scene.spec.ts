@@ -110,7 +110,9 @@ test('monitor tile activation restores the original screen on browser Back', asy
   await page.goto('/');
   const point = await getCrtPosition(page);
   const canvas = page.locator('[data-scene-status] canvas');
-  const original = await canvas.screenshot();
+  // The onboarding utility intentionally changes after interaction; keep the scene comparison exact.
+  const captureOptions = { mask: [page.locator('[data-camera-tools]')] };
+  const original = await canvas.screenshot(captureOptions);
   await page.mouse.click(point.x, point.y);
   await expect(page).toHaveURL(/\/work$/, { timeout: 30000 });
   await expect(canvas).not.toHaveAttribute(
@@ -120,7 +122,9 @@ test('monitor tile activation restores the original screen on browser Back', asy
   await page.goBack();
   await expect(canvas).toHaveAttribute('data-portfolio-phase', 'idle');
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(original))
+    .poll(async () =>
+      (await canvas.screenshot(captureOptions)).equals(original),
+    )
     .toBe(true);
 });
 
@@ -261,6 +265,13 @@ test('normal-motion camera entrance can be interrupted and reset without blockin
   await page.goto('/');
   const screen = await getCrtPosition(page);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    window.addEventListener(
+      'taqueria:scene-settled',
+      (event) => event.stopImmediatePropagation(),
+      { once: true, capture: true },
+    );
+  });
   try {
     await page.goto('/');
     await expect(page.locator('[data-scene-status]')).toHaveAttribute(
@@ -268,14 +279,20 @@ test('normal-motion camera entrance can be interrupted and reset without blockin
       'ready',
       { timeout: 45000 },
     );
-    await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
     const canvas = page.locator('[data-scene-status] canvas');
+    await expect(canvas).toHaveAttribute('data-camera-entrance', 'waiting');
+    // Hold the entrance clock so slow browser input cannot arrive after it finishes.
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
+    await page.keyboard.press('Escape');
+    await page.clock.runFor(32);
     await expect(canvas).toHaveAttribute('data-camera-entrance', 'running');
     await page.mouse.move(300, 340);
     await page.mouse.down();
     await page.mouse.move(380, 320);
     await page.mouse.up();
     await expect(canvas).toHaveAttribute('data-camera-entrance', 'interrupted');
+    await page.clock.resume();
     await expect(page).toHaveURL(/\/$/);
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await expect(canvas).toHaveAttribute('data-camera-entrance', 'complete');
@@ -457,9 +474,11 @@ test('drag and scroll explore without activating the CRT, and pointer/keyboard r
   );
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
   const canvas = page.locator('[data-scene-status] canvas');
+  // The onboarding utility intentionally changes after interaction; keep the scene comparison exact.
+  const captureOptions = { mask: [page.locator('[data-camera-tools]')] };
   const box = await canvas.boundingBox();
   if (!box) throw new Error('Canvas is missing');
-  const initial = await canvas.screenshot();
+  const initial = await canvas.screenshot(captureOptions);
   const target = metrics.targets.HIT_WORK_CRT_SCREEN;
   if (!target) throw new Error('CRT target coordinates are missing');
   const x = box.x + ((target.x + 1) * box.width) / 2;
@@ -472,33 +491,37 @@ test('drag and scroll explore without activating the CRT, and pointer/keyboard r
   await expect(page).toHaveURL(/\/$/);
   await page.getByRole('button', { name: 'Reset view', exact: true }).click();
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
+    .poll(async () => (await canvas.screenshot(captureOptions)).equals(initial))
     .toBe(true);
 
   await page.mouse.move(box.width / 2, box.height / 2);
   await page.mouse.wheel(0, -400);
-  const zoomedIn = await canvas.screenshot();
+  const zoomedIn = await canvas.screenshot(captureOptions);
   expect(zoomedIn.equals(initial)).toBe(false);
   await page.mouse.wheel(0, 400);
-  expect((await canvas.screenshot()).equals(zoomedIn)).toBe(false);
+  expect((await canvas.screenshot(captureOptions)).equals(zoomedIn)).toBe(
+    false,
+  );
   await page.getByRole('button', { name: 'Reset view', exact: true }).click();
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
+    .poll(async () => (await canvas.screenshot(captureOptions)).equals(initial))
     .toBe(true);
   await canvas.focus();
   await page.keyboard.press('+');
   await canvas.evaluate((element) => element.blur());
-  const keyboardZoom = await canvas.screenshot();
+  const keyboardZoom = await canvas.screenshot(captureOptions);
   expect(keyboardZoom.equals(initial)).toBe(false);
   await canvas.focus();
   await page.keyboard.press('-');
   await canvas.evaluate((element) => element.blur());
-  expect((await canvas.screenshot()).equals(keyboardZoom)).toBe(false);
+  expect((await canvas.screenshot(captureOptions)).equals(keyboardZoom)).toBe(
+    false,
+  );
   await canvas.focus();
   await page.keyboard.press('Home');
   await canvas.evaluate((element) => element.blur());
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
+    .poll(async () => (await canvas.screenshot(captureOptions)).equals(initial))
     .toBe(true);
 
   await page.mouse.move(box.width / 2, box.height / 2);
@@ -507,25 +530,25 @@ test('drag and scroll explore without activating the CRT, and pointer/keyboard r
     steps: 1,
   });
   await page.mouse.up({ button: 'left' });
-  expect((await canvas.screenshot()).equals(initial)).toBe(false);
+  expect((await canvas.screenshot(captureOptions)).equals(initial)).toBe(false);
   await page.screenshot({
     path: testInfo.outputPath('explored.png'),
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Reset view', exact: true }).click();
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
+    .poll(async () => (await canvas.screenshot(captureOptions)).equals(initial))
     .toBe(true);
 
   await canvas.focus();
   await page.keyboard.press('ArrowLeft');
   await canvas.evaluate((element) => element.blur());
-  expect((await canvas.screenshot()).equals(initial)).toBe(false);
+  expect((await canvas.screenshot(captureOptions)).equals(initial)).toBe(false);
   await canvas.focus();
   await page.keyboard.press('Home');
   await canvas.evaluate((element) => element.blur());
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
+    .poll(async () => (await canvas.screenshot(captureOptions)).equals(initial))
     .toBe(true);
   expect(errors).toEqual([]);
   await page.mouse.click(x, y);

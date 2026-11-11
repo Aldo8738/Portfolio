@@ -11,8 +11,12 @@ const interactiveNames = new Set<string>([
   ...themes.map((theme) => theme.node),
 ]);
 
-export function isInteractiveObject(object: Object3D): boolean {
+export function getInteractiveObject(object: Object3D): Object3D | undefined {
   for (let node: Object3D | null = object; node; node = node.parent)
-    if (interactiveNames.has(node.name)) return true;
-  return false;
+    if (interactiveNames.has(node.name)) return node;
+  return undefined;
+}
+
+export function isInteractiveObject(object: Object3D): boolean {
+  return getInteractiveObject(object) !== undefined;
 }

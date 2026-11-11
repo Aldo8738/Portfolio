@@ -1,3 +1,4 @@
+import { restoreSceneFocus } from './annotation-focus';
 import {
   useCallback,
   useEffect,
@@ -74,9 +75,7 @@ export function GuitarVideoExperience({
       currentPhase.current = 'idle';
       if (notify) {
         onPhaseChange('idle');
-        requestAnimationFrame(() =>
-          trigger.current?.focus({ preventScroll: true }),
-        );
+        restoreSceneFocus(trigger.current);
       }
     },
     [audio, onPhaseChange, trigger],

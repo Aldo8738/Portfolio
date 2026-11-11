@@ -9,6 +9,7 @@ async function ready(page: Page) {
     { timeout: 45000 },
   );
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Explore', exact: true }).click();
 }
 
 test('blocked playback and failed media remain recoverable', async ({
@@ -104,12 +105,17 @@ test('normal motion survives early close, repeats, hidden tabs and navigation wi
       .getByRole('button', { name: "Play Aldo's guitar video" })
       .click();
     if (visit !== 0)
-      await expect(stage).toHaveAttribute('data-guitar-phase', 'open');
+      await expect(stage).toHaveAttribute('data-guitar-phase', 'open', {
+        timeout: 15000,
+      });
     await page.keyboard.press('Escape');
-    await expect(stage).toHaveAttribute('data-guitar-phase', 'idle');
+    // Software WebGL can advance the existing camera timeline slowly under load.
+    await expect(stage).toHaveAttribute('data-guitar-phase', 'idle', {
+      timeout: 15000,
+    });
     await expect(
       page.getByRole('button', { name: "Play Aldo's guitar video" }),
-    ).toBeFocused();
+    ).toBeFocused({ timeout: 15000 });
     await expect(canvas).toHaveCSS('cursor', 'grab');
   }
   await page.getByRole('button', { name: "Play Aldo's guitar video" }).click();

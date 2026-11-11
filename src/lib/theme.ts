@@ -38,6 +38,10 @@ export function selectTheme(theme: ThemeId) {
   window.dispatchEvent(new CustomEvent('taqueria:theme', { detail: theme }));
 }
 
+export function getCurrentTheme() {
+  return document.documentElement.dataset.theme && 'original';
+}
+
 export function requestTheme(theme: ThemeId) {
   const request = new CustomEvent('taqueria:theme-request', {
     detail: theme,

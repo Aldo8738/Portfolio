@@ -1,0 +1,204 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  color: var(--scene-text);
+  font-size: 0.78rem;
+}
+.layer:not([data-ready='true']) {
+  visibility: hidden;
+  opacity: 0;
+}
+.items {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.annotation {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate3d(var(--anchor-x, -999px), var(--anchor-y, -999px), 0);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 240ms ease,
+    visibility 240ms;
+}
+.layer[data-ready='true'] .annotation[data-visible='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+.annotation[data-annotation='guitar'] {
+  transition:
+    opacity 320ms ease,
+    visibility 320ms;
+}
+.annotation[data-annotation='guitar'] .control {
+  translate: 0 4px;
+  transition:
+    color 240ms ease,
+    translate 320ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.annotation[data-annotation='guitar'][data-visible='true'] .control,
+.layer[data-menu-open='true'] .annotation .control {
+  translate: 0 0;
+}
+.control {
+  position: absolute;
+  left: var(--label-x);
+  top: var(--label-y);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 96px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--scene-text) 84%, transparent);
+  font: inherit;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 240ms ease;
+  list-style: none;
+}
+.control::-webkit-details-marker {
+  display: none;
+}
+.annotation[data-side='left'] .control {
+  transform: translate(-100%, -50%);
+  justify-content: flex-end;
+}
+.control span {
+  transition: transform 240ms ease;
+}
+.control:hover,
+.control:focus-visible {
+  color: var(--scene-text);
+}
+.control:hover span,
+.control:focus-visible span {
+  transform: translate(3px, -3px);
+}
+.control:focus-visible,
+.explore:focus-visible,
+.photos a:focus-visible {
+  outline: 1px solid var(--scene-text);
+  outline-offset: 2px;
+}
+.picker {
+  position: relative;
+}
+.photos {
+  position: absolute;
+  left: var(--label-x);
+  top: calc(var(--label-y) + 24px);
+  min-width: 112px;
+  padding: 0.5rem;
+  background: var(--scene-background);
+  border: 1px solid var(--line);
+  pointer-events: auto;
+}
+.photos a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.5rem;
+}
+.explore {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 6.5rem;
+  transform: translateX(-50%);
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--scene-text);
+  pointer-events: auto;
+  cursor: pointer;
+}
+.explore span {
+  margin-left: 0.4rem;
+}
+.layer[data-has-hidden='true'] .explore,
+.layer[data-menu-open='true'] .explore {
+  display: block;
+}
+.layer[data-menu-open='true'] .items {
+  inset: auto auto 10rem 50%;
+  transform: translateX(-50%);
+  width: min(19rem, calc(100% - 2rem));
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--scene-background);
+  border: 1px solid var(--line);
+}
+.layer[data-menu-open='true'] .annotation {
+  position: relative;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+}
+.layer[data-menu-open='true'] .connector {
+  display: none;
+}
+.layer[data-menu-open='true'] .control {
+  position: static;
+  transform: none;
+  justify-content: flex-start;
+  width: 100%;
+}
+.layer[data-menu-open='true'] .photos {
+  left: auto;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  display: flex;
+  min-width: 270px;
+}
+.layer[data-menu-open='true'] .photos a {
+  flex: 1;
+  justify-content: center;
+}
+@media (max-width: 1024px) {
+  .explore {
+    display: block;
+  }
+  .layer:not([data-menu-open='true']) .items {
+    visibility: hidden;
+  }
+  .layer:not([data-menu-open='true']) .annotation {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .annotation,
+  .control,
+  .control span {
+    transition: none;
+  }
+  .control:hover span,
+  .control:focus-visible span {
+    transform: none;
+  }
+  .annotation[data-annotation='guitar'],
+  .annotation[data-annotation='guitar'] .control {
+    transition: none;
+    translate: none;
+  }
+}
+
+.explore {
+  display: block;
+}

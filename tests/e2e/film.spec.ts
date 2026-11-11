@@ -67,7 +67,8 @@ for (const viewport of [
         });
       }
     }
-    await page.getByText('Photos', { exact: true }).click();
+    await page.getByRole('button', { name: 'Explore', exact: true }).click();
+    await page.locator('[data-photo-picker] > summary:visible').click();
     await page.getByRole('link', { name: 'Paris', exact: true }).click();
     await expect(stage).toHaveAttribute('data-photo-state', 'focused');
     expect(

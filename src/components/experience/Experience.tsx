@@ -10,6 +10,9 @@ import {
   GuitarVideoExperience,
   type GuitarVideoActions,
 } from './GuitarVideoExperience';
+import { SceneAnnotations } from './SceneAnnotations';
+import { restoreSceneFocus } from './annotation-focus';
+import type { AnnotationElements } from '../../lib/scene-annotations';
 import { PhotoControls } from './PhotoControls';
 import { BackToStandButton } from './BackToStandButton';
 import photoControlsStyles from './PhotoControls.module.css';
@@ -32,6 +35,20 @@ type SceneState =
 
 export default function Experience() {
   const container = useRef<HTMLDivElement>(null);
+  const annotationLayer = useRef<HTMLDivElement>(null);
+  const annotationElements = useRef<AnnotationElements>({
+    work: null,
+    photos: null,
+    drawings: null,
+    guitar: null,
+  });
+  const [hasExplored, setHasExplored] = useState(false);
+  const [viewChanged, setViewChanged] = useState(false);
+  const onCameraExplore = useCallback(() => {
+    setHasExplored(true);
+    setViewChanged(true);
+  }, []);
+  const onCameraReset = useCallback(() => setViewChanged(false), []);
   const [CanvasComponent, setCanvasComponent] =
     useState<ComponentType<CanvasProps> | null>(null);
   const [state, setState] = useState<SceneState>({ status: 'loading' });
@@ -94,9 +111,7 @@ export default function Experience() {
   const closePhoto = useCallback(() => {
     setPhotoView(null);
     cameraActions.current?.resetView();
-    requestAnimationFrame(() =>
-      photoOpener.current?.focus({ preventScroll: true }),
-    );
+    restoreSceneFocus(photoOpener.current);
   }, []);
   useEffect(() => {
     const reveal = () => setLoaderDismissed(true);
@@ -150,6 +165,8 @@ export default function Experience() {
     <div ref={container}>
       <div
         className={styles.stage}
+        onPointerDownCapture={() => setHasExplored(true)}
+        onClickCapture={() => setHasExplored(true)}
         data-scene-status={state.status}
         data-guitar-phase={guitarPhase}
         data-photo-id={photoView?.photo.id}
@@ -165,6 +182,10 @@ export default function Experience() {
           >
             <SceneErrorBoundary onFailure={onFailure}>
               <CanvasComponent
+                annotationLayer={annotationLayer}
+                annotationElements={annotationElements}
+                onCameraExplore={onCameraExplore}
+                onCameraReset={onCameraReset}
                 onCameraMotion={cameraMotion}
                 guitarPhase={guitarPhase}
                 onGuitarOpen={openGuitar}
@@ -202,28 +223,33 @@ export default function Experience() {
           reducedMotion={reducedMotion}
           trigger={guitarTrigger}
         />
-        <details
-          className={styles.photoPicker}
-          data-photo-picker
-          hidden={Boolean(photoView) || guitarPhase !== 'idle'}
-        >
-          <summary>Photos</summary>
-          <nav aria-label="Photos">
-            {photos.map((photo) => (
-              <a
-                key={photo.id}
-                href={photo.original ?? photo.preview}
-                onClick={(event) => {
-                  if (state.status !== 'ready') return;
-                  event.preventDefault();
-                  onPhotoRequest(photo.id);
-                }}
-              >
-                {photo.title}
-              </a>
-            ))}
-          </nav>
-        </details>
+        <SceneAnnotations
+          available={
+            state.status === 'ready' &&
+            !photoView &&
+            !drawingsView &&
+            guitarPhase === 'idle'
+          }
+          layer={annotationLayer}
+          elements={annotationElements}
+          drawingsTrigger={drawingsTrigger}
+          guitarTrigger={guitarTrigger}
+          onDrawings={() => cameraActions.current?.focusDrawings()}
+          onGuitar={openGuitar}
+          onPhoto={onPhotoRequest}
+        />
+        {state.status === 'failed' && (
+          <details className={styles.photoPicker} data-photo-picker>
+            <summary>Photos</summary>
+            <nav aria-label="Photos">
+              {photos.map((photo) => (
+                <a key={photo.id} href={photo.original ?? photo.preview}>
+                  {photo.title}
+                </a>
+              ))}
+            </nav>
+          </details>
+        )}
         {state.status !== 'ready' && (
           <div className={styles.loading} role="status">
             <p>
@@ -264,9 +290,7 @@ export default function Experience() {
                 autoFocus
                 onClick={() => {
                   cameraActions.current?.resetView();
-                  requestAnimationFrame(() =>
-                    drawingsTrigger.current?.focus({ preventScroll: true }),
-                  );
+                  restoreSceneFocus(drawingsTrigger.current);
                 }}
               />
             </nav>
@@ -275,23 +299,14 @@ export default function Experience() {
           !drawingsView &&
           !photoView &&
           guitarPhase === 'idle' && (
-            <div className={styles.cameraTools} data-camera-tools>
-              <button
-                ref={guitarTrigger}
-                type="button"
-                aria-label="Play Aldo's guitar video"
-                onClick={openGuitar}
-              >
-                Guitar ↗
-              </button>
-              <span>Drag to explore · Scroll to zoom</span>
-              <button
-                ref={drawingsTrigger}
-                type="button"
-                onClick={() => cameraActions.current?.focusDrawings()}
-              >
-                Drawings
-              </button>
+            <div
+              className={styles.cameraTools}
+              data-camera-tools
+              data-view-changed={viewChanged}
+            >
+              <span data-used={hasExplored}>
+                Drag or use arrow keys · Scroll / pinch to zoom
+              </span>
               <button
                 type="button"
                 onClick={() => cameraActions.current?.resetView()}
@@ -304,8 +319,8 @@ export default function Experience() {
           <p className="sr-only" role="status">
             The interactive stand is ready. Drag with the left mouse button to
             explore, or focus the canvas and use arrow keys. Scroll or use plus
-            and minus to zoom. Press Home to reset. Click the CRT or use the
-            View work link.
+            and minus to zoom. Press Home to reset. Click the CRT or use Work in
+            the stand interactions or header navigation.
           </p>
         )}
         {state.status === 'failed' && guitarPhase === 'idle' && (

@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import type { Box3, Object3D } from 'three';
 import type { gsap as gsapApi } from 'gsap';
+import type { AnnotationElements } from '../../lib/scene-annotations';
 import type { PhotoControlsLayout } from '../../lib/photo-controls-layout';
 
 export type GuitarPhase = 'idle' | 'opening' | 'open' | 'closing';
@@ -37,6 +38,10 @@ export interface SceneMetrics {
   targets: Record<string, { x: number; y: number }>;
 }
 export interface CanvasProps {
+  annotationElements: RefObject<AnnotationElements>;
+  annotationLayer: RefObject<HTMLDivElement | null>;
+  onCameraExplore: () => void;
+  onCameraReset: () => void;
   guitarPhase: GuitarPhase;
   onCameraMotion: (moving: boolean) => void;
   onGuitarOpen: () => void;

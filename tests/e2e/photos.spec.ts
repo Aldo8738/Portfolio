@@ -11,7 +11,7 @@ for (const theme of ['original', 'noir', 'synthwave']) {
       localStorage.setItem('taqueria-theme', value);
     }, theme);
     const stage = await ready(page);
-    await page.getByText('Photos', { exact: true }).click();
+    await page.locator('[data-photo-picker] > summary:visible').click();
     const opener = page.getByRole('link', { name: 'Paris', exact: true });
     await opener.click();
     const controls = page.getByRole('navigation', { name: 'Photo navigation' });
@@ -49,9 +49,9 @@ for (const theme of ['original', 'noir', 'synthwave']) {
         expect(box.x).toBeGreaterThanOrEqual(0);
         expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
         expect(box.y).toBeGreaterThanOrEqual(0);
-        const work = await page.locator('.scene-work-link').boundingBox();
-        if (!work) throw new Error('View work link missing');
-        expect(box.y + box.height).toBeLessThanOrEqual(work.y);
+        const utilities = await page.locator('.scene-controls').boundingBox();
+        if (!utilities) throw new Error('Scene utilities missing');
+        expect(box.y + box.height).toBeLessThanOrEqual(utilities.y);
       }
       await page.screenshot({
         path: testInfo.outputPath(`${theme}-${viewport.width}.png`),
@@ -84,6 +84,7 @@ async function ready(page: Page) {
     timeout: 45000,
   });
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Explore', exact: true }).click();
   return stage;
 }
 
@@ -93,7 +94,7 @@ test('canvas presses and rapid retargeting keep photo mode during a slide', asyn
   test.setTimeout(120000);
   await page.setViewportSize({ width: 1440, height: 900 });
   const stage = await ready(page);
-  await page.getByText('Photos', { exact: true }).click();
+  await page.locator('[data-photo-picker] > summary:visible').click();
   await page.getByRole('link', { name: 'Lucha', exact: true }).click();
   await expect(stage).toHaveAttribute('data-photo-state', 'focused');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -144,7 +145,7 @@ test('visible photos remain clickable while another photo is focused', async ({
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const stage = await ready(page);
-  await page.getByText('Photos', { exact: true }).click();
+  await page.locator('[data-photo-picker] > summary:visible').click();
   await page.getByRole('link', { name: 'Lucha', exact: true }).click();
   await expect(stage).toHaveAttribute('data-photo-state', 'focused');
   const box = await stage.locator('canvas').boundingBox();
@@ -247,7 +248,7 @@ test('HTML controls keep embedded textures and restore focus after rapid photo c
     route.abort(),
   );
   const stage = await ready(page);
-  await page.getByText('Photos', { exact: true }).click();
+  await page.locator('[data-photo-picker] > summary:visible').click();
   const opener = page.getByRole('link', { name: 'Paris', exact: true });
   await opener.click();
   await expect(stage).toHaveAttribute('data-photo-id', 'paris');
@@ -273,7 +274,7 @@ test('photo links remain ordinary original-image links when WebGL fails', async 
     'failed',
   );
   await expect(page.locator('#ascii-taco-loader')).toHaveCount(0);
-  await page.getByText('Photos', { exact: true }).click();
+  await page.locator('[data-photo-picker] > summary:visible').click();
   const link = page.getByRole('link', { name: 'Lucha', exact: true });
   await expect(link).toHaveAttribute('href', photos[0]?.original ?? '');
   await link.click();

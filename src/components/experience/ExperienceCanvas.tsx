@@ -28,6 +28,7 @@ import { isInteractiveObject } from '../../lib/interactive-object';
 import type { CanvasProps } from './scene-types';
 import { useModelMaterials } from './useModelMaterials';
 import { usePortfolioTransition } from './usePortfolioTransition';
+import { SceneAnnotationTracking } from './SceneAnnotationTracking';
 import { CameraControls } from './CameraControls';
 import { usePointerDrag } from './usePointerDrag';
 import { usePhotoSway } from './usePhotoSway';
@@ -60,6 +61,10 @@ function LoadingProgress({ onProgress }: Pick<CanvasProps, 'onProgress'>) {
   return null;
 }
 function Model({
+  annotationElements,
+  annotationLayer,
+  onCameraExplore,
+  onCameraReset,
   guitarPhase,
   onCameraMotion,
   onGuitarOpen,
@@ -76,6 +81,10 @@ function Model({
   onReady,
 }: Pick<
   CanvasProps,
+  | 'annotationElements'
+  | 'annotationLayer'
+  | 'onCameraExplore'
+  | 'onCameraReset'
   | 'guitarPhase'
   | 'onCameraMotion'
   | 'onGuitarOpen'
@@ -287,6 +296,8 @@ function Model({
         <SceneBenchmark />
       )}
       <CameraControls
+        onCameraExplore={onCameraExplore}
+        onCameraReset={onCameraReset}
         onDrawingsView={onDrawingsView}
         photoId={photoId}
         amp={amp}
@@ -301,18 +312,49 @@ function Model({
         cameraActions={cameraActions}
         sceneRevealed={sceneRevealed}
       />
+      <SceneAnnotationTracking
+        scene={scene}
+        elements={annotationElements}
+        layer={annotationLayer}
+        enabled={
+          active &&
+          sceneRevealed &&
+          !photoId &&
+          guitarPhase === 'idle' &&
+          portfolio.phase === 'idle'
+        }
+        enterWork={portfolio.enterPortfolio}
+      />
       {portfolio.effect}
       <primitive
         object={scene}
         dispose={null}
         onPointerMove={(event: ThreeEvent<PointerEvent>) => {
           event.stopPropagation();
+          const target = event.object;
+          let id = '';
+          for (let node: Object3D | null = target; node; node = node.parent) {
+            if (node.name === 'CRT_INTERACTION') id = 'work';
+            if (node.name === 'SKETCHBOOK_INTERACTION') id = 'drawings';
+            if (node.name === 'AMP_INTERACTION') id = 'guitar';
+            if (/POLAROID_\d_SWING_PIVOT/.test(node.name)) id = 'photos';
+          }
+          gl.domElement.dataset.hoverTarget = dragged.current ? '' : id;
+          gl.domElement.dataset.hoverMesh = event.object.name;
+          gl.domElement.dataset.hoverMeshId = String(event.object.id);
+          const localHit = event.object.worldToLocal(event.point.clone());
+          gl.domElement.dataset.hoverX = String(localHit.x);
+          gl.domElement.dataset.hoverY = String(localHit.y);
+          gl.domElement.dataset.hoverZ = String(localHit.z);
+          invalidate();
           salsa.hover(dragged.current ? null : event.object);
           gl.domElement.dataset.interactive = String(
             isInteractiveObject(event.object),
           );
         }}
         onPointerOut={() => {
+          gl.domElement.dataset.hoverTarget = '';
+          invalidate();
           salsa.hover(null);
           delete gl.domElement.dataset.interactive;
         }}
@@ -329,6 +371,11 @@ function Model({
             node;
             node = node.parent
           ) {
+            if (!photoId && node.name === 'CRT_INTERACTION') {
+              event.stopPropagation();
+              void portfolio.enterPortfolio();
+              return;
+            }
             if (!photoId && node.name === 'AMP_INTERACTION') {
               event.stopPropagation();
               onGuitarOpen();
@@ -358,10 +405,6 @@ function Model({
             event.stopPropagation();
             salsa.select(theme.id);
             return;
-          }
-          if (event.object.name === 'HIT_WORK_CRT_SCREEN') {
-            event.stopPropagation();
-            void portfolio.enterPortfolio();
           }
         }}
       />

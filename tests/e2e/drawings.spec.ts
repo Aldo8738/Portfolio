@@ -48,9 +48,9 @@ for (const width of [1280, 390]) {
     await back.click();
     await expect(canvas).not.toHaveAttribute('data-drawings-view');
     await expect(back).toHaveCount(0);
-    await expect(
-      page.getByRole('button', { name: 'Drawings', exact: true }),
-    ).toBeFocused();
+    const explore = page.getByRole('button', { name: 'Explore', exact: true });
+    await expect(explore).toBeFocused();
+    await explore.click();
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await expect(canvas).toHaveAttribute('data-salsa-motion', 'full');
     await page.getByRole('button', { name: 'Drawings', exact: true }).focus();

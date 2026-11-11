@@ -1,0 +1,58 @@
+[
+  {
+    "orbitDegrees": 0,
+    "targets": {
+      "photos": {
+        "x": 920,
+        "y": 310
+      },
+      "work": {
+        "x": 920,
+        "y": 390
+      },
+      "guitar": {
+        "x": 520,
+        "y": 510
+      }
+    }
+  },
+  {
+    "orbitDegrees": 90,
+    "targets": {
+      "photos": {
+        "x": 760,
+        "y": 310
+      },
+      "work": {
+        "x": 600,
+        "y": 390
+      }
+    }
+  },
+  {
+    "orbitDegrees": 180,
+    "targets": {
+      "photos": {
+        "x": 400,
+        "y": 310
+      }
+    }
+  },
+  {
+    "orbitDegrees": 270,
+    "targets": {
+      "photos": {
+        "x": 680,
+        "y": 310
+      },
+      "work": {
+        "x": 800,
+        "y": 390
+      },
+      "guitar": {
+        "x": 800,
+        "y": 550
+      }
+    }
+  }
+]
