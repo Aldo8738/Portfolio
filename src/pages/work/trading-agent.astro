@@ -1,0 +1,12 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import TradingAgentCaseStudy from '../../components/work/trading-agent/TradingAgentCaseStudy.astro';
+import { getProject } from '../../content/portfolio';
+
+const project = getProject('trading-agent');
+if (!project) throw new Error('Trading Agent content is missing');
+---
+
+<SiteLayout title={project.title} description={project.summary}>
+  <TradingAgentCaseStudy project={project} />
+</SiteLayout>

@@ -1,0 +1,77 @@
+---
+import {
+  researchBeats,
+  researchCase,
+  researchSources,
+} from '../../../content/trading-research';
+import SourceArtifact from './SourceArtifact.astro';
+import AssessmentDocument from './AssessmentDocument.astro';
+---
+
+<section
+  class="rd-story"
+  aria-label="From research sources to an assessment"
+  data-research-desk
+>
+  <div class="rd-stage" data-desk-stage>
+    {researchBeats.map((beat) => (
+      <section
+        class:list={['rd-beat', `rd-beat--${beat.id}`]}
+        data-beat={beat.id}
+        aria-labelledby={`rd-title-${beat.id}`}
+      >
+        {'title' in beat ? (
+          <div class="rd-copy">
+            <p class="rd-meta">{beat.label}</p>
+            <h2 id={`rd-title-${beat.id}`}>
+              {'lines' in beat
+                ? beat.lines.map((line) => (
+                    <span class="rd-intro-line">{line} </span>
+                  ))
+                : beat.title}
+            </h2>
+            <p>{beat.description}</p>
+          </div>
+        ) : (
+          <h2 class="rd-meta rd-beat-label" id={`rd-title-${beat.id}`}>
+            {beat.label}
+          </h2>
+        )}
+        {beat.id === 'sources' && (
+          <div class="rd-papers" data-master-papers>
+            {researchSources.map((source) => (
+              <SourceArtifact source={source} />
+            ))}
+          </div>
+        )}
+        {beat.id === 'evidence' && (
+          <div class="rd-mobile-evidence">
+            <p class="rd-selection-note">
+              Selected for consideration. Opinion remains opinion.
+            </p>
+            <div class="rd-papers">
+              {researchSources.map((source) => (
+                <SourceArtifact source={source} highlighted />
+              ))}
+            </div>
+          </div>
+        )}
+        {beat.id === 'assessment' && <AssessmentDocument />}
+      </section>
+    ))}
+    <p class="rd-disclaimer">{researchCase.disclaimer}</p>
+  </div>
+</section>
+
+<script>
+  import { mountResearchDesk } from './research-desk';
+
+  const root = document.querySelector<HTMLElement>('[data-research-desk]');
+  if (root) {
+    let dispose = mountResearchDesk(root);
+    window.addEventListener('pagehide', () => dispose());
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) dispose = mountResearchDesk(root);
+    });
+  }
+</script>

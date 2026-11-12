@@ -2,6 +2,12 @@
 
 **Current interaction direction:** The [diegetic brief](docs/taqueria-diegetic-interactions-codex-plan.md) supersedes permanent floating labels. See [implementation and verification](docs/qa/DIEGETIC_INTERACTIONS.md). Earlier floating-label notes below are historical.
 
+**Trading Agent update:** The [Los Trading Hermanos brief](docs/LOS_TRADING_HERMANOS_CODEX.md)
+replaces that project's generic detail template with an editorial hero, a six-beat
+Research Desk, and a compact engineering section. See the
+[implementation notes](docs/qa/LOS_TRADING_HERMANOS.md) for the illustrative case,
+desktop choreography, natural-flow fallbacks, and pending creator visual review.
+
 **Status:** Build-ready specification · **Date:** 21 October 2026  
 **Project:** Personal creative/developer portfolio presented as an interactive, stylized 3D Mexican taco stand  
 **Design baseline:** **Frozen Blender v3.12.9** — do not redesign the geometry  

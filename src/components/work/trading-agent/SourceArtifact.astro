@@ -1,0 +1,239 @@
+---
+import {
+  researchCase,
+  selectedEvidence,
+  type ResearchSource,
+} from '../../../content/trading-research';
+
+interface Props {
+  source: ResearchSource;
+  highlighted?: boolean;
+}
+const { source, highlighted = false } = Astro.props;
+const { measurements, allocation, priceHistory } = researchCase;
+const marketMetrics = source.entries.filter(
+  (entry) => entry.reference === 'M1' || entry.label === 'Average volume',
+);
+const chartLow = Math.min(...priceHistory);
+const chartHigh = Math.max(...priceHistory);
+const priceLine = priceHistory
+  .map((price, index) => {
+    const x = 20 + (index / (priceHistory.length - 1)) * 260;
+    const y = 62 - ((price - chartLow) / (chartHigh - chartLow)) * 40;
+    return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
+  })
+  .join(' ');
+---
+
+<article
+  class:list={['rd-paper', `rd-paper--${source.id}`]}
+  id={`${highlighted ? 'evidence' : 'source'}-${source.id}`}
+  data-source={source.id}
+  data-highlighted={String(highlighted)}
+>
+  <header>
+    <p class="rd-meta">
+      {source.provenance} / {researchCase.company}
+    </p>
+    <h3>{source.title}</h3>
+    <p class="rd-provenance">{source.description}</p>
+  </header>
+  {source.id === 'fundamentals' ? (
+    <table class="rd-financial-table">
+      <caption class="sr-only">
+        {source.title} · {source.description}
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Illustrative value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {source.entries.map((entry) => (
+          <tr>
+            <th scope="row">{entry.label}</th>
+            <td>
+              <span
+                class:list={{
+                  'rd-selection': selectedEvidence.some(
+                    (id) => id === entry.reference,
+                  ),
+                }}
+              >
+                {selectedEvidence.some((id) => id === entry.reference) && (
+                  <span class="rd-ink" aria-hidden="true" />
+                )}
+                <span class="rd-entry-text">{entry.value}</span>
+              </span>
+              {entry.reference && (
+                <span class="rd-reference">[{entry.reference}]</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    source.id !== 'market' &&
+    source.id !== 'portfolio' && (
+      <ul class="rd-entries">
+        {source.entries.map((entry, index) => {
+          const selected = selectedEvidence.some(
+            (id) => id === entry.reference,
+          );
+          return (
+            <li>
+              {source.id === 'discussion' && (
+                <span class="rd-vote-markers" aria-hidden="true">
+                  <span>▴</span>
+                  <span>▾</span>
+                </span>
+              )}
+              {source.id === 'discussion' && (
+                <p class="rd-comment-meta">
+                  Opinion {String.fromCharCode(65 + index)}{' '}
+                  <span>Unverified view</span>
+                </p>
+              )}
+              <span
+                class:list={{
+                  'rd-selection': selected && !entry.highlightPhrase,
+                }}
+              >
+                {selected && !entry.highlightPhrase && (
+                  <span class="rd-ink" aria-hidden="true" />
+                )}
+                <span class="rd-entry-text">
+                  {selected && entry.highlightPhrase
+                    ? entry.text
+                        .split(entry.highlightPhrase)
+                        .map((part, index) => (
+                          <>
+                            {index > 0 && (
+                              <span class="rd-marker">
+                                {entry.highlightPhrase}
+                              </span>
+                            )}
+                            {part}
+                          </>
+                        ))
+                    : entry.text}
+                </span>
+              </span>
+              {entry.reference && (
+                <span class="rd-reference">[{entry.reference}]</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    )
+  )}
+  {source.id === 'news' && (
+    <p class="rd-clipping-note">
+      Research clipping / {researchCase.company} / Secondary source
+    </p>
+  )}
+  {source.id === 'market' && (
+    <figure class="rd-range">
+      <svg
+        viewBox="0 0 300 90"
+        role="img"
+        aria-label={`Authored illustrative six-month price path ending at ${measurements.price.toFixed(2)}, with a ${measurements.return} return. These are not historical prices. The illustrative 52-week range is ${measurements.rangeLow.toFixed(2)} to ${measurements.rangeHigh.toFixed(2)}.`}
+      >
+        <path class="rd-chart-grid" d="M20 22H280M20 42H280M20 62H280" />
+        <path class="rd-price-history" d={priceLine} />
+        <circle class="rd-price-endpoint" cx="280" cy="22" r="3" />
+        <text x="280" y="14" text-anchor="end" class="rd-price-label">
+          {measurements.price.toFixed(2)}
+        </text>
+        <text x="20" y="78">
+          −6 months
+        </text>
+        <text x="280" y="78" text-anchor="end">
+          Now
+        </text>
+      </svg>
+      <figcaption>
+        Illustrative path · Not historical prices
+        <br />
+        52-week range {measurements.rangeLow.toFixed(2)}–
+        {measurements.rangeHigh.toFixed(2)}
+      </figcaption>
+    </figure>
+  )}
+  {source.id === 'market' && (
+    <dl class="rd-market-metrics">
+      {marketMetrics.map((entry) => (
+        <div>
+          <dt>{entry.label}</dt>
+          <dd>
+            <span class:list={{ 'rd-selection': entry.reference === 'M1' }}>
+              {entry.reference === 'M1' && (
+                <span class="rd-ink" aria-hidden="true" />
+              )}
+              <span class="rd-entry-text">{entry.value}</span>
+            </span>
+            {entry.reference && (
+              <span class="rd-reference">[{entry.reference}]</span>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
+  {source.id === 'portfolio' && (
+    <>
+      <figure class="rd-allocation">
+        <svg
+          viewBox="0 0 124 124"
+          role="img"
+          aria-label={`Illustrative position weight ${measurements.position}; allocation band ${measurements.allocationBand}.`}
+        >
+          <circle class="rd-allocation-track" cx="62" cy="62" r="44" />
+          <circle
+            class="rd-allocation-weight"
+            cx="62"
+            cy="62"
+            r="44"
+            pathLength="100"
+            stroke-dasharray={`${allocation.weight} ${100 - allocation.weight}`}
+            transform="rotate(-90 62 62)"
+          />
+          <text x="62" y="68" text-anchor="middle">
+            {measurements.position}
+          </text>
+        </svg>
+        <figcaption>
+          <strong>Position weight</strong>
+          <span>Allocation band {measurements.allocationBand}</span>
+        </figcaption>
+      </figure>
+      <ul class="rd-entries">
+        {source.entries.map((entry) => (
+          <li>
+            <span
+              class:list={{
+                'rd-selection': selectedEvidence.some(
+                  (id) => id === entry.reference,
+                ),
+              }}
+            >
+              {selectedEvidence.some((id) => id === entry.reference) && (
+                <span class="rd-ink" aria-hidden="true" />
+              )}
+              <span class="rd-entry-text">{entry.text}</span>
+            </span>
+            {entry.reference && (
+              <span class="rd-reference">[{entry.reference}]</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p class="rd-paper-note">
+        Allocation context, not an instruction to trade.
+      </p>
+    </>
+  )}
+</article>

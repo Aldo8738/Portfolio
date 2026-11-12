@@ -1,0 +1,72 @@
+---
+import {
+  researchCase,
+  researchAssessment as assessment,
+  getResearchEvidence,
+} from '../../../content/trading-research';
+const opinion = getResearchEvidence(assessment.counterpoint);
+const portfolio = getResearchEvidence(assessment.portfolioReference);
+---
+
+<article class="rd-assessment" aria-labelledby="rd-assessment-title">
+  <header>
+    <p class="rd-meta">ASSESSMENT / {researchCase.company} / ILLUSTRATIVE</p>
+    <h3 id="rd-assessment-title">Investment Assessment</h3>
+  </header>
+  <section>
+    <h4>Thesis</h4>
+    <p>{assessment.thesis}</p>
+  </section>
+  <section>
+    <h4>Supporting evidence</h4>
+    <ul>
+      {assessment.supportingEvidence.map((id) => {
+        const evidence = getResearchEvidence(id);
+        return (
+          <li>
+            {evidence.summary ?? evidence.text}
+            {'\u00a0'}
+            <span class="rd-citation">
+              [{id}]
+              <span class="sr-only">
+                {' '}
+                {evidence.source.provenance} / {evidence.source.title}
+              </span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+  <section class="rd-assessment-context">
+    <div>
+      <h4>Risks</h4>
+      <p>
+        {opinion.text}
+        {'\u00a0'}
+        <span class="rd-citation">
+          [{assessment.counterpoint}]
+          <span class="sr-only">
+            {' '}
+            {opinion.source.provenance} / {opinion.source.title}
+          </span>
+        </span>
+      </p>
+    </div>
+    <div>
+      <h4>Portfolio implication</h4>
+      <p>
+        {assessment.portfolio}
+        {'\u00a0'}
+        <span class="rd-citation">
+          [{assessment.portfolioReference}]
+          <span class="sr-only">
+            {' '}
+            {portfolio.source.provenance} / {portfolio.source.title}
+          </span>
+        </span>
+      </p>
+    </div>
+  </section>
+  <footer>{researchCase.disclaimer}</footer>
+</article>

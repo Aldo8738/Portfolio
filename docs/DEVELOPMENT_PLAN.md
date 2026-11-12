@@ -1,5 +1,12 @@
 # Taquería Aldo development plan
 
+The [Los Trading Hermanos brief](LOS_TRADING_HERMANOS_CODEX.md) now supplies the
+Trading Agent detail page at `/work/trading-agent`. Its six-beat Research Desk
+uses one persistent desktop composition and natural-flow mobile/reduced-motion
+chapters. See [implementation notes](qa/LOS_TRADING_HERMANOS.md). Per the creator's
+instruction, this increment adds/runs no tests and performs no visual inspection;
+visual acceptance remains with the creator.
+
 The current homepage interaction direction is the [diegetic brief](taqueria-diegetic-interactions-codex-plan.md). It supersedes permanent floating labels; see [implementation and checks](qa/DIEGETIC_INTERACTIONS.md).
 
 Planning baseline: 21 October 2026. The authoritative specification remains

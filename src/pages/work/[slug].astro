@@ -11,7 +11,10 @@ import '../../components/work/work.css';
 
 export const getStaticPaths = (() =>
   orderedProjects
-    .filter((project) => project.slug !== 'knowledge-bridge')
+    .filter(
+      (project) =>
+        project.slug !== 'knowledge-bridge' && project.slug !== 'trading-agent',
+    )
     .map((project) => ({
       params: { slug: project.slug },
       props: { project },
