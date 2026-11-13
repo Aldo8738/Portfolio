@@ -7,9 +7,14 @@ gsap.registerPlugin(CSSPlugin, ScrollTrigger);
 const mounted = new WeakMap<HTMLElement, () => void>();
 const storyTiming = {
   transition: 2,
-  scrollViewports: 7,
-  beats: [0, 9, 31, 40, 63, 72],
-  end: 100,
+  assembly: 8,
+  scrollViewports: 7.5,
+  beats: [0, 16, 38, 47, 70, 79],
+  end: 107,
+} as const;
+const entranceMotion = {
+  desktop: { travel: 34, rotation: 1.2, duration: 0.95, stagger: 0.25 },
+  compact: { travel: 16, rotation: 0.3, duration: 0.65, stagger: 0.14 },
 } as const;
 
 export function mountResearchDesk(root: HTMLElement): () => void {
@@ -24,6 +29,46 @@ export function mountResearchDesk(root: HTMLElement): () => void {
     const papers = root.querySelector<HTMLElement>('[data-master-papers]');
     const assessment = root.querySelector<HTMLElement>('.rd-assessment');
     if (!stage || !papers || !assessment) return;
+    const cards = Array.from(
+      papers.querySelectorAll<HTMLElement>('[data-source]'),
+    );
+
+    function createDeskEntrance(compact: boolean) {
+      const motion = compact ? entranceMotion.compact : entranceMotion.desktop;
+      const rotations = cards.map((card) =>
+        Number(gsap.getProperty(card, 'rotation')),
+      );
+      return gsap.timeline().fromTo(
+        cards,
+        {
+          opacity: 0,
+          x: (_index, card: HTMLElement) => {
+            const id = card.dataset.source;
+            if (id === 'news' || id === 'fundamentals') return -motion.travel;
+            if (id === 'discussion' || id === 'portfolio') return motion.travel;
+            return 0;
+          },
+          y: (_index, card: HTMLElement) =>
+            card.dataset.source === 'market'
+              ? motion.travel
+              : motion.travel / 4,
+          scale: 0.975,
+          rotation: (index) =>
+            (rotations[index] ?? 0) +
+            (index % 2 === 0 ? -motion.rotation : motion.rotation),
+        },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          rotation: (index) => rotations[index] ?? 0,
+          duration: motion.duration,
+          stagger: motion.stagger,
+          ease: 'power3.out',
+        },
+      );
+    }
 
     media.add(
       '(min-width: 1100px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)',
@@ -39,7 +84,6 @@ export function mountResearchDesk(root: HTMLElement): () => void {
         const assessmentLabel = root.querySelector<HTMLElement>(
           '[data-beat="assessment"] > h2',
         );
-        const cards = papers.querySelectorAll<HTMLElement>('[data-source]');
         const assessmentScale = 0.84;
         const hidden = [
           explain,
@@ -61,14 +105,19 @@ export function mountResearchDesk(root: HTMLElement): () => void {
         const at = (index: number) => storyTiming.beats[index] ?? 0;
         const leave = (index: number) => at(index) - transition;
         const enter = (index: number) => at(index) - transition / 2;
+        const assemblyStart = at(1) - storyTiming.assembly;
         researchBeats.forEach((beat, index) =>
           timeline.addLabel(beat.id, at(index)),
         );
 
         timeline
-          .to(intro, { autoAlpha: 0 }, leave(1))
-          .to(papers, { opacity: 1 }, enter(1))
-          .to(sourceLabel, { autoAlpha: 1 }, enter(1))
+          .to(intro, { autoAlpha: 0, y: -8 }, assemblyStart - transition / 2)
+          .set(papers, { opacity: 1 }, assemblyStart)
+          .to(sourceLabel, { autoAlpha: 1 }, assemblyStart)
+          .add(
+            createDeskEntrance(false).duration(storyTiming.assembly),
+            assemblyStart,
+          )
           .to(papers, { opacity: 0.05 }, leave(2))
           .to(sourceLabel, { autoAlpha: 0 }, leave(2))
           .to(explain, { autoAlpha: 1 }, enter(2))
@@ -145,6 +194,19 @@ export function mountResearchDesk(root: HTMLElement): () => void {
         return () => {
           delete root.dataset.deskMode;
         };
+      },
+    );
+
+    media.add(
+      '(max-width: 1099px) and (prefers-reduced-motion: no-preference), (max-height: 759px) and (prefers-reduced-motion: no-preference)',
+      () => {
+        ScrollTrigger.create({
+          trigger: papers,
+          start: 'top 72%',
+          end: 'top 10%',
+          animation: createDeskEntrance(true),
+          scrub: true,
+        });
       },
     );
   }
